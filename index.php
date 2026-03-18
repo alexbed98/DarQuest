@@ -4,7 +4,7 @@
 // a decommenter quand on les utilisent
 
 // require_once 'core/error-exception.php';
-// require_once 'src/initialization.php';
+require_once 'src/initialization.php';
 // require_once 'src/Page.php';
 
 // identification de la page active
@@ -15,7 +15,7 @@
 <html lang="fr">
 
 <!--Bloc entête document-Head block-->
-<?php // include_once TEMPLATE . '/head.php'; ?>
+<?php include_once TEMPLATE . '/head.php'; ?>
 <!--Bloc entête document-Head block-->
 
 <body>
@@ -24,7 +24,7 @@
     <div class="container">
 
         <!--Bloc entête-Header block-->
-        <?php // include_once TEMPLATE . '/header.php'; ?>
+        <?php include_once TEMPLATE . '/header.php'; ?>
         <!--Bloc entête-Header block-->
         
         <main>
@@ -37,7 +37,7 @@
         </main>
         
         <!--Bloc pied de page-Footer block-->
-        <?php // include_once TEMPLATE . '/footer.php'; ?>
+        <?php include_once TEMPLATE . '/footer.php'; ?>
         <!--Bloc pied de page-Footer block-->
         
     </div>
