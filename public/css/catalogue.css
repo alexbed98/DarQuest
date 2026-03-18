@@ -42,6 +42,7 @@ body {
 .options {
     border: 2px solid black;
     border-radius: 20px;
+    min-width: 150px;
     width: 0dp;
     height: 0dpx;
     margin: 20px;
