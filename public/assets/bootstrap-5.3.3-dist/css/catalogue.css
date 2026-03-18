@@ -1,0 +1,71 @@
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    border: 2px solid black;
+}
+
+.pages {
+    display: flex;
+    flex-direction: row;
+    margin-left: auto;
+    justify-content: space-between;
+    width: 30%;
+    padding-right: 5px;
+}
+
+.logo {
+    width: 50px;
+}
+
+.avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+}
+
+.catalogue {
+    display: flex;
+    border: 2px solid black;
+    min-height: 500px;
+    margin-top: 10px;
+}
+
+.options {
+    border: 2px solid black;
+    border-radius: 20px;
+    width: 0dp;
+    height: 0dpx;
+    margin: 20px;
+    padding: 10px;
+}
+
+.list-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: start;
+    padding: 10px;
+}
+
+.item {
+    width: 0dpx;
+    margin: 20px;
+}
+
+.footer {
+    border: 2px solid black;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    width: 100%;
+    margin-top: 10px;
+
+}
