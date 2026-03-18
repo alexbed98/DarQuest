@@ -1,6 +1,18 @@
 <header>
-            
-    <!--Bannière-Banner-->
+         <img class="logo" src="TheBoi.png" alt="Logo">
+        <h1 class="titre">Accueil</h1>
+        <div class="pages">
+            <a>Admin</a>
+            <a>Inventaire</a>
+            <a>Énigma</a>
+            <a>Panier</a>
+        </div>
+        <div>
+            <img class="avatar" src="close-up-of-grass-1.jpg">
+        </div>
+
+
+    <!-- Bannière-Banner-->
     <img src="<? ?>/banner.jpg" class="img-fluid" alt="La meilleure boutique informatique !">        
 
     <!--Bloc Navigation Menu principal-Navigation Block Top Menu-->
@@ -73,6 +85,6 @@
             </div>
         </div>
     </nav>
-    <!--Bloc Navigation Menu principal-Navigation Block Top Menu-->
+    <!--Bloc Navigation Menu principal-Navigation Block Top Menu -->
 
 </header>
