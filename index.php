@@ -5,12 +5,13 @@
 
 // require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
-// require_once 'src/Page.php';
+require_once 'src/Page.php';
 
 // identification de la page active
 // const ACTIVE_PAGE = Page::Home;
 
-$cssAdd = ['/public/css/catalogue.css'];
+$cssAdd = ['/public/css/catalogue.css',
+           '/public/css/layout.css'];
 
 ?>
 <!DOCTYPE html>
