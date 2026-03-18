@@ -13,7 +13,8 @@ $items = [
         "image" => "TheBoi.png",
         "quantite" => 10,
         "prix" => 100,
-    ],[
+    ],
+    [
         "id" => 1,
         "nom" => "Bouclier de glace",
         "categorie" => "armure",
@@ -23,18 +24,17 @@ $items = [
     ],
 ];
 
-if(isset($_GET['prix'])) {
-echo "prix";
+if (isset($_GET['prix'])) {
+    echo "prix";
 }
 
-        // <?php foreach($items as $item) : ?>
+// <?php foreach($items as $item) : ?>
 
 <div class="catalogue">
     <div class="options">
         <div style="border: 1px solid black; border-radius: 5px;">
             Nb pièces
         </div>
-        <form action="changeAffichage" method="post">
         <div>
             <legend>Trier par:</legend>
             <input type="radio" id="prix" value="prix" />
@@ -60,11 +60,8 @@ echo "prix";
             <input type="checkbox" id="" />
             <label for=""></label>
         </div>
-        <div>
-            <!-- <input type="submit" value="Submit" /> -->
-        </div>
-        </form>
-        <!-- <div>
+    </div>
+    <!-- <div>
             <legend>Trier par:</legend>
             <input type="radio" id="prix" />
             <label for="prix">Prix</label>
@@ -89,13 +86,13 @@ echo "prix";
             <input type="checkbox" id="" />
             <label for=""></label>
         </div> -->
-    </div>
 
-    <div class="list-item">
-        <?php foreach($items as $item) : ?>
+<div class="list-item">
+    <?php foreach ($items as $item): ?>
         <div class="item">
             <div style="border: 2px solid black;">
-                <img src=<?= PRODUCT_IMG . '/' . $item['image'] ?> alt="Image de l'article" style="width: 100px; height: 100px;">
+                <img src=<?= PRODUCT_IMG . '/' . $item['image'] ?> alt="Image de l'article"
+                    style="width: 100px; height: 100px;">
             </div>
             <div
                 style="border: 2px solid black; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 5px; margin-top: 10px; width: 300px;">
@@ -105,6 +102,6 @@ echo "prix";
                 <button>Ajouter</button>
             </div>
         </div>
-        <?php endforeach; ?>
-    </div>
+    <?php endforeach; ?>
+</div>
 </div>
