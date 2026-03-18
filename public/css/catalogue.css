@@ -10,6 +10,7 @@ body {
     align-items: center;
     padding: 5px;
     border: 2px solid black;
+    border-radius: 15px;
 }
 
 .pages {
@@ -17,8 +18,8 @@ body {
     flex-direction: row;
     margin-left: auto;
     justify-content: space-between;
-    width: 30%;
-    padding-right: 5px;
+    width: 20%;
+    padding-right: 15px;
 }
 
 .logo {
