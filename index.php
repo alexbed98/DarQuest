@@ -10,9 +10,7 @@ require_once 'src/initialization.php';
 // identification de la page active
 // const ACTIVE_PAGE = Page::Home;
 
-// $cssAdd = ['/public/css/catalogue.css'];
-
-require_once 'public/css/catalogue.css';
+$cssAdd = ['/public/css/catalogue.css'];
 
 ?>
 <!DOCTYPE html>
