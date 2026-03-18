@@ -1,5 +1,5 @@
 <header>
-    <nav class="nav-bar">
+    <nav class="header">
         <a class=""><img class="logo" src="TheBoi.png" alt="Logo"></a>
 
         <h1 class="titre">Accueil</h1>
