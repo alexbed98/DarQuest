@@ -10,6 +10,8 @@ require_once 'src/initialization.php';
 // identification de la page active
 // const ACTIVE_PAGE = Page::Home;
 
+
+
 ?>
 <!DOCTYPE html>
 <html lang="fr">
