@@ -2,12 +2,16 @@
 enum Page
 {
     case Home;
+    case Connexion;
+    case CreationCompte;
 
     public function text(): string {
 
         return match($this) {
             
-            Page::Home => 'Accueil'
+            Page::Home => 'Accueil',
+            Page::Connexion => 'Connexion',
+            Page::CreationCompte => 'Création de compte'
         };
 
     }
@@ -16,7 +20,9 @@ enum Page
 
         return match($this) {
             
-            Page::Home => '/'
+            Page::Home => '/',
+            Page::Connexion => '/login',
+            Page::CreationCompte => '/signup'
         };
 
     }
