@@ -7,7 +7,7 @@
             <a href="">Admin</a>
             <a href="">Inventaire</a>
             <a href="">Énigma</a>
-            <a href="/panier.php">Panier</a>
+            <a href="<?= Page::Panier->url() ?>">Panier</a>
         </div>
         <div>
             <img class="avatar" src="/public/img/close-up-of-grass-1.jpg" alt="Avatar">
