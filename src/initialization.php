@@ -38,18 +38,18 @@ define('IS_ADMIN', IS_AUTH && $_SESSION['role'] === 1);
 // mySql
 // il faut verifier comment ca fonctionne et entrer les 
 // bonnes infos
-// $dbConfig = [
-//     "dbHost" => "127.0.0.1",
-//     "dbName" => "boutique",
-//     "dbUser" => "root",
-//     "dbPass" => "",
-//     "dbParams" => [
-//         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-//         PDO::ATTR_CASE => PDO::CASE_NATURAL,
-//         PDO::ATTR_ORACLE_NULLS => PDO::NULL_EMPTY_STRING,
-//         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-//     ],
-// ];
+ $dbConfig = [
+     "dbHost" => "127.0.0.1",
+     "dbName" => "darquest",
+     "dbUser" => "root",
+     "dbPass" => "",
+     "dbParams" => [
+         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+         PDO::ATTR_CASE => PDO::CASE_NATURAL,
+         PDO::ATTR_ORACLE_NULLS => PDO::NULL_EMPTY_STRING,
+         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+     ],
+ ];
 
 //==========================================
 
