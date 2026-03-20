@@ -31,6 +31,7 @@ $items = ItemDAL::selectAll($connexion);
         <div style="border: 1px solid black; border-radius: 5px;">
             Nb pièces
         </div>
+        <form action="">
         <div>
             <legend>Trier par:</legend>
             <input type="radio" id="prix" value="prix" onclick="submitForm()" />
@@ -56,6 +57,7 @@ $items = ItemDAL::selectAll($connexion);
             <input type="checkbox" id="" />
             <label for=""></label>
         </div>
+        </form>
     </div>
     <!-- <div>
             <legend>Trier par:</legend>
