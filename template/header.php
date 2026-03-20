@@ -1,6 +1,6 @@
 <header>
     <div class="header">
-        <a class="" href="/index.php"><img class="logo" src="/public/img/TheBoi.png" alt="Logo"></a>
+        <a class="" href="/index.php"><img class="logo" src="/public/img/okk.avif" alt="Logo"></a>
 
         <h1 class="titre">Accueil</h1>
         <div class="pages">
