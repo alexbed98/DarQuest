@@ -1,7 +1,6 @@
 <?php
 
 // les require et les include
-// a decommenter quand on les utilisent
 
 // require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
