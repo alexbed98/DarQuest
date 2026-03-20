@@ -14,7 +14,8 @@ if (IS_AUTH) header('Location: '. Page::Home->url());
 const ACTIVE_PAGE = Page::Connexion;
 
 $cssAdd = ['/public/css/catalogue.css',
-           '/public/css/layout.css'];
+           '/public/css/layout.css',
+           '/public/css/form.css'];
 
 $email = '';
 $messages = [];
@@ -41,8 +42,6 @@ if (IS_POST) {
 
     }
     
-    // La logique actuelle est basée sur la présence d'un ou plus message d'erreur
-    // Nous pourrions faire aussi avec :!empty($messages)
     if (count($messages) > 0) {
 
         $messages['global'] = 'Le formulaire est invalide.';
@@ -63,7 +62,7 @@ if (IS_POST) {
 
         } else {
 
-            $messages['global'] = 'Mauvaises informations d\'authentification.';
+            $messages['global'] = 'Informations d\'authentification invalides.';
 
         }       
 
@@ -98,16 +97,15 @@ if (!empty($_SESSION['new-account'])) {
         <!--Bloc entête-Header block-->
         
         <main>
-            <h1 class="py-3 mt-3">DarQuest</h1>
 
             <?php if ($showNewAccountMessage): ?>
             <div class="py=3 text-success text-center fs-4">
-                <p>Merci d'avoir créé un compte sur le site de notre boutique.</p>
-                <p>Cependant, le courriel sera à valider avant que vous ayez la possibilité de vous connecter.</p>
+                <p>Merci d'avoir créé un compte DarQuest</p>
+                <p>Vous devez valider votre courriel pour vous connecter.</p>
             </div>
             <?php endif; ?>
 
-            <div class="fs-4 text-center my-5">Entrez vos informations de connexion.</div>
+            <div class="fs-4 text-center my-5">Connectez-vous</div>
 
             <!--Formulaire authenfification-Authentication form-->
             <div class="col-md-4 mx-auto">                         
@@ -134,7 +132,7 @@ if (!empty($_SESSION['new-account'])) {
 
                 <div id="global-message" class="my-5 <?= $globalMessageColor ?>"><?= $messages['global'] ?? '' ?></dib>
 
-                <div class="py-3"><a href="<?= Page::CreationCompte->url() ?>">Créez un compte</a></div>
+                <div class="py-3"><a href="<?= Page::CreationCompte->url() ?>">Je n'ai pas de compte</a></div>
             </div>
             <!--Formulaire authenfification-Authentication form-->
 
