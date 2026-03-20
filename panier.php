@@ -8,7 +8,7 @@ require_once 'src/initialization.php';
 require_once 'src/Page.php';
 
 // identification de la page active
-const ACTIVE_PAGE = Page::Home;
+const ACTIVE_PAGE = Page::Panier;
 
 $cssAdd = ['/public/css/catalogue.css',
            '/public/css/layout.css'];
@@ -31,9 +31,10 @@ $cssAdd = ['/public/css/catalogue.css',
         <!--Bloc entête-Header block-->
         
         <main>
+            <h1 class="py-3 mt-3">DarQuest</h1>
 
             <!--Bloc ?-->
-            
+            <?php include_once TEMPLATE . '/paniers.php'; ?>
             <!--Bloc ?-->
 
         </main>
