@@ -14,6 +14,7 @@ define('ROOT', dirname(__DIR__));
 const TEMPLATE = ROOT . '/template';
 const SRC = ROOT . '/src';
 const UPLOAD = ROOT . '/upload';
+const VENDOR = ROOT . '/vendor';
 
 //=======================================================
 
