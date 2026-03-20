@@ -39,7 +39,7 @@ define('IS_ADMIN', IS_AUTH && $_SESSION['role'] === 1);
 // bonnes infos
 // $dbConfig = [
 //     "dbHost" => "127.0.0.1",
-//     "dbName" => "boutique",
+//     "dbName" => "darquest",
 //     "dbUser" => "root",
 //     "dbPass" => "",
 //     "dbParams" => [
