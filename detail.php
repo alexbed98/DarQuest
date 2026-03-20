@@ -11,7 +11,9 @@ require_once 'src/Page.php';
 // const ACTIVE_PAGE = Page::Home;
 
 $cssAdd = ['/public/css/catalogue.css',
-           '/public/css/layout.css'];
+           '/public/css/layout.css',
+           '/public/css/details.css'
+           ];
 
 ?>
 <!DOCTYPE html>
