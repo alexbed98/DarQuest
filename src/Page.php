@@ -2,14 +2,14 @@
 enum Page
 {
     case Home;
-    case Panier;
+    case Catalogue;
 
     public function text(): string {
 
         return match($this) {
             
             Page::Home => 'Accueil',
-            Page::Panier => 'Panier'
+            Page::Catalogue => 'Catalogue'
         };
 
     }
@@ -19,7 +19,7 @@ enum Page
         return match($this) {
             
             Page::Home => '/',
-            Page::Panier => '/panier.php'
+            Page::Catalogue => '/catalogue'
         };
 
     }
