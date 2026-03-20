@@ -24,6 +24,22 @@ ItemDAL::insertArmure($connexion,'armure', 5, 200, 'armure.jpg', 1, 'metal', 'xl
 ItemDAL::insertPotion($connexion,'potion', 15, 30, 'potion.jpg', 1, 0, 1);
 $items = ItemDAL::selectAll($connexion);
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['gender'])) {
+    $gender_value = htmlspecialchars($_POST['gender']);
+    
+    // You can perform actions here, like saving to a database
+    // use an official source like the PHP Manual for specific functions
+    // e.g. check values as shown on [Stack Overflow](https://stackoverflow.com/questions/21147132/how-to-keep-radio-button-value-inside-php-variable-without-error)
+    if ($gender_value == 'male') {
+        echo "You selected Male. Value received: " . $gender_value;
+    } elseif ($gender_value == 'female') {
+        echo "You selected Female. Value received: " . $gender_value;
+    } else {
+        echo "Selection received: " . $gender_value;
+    }
+} else {
+    echo "No gender value received or invalid request method.";
+}
 ?>
 
 <div class="catalogue">
@@ -31,10 +47,10 @@ $items = ItemDAL::selectAll($connexion);
         <div style="border: 1px solid black; border-radius: 5px;">
             Nb pièces
         </div>
-        <form action="">
+        <form id="form" action="">
         <div>
             <legend>Trier par:</legend>
-            <input type="radio" id="prix" value="prix" onclick="submitForm()" />
+            <input type="radio" id="prix" value="prix"/>
             <label for="prix">Prix</label>
             <div></div>
             <input type="radio" id="type" value="Type" />
@@ -45,7 +61,7 @@ $items = ItemDAL::selectAll($connexion);
         </div>
         <div>
             <legend>Filtrer:</legend>
-            <input type="checkbox" id="arme" />
+            <input type="checkbox" id="arme" onclick="submitForm()" />
             <label for="armes">Armes</label>
             <div></div>
             <input type="checkbox" id="armure" />
@@ -59,32 +75,6 @@ $items = ItemDAL::selectAll($connexion);
         </div>
         </form>
     </div>
-    <!-- <div>
-            <legend>Trier par:</legend>
-            <input type="radio" id="prix" />
-            <label for="prix">Prix</label>
-            <div></div>
-            <input type="radio" id="type" />
-            <label for="type">Type</label>
-            <div></div>
-            <input type="radio" id="" />
-            <label for=""></label>
-        </div>
-        <div>
-            <legend>Filtrer:</legend>
-            <input type="checkbox" id="arme" />
-            <label for="armes">Armes</label>
-            <div></div>
-            <input type="checkbox" id="armure" />
-            <label for="armure">Armures</label>
-            <div></div>
-            <input type="checkbox" id="" />
-            <label for=""></label>
-            <div></div>
-            <input type="checkbox" id="" />
-            <label for=""></label>
-        </div> -->
-
 <div class="list-item">
     <?php foreach ($items as $item): ?>
         <div class="item">
@@ -103,3 +93,30 @@ $items = ItemDAL::selectAll($connexion);
     <?php endforeach; ?>
 </div>
 </div>
+<script>
+    function submitForm() {
+        // Find the selected radio button within the form
+        const selectedRadio = document.querySelector('input[name="arme"]:checked');
+        
+        if (selectedRadio) {
+            const value = selectedRadio.value;
+
+            fetch('process.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `gender=${encodeURIComponent(value)}`
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Handle the response from the PHP script
+                console.log('Success:', data);
+                document.getElementById('response_message').innerText = data;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    }
+</script>
