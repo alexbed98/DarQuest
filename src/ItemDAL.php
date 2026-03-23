@@ -3,10 +3,20 @@
 class ItemDAL
 {
     public static string $OrderBy = '';
+    public static string $filtre = ['a'];
+
 
     public static function selectAll(PDO $connexion): array {
 
-        $sql = "SELECT idItem, nom, quantiteStock, prix, photo,typeItem from Items " . self::$OrderBy;
+        $where = '';
+        if(count(self::$filtre) > 0){
+            $where = 'WHERE ';
+            foreach(self::$filtre as $f){
+                $where .= 'typeItem = "' . $f . '" OR ';
+            }
+        }
+
+        $sql = "SELECT idItem, nom, quantiteStock, prix, photo,typeItem from Items ". $where . self::$OrderBy;
 
         $statement = $connexion->prepare($sql); 
              
