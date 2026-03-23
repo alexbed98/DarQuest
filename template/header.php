@@ -4,7 +4,7 @@
 
         <h1 class="titre"><?= ACTIVE_PAGE->text() ?></h1>
         <div class="pages">
-            <a href="<?= Page::Catalogue->url() ?>">Catalogue</a>
+            <a href="<?= Page::Catalogue->url() ?>">Items</a>
             <a href="">Admin</a>
             <a href="">Inventaire</a>
             <a href="">Énigma</a>

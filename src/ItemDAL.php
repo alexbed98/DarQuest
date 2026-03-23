@@ -3,10 +3,20 @@
 class ItemDAL
 {
     public static string $OrderBy = '';
+    public static string $filtre = ['a'];
+
 
     public static function selectAll(PDO $connexion): array {
 
-        $sql = "SELECT idItem, nom, quantiteStock, prix, photo,typeItem from Items " . self::$OrderBy;
+        $where = '';
+        if(count(self::$filtre) > 0){
+            $where = 'WHERE ';
+            foreach(self::$filtre as $f){
+                $where .= 'typeItem = "' . $f . '" OR ';
+            }
+        }
+
+        $sql = "SELECT idItem, nom, quantiteStock, prix, photo,typeItem from Items ". $where . self::$OrderBy;
 
         $statement = $connexion->prepare($sql); 
              
@@ -48,7 +58,7 @@ class ItemDAL
     }
     public static function insertSort(PDO $connexion, string $pNom,int $pQuantite,int $pPrix, string $pPhoto, int $pEstDisponible, int $pInstantane, int $prarete, string $ptype/*, int $idItem, string $nom, int $quantiteStock,int $prix,string $photo,string $typeItem*/): bool {
 
-        $sql = "call ajouterPotion(:pNom,:pQuantite,:pPrix,:pPhoto,:pEstDisponible,:pInstantane,:prarete,:ptype);";
+        $sql = "call ajouterSort(:pNom,:pQuantite,:pPrix,:pPhoto,:pEstDisponible,:pInstantane,:prarete,:ptype);";
 
         $statement = $connexion->prepare($sql); 
 
@@ -99,6 +109,21 @@ class ItemDAL
         return $statement->execute();
 
     }
+         public static function insertSortType(PDO $connexion,string $typeSort,string $uneDescription,int $ptVie,int $ptDegat): bool {
+
+        $sql = "insert into TypeSorts (typeSort, uneDescription, ptVie, ptDegat) values (:typeSort, :uneDescription, :ptVie, :ptDegat);";
+
+        $statement = $connexion->prepare($sql); 
+
+         $statement->bindValue('typeSort', $typeSort, PDO::PARAM_STR);
+         $statement->bindValue('uneDescription', $uneDescription, PDO::PARAM_STR);
+         $statement->bindValue('ptVie', $ptVie, PDO::PARAM_INT);
+         $statement->bindValue('ptDegat', $ptDegat, PDO::PARAM_INT);
+             
+        return $statement->execute();
+
+    }
+
     public static function resetItems(PDO $connexion): bool {
 
         $sql = "TRUNCATE TABLE Armes;TRUNCATE TABLE Armures;TRUNCATE TABLE Sorts;TRUNCATE TABLE Potions; TRUNCATE TABLE Items;";
