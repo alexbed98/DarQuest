@@ -2,10 +2,23 @@
 
 class ItemDAL
 {
+    public static string $OrderBy = '';
 
     public static function selectAll(PDO $connexion): array {
 
-        $sql = "SELECT idItem, nom, quantiteStock, prix, photo,typeItem from Items";
+        $sql = "SELECT idItem, nom, quantiteStock, prix, photo,typeItem from Items " . self::$OrderBy;
+
+        $statement = $connexion->prepare($sql); 
+             
+        $statement->execute();
+
+        // Retourne un tableau vide si aucune donnée
+        return $statement->fetchAll();
+
+    }
+    public static function selectAllOrderByPrice(PDO $connexion): array {
+
+        $sql = "SELECT idItem, nom, quantiteStock, prix, photo,typeItem from Items ORDER BY prix";
 
         $statement = $connexion->prepare($sql); 
              
