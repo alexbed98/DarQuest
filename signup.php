@@ -6,6 +6,7 @@
 // require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
+require_once 'core/Validation.php';
 
 // on retourne a l'accueil si lutilisateur est deja logged in
 if (IS_AUTH)
@@ -29,21 +30,17 @@ $globalMessageColor = 'text-danger';
 
 if (IS_POST) {
 
-    if (!empty($prenom)) {
-        $prenom = $_POST['prenom'] ?? '';
-    } else {
+    $prenom = $_POST['prenom'] ?? '';
+
+    if (empty($prenom)){
         $messages['prenom'] = 'Le prenom est obligatoire.';
     }
 
-    if (!empty($nom)) {
-        $nom = $_POST['nom'] ?? '';
-    } else {
+    if (empty($nom)){
         $messages['nom'] = 'Le nom est obligatoire.';
     }
 
-    if (!empty($username)) {
-        $username = $_POST['username'] ?? '';
-    } else {
+    if (empty($username)){
         $messages['username'] = 'Le username est obligatoire.';
     }
 
@@ -79,7 +76,7 @@ if (IS_POST) {
 
             $hash = password_hash($password, PASSWORD_DEFAULT);
 
-            if (AccountDAL::insertOne($connexion, $email, $hash)) {
+            if (AccountDAL::insertOne($connexion, $username, $prenom, $nom, $email, $hash)) {
 
                 $subject = 'Merci d\'avoir créé un compte.';
 
@@ -196,7 +193,7 @@ if (IS_POST) {
 
                 </form>
 
-                <div id="global-message" class="my-3 <?= $globalMessageColor ?>"><?= $messages['global'] ?? '' ?></dib>
+                <div id="global-message" class="my-3 <?= $globalMessageColor ?>"><?= $messages['global'] ?? '' ?></div>
 
                     <div class="py-3"><a href="<?= Page::Connexion->url() ?>">Connexion à un compte</a></div>
 

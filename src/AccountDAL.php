@@ -17,14 +17,20 @@ class AccountDAL
 
     }
 
-     public static function insertOne(PDO $connexion, string $email, string $password): bool {
+     public static function insertOne(PDO $connexion,string $username, string $prenom, string $nom, string $email, string $password, int $estMage = 0, int $estAdmin = 0): bool {
 
-        $sql = "insert into account (email, password) values(:email, :password)";
+        $sql = "insert into Joueurs (alias, prenom, nom, estMage, courriel, motDePasse, estAdmin) values(:username, :prenom, :nom, :estMage, :email, :password, :estAdmin)";
 
         $statement = $connexion->prepare($sql); 
 
+        $statement->bindValue('username', $username, PDO::PARAM_STR);
         $statement->bindValue('email', $email, PDO::PARAM_STR);
+        $statement->bindValue('prenom', $prenom, PDO::PARAM_STR);
+        $statement->bindValue('nom', $nom, PDO::PARAM_STR);
+        $statement->bindValue('estMage', $estMage, PDO::PARAM_INT);
         $statement->bindValue('password', $password, PDO::PARAM_STR);
+        $statement->bindValue('email', $email, PDO::PARAM_STR);
+        $statement->bindValue('estAdmin', $estAdmin, PDO::PARAM_INT);
              
         return $statement->execute();
 
