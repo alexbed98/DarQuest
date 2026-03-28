@@ -7,6 +7,9 @@
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
 require_once 'core/Validation.php';
+require_once 'core/Database.php';
+require_once 'src/AccountDAL.php';
+require_once 'core/Email.php';
 
 // on retourne a l'accueil si lutilisateur est deja logged in
 if (IS_AUTH)
@@ -36,9 +39,13 @@ if (IS_POST) {
         $messages['prenom'] = 'Le prenom est obligatoire.';
     }
 
+    $nom = $_POST['nom'] ?? '';
+
     if (empty($nom)){
         $messages['nom'] = 'Le nom est obligatoire.';
     }
+
+    $username = $_POST['username'] ?? '';
 
     if (empty($username)){
         $messages['username'] = 'Le username est obligatoire.';
@@ -70,13 +77,15 @@ if (IS_POST) {
     } else {
 
         $connexion = Database::getConnexion($dbConfig);
-        $user = AccountDAL::selectByEmail($connexion, $email);
+        // $user = AccountDAL::selectByEmail($connexion, $email);
+        $user = false;
 
         if ($user === false) {
 
-            $hash = password_hash($password, PASSWORD_DEFAULT);
+            $motDePasse = password_hash($password, PASSWORD_DEFAULT);
+            $courriel = $email;
 
-            if (AccountDAL::insertOne($connexion, $username, $prenom, $nom, $email, $hash)) {
+            if (AccountDAL::insertOne($connexion, $username, $prenom, $nom, $courriel, $motDePasse)) {
 
                 $subject = 'Merci d\'avoir créé un compte.';
 
@@ -85,14 +94,14 @@ if (IS_POST) {
                 <a href="http://darquest.ca:8080">Validez votre courriel</a>
                 HTML;
 
-                Email::readConfig(SRC . '/gmail.ini');
+                // Email::readConfig(SRC . '/gmail.ini');
 
-                if (true || Email::send($email, $subject, $message)) {
+                // if (true || Email::send($email, $subject, $message)) {
 
-                    $_SESSION['new-account'] = true;
-                    header('Location: ' . Page::Connexion->url());
+                //     $_SESSION['new-account'] = true;
+                //     header('Location: ' . Page::Connexion->url());
 
-                }
+                // }
 
             }
 
@@ -126,8 +135,7 @@ if (IS_POST) {
         <!--Bloc entête-Header block-->
 
         <main>
-            <h1 class="py-3 mt-3">DarQuest</h1>
-
+            
             <div class="fs-4 text-center my-5">Entrez vos informations de création de compte.</div>
 
             <!--Formulaire authenfification-Authentication form-->

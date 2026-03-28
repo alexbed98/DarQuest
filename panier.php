@@ -31,7 +31,6 @@ $cssAdd = ['/public/css/catalogue.css',
         <!--Bloc entête-Header block-->
         
         <main>
-            <h1 class="py-3 mt-3">DarQuest</h1>
 
             <!--Bloc ?-->
             <?php include_once TEMPLATE . '/paniers.php'; ?>
