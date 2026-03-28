@@ -1,22 +1,50 @@
+* {
+    color: #464646;
+}
+
 body {
     display: flex;
     flex-direction: column;
     height: 100%;
     padding: 15px;
+    background-color: #dce3ee;
 }
 
 .header {
     display: flex;
     align-items: center;
-    padding: 5px;
-    border: 2px solid #94A3D9;
-    border-radius: 15px;
+    justify-content: space-between;
+    padding: 5px 15px;
+    border: 2px solid #7e89b4;
+    border-radius: 12px;
     margin-bottom: 15px;
 }
 
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.headerButtons {
+    text-decoration: none;
+    font-size: 20px;
+    background-color: #94A3D9;
+    border: 1px solid #7e89b4;
+    padding: 5px;
+    color: #2c2c2c;
+    border-radius: 8px;
+}
+
 main {
-    border: 2px solid #94A3D9;
-    border-radius: 15px;
+    border: 2px solid #7e89b4;
+    border-radius: 12px;
     padding: 15px;
 }
 
@@ -27,6 +55,7 @@ main {
     justify-content: space-between;
     width: 30%;
     padding-right: 15px;
+    gap: 10px;
 }
 
 .logo {
@@ -40,21 +69,22 @@ main {
     height: 50px;
     border-radius: 100%;
     margin-right: 0.5em;
+    border: 2px solid #7e89b4;
 }
 
+
 .footer {
-    border: 2px solid #94A3D9;
+    border: 2px solid #7e89b4;
     height: 50px;
     display: flex;
     align-items: center;
     padding-left: 10px;
     width: 100%;
     margin-top: 15px;
-    border-radius: 15px;
+    border-radius: 12px;
 }
 
 .titre {
     font-size: 35px;
     font-weight: 600;
-    color: #464646;
 }

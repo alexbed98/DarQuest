@@ -1,8 +1,5 @@
 <?php
 
-// les require et les include
-// a decommenter quand on les utilisent
-
 // require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
@@ -20,7 +17,8 @@ const ACTIVE_PAGE = Page::CreationCompte;
 
 $cssAdd = [
     '/public/css/catalogue.css',
-    '/public/css/layout.css'
+    '/public/css/layout.css',
+    '/public/css/form.css'
 ];
 
 $email = '';
@@ -35,19 +33,19 @@ if (IS_POST) {
 
     $prenom = $_POST['prenom'] ?? '';
 
-    if (empty($prenom)){
+    if (empty($prenom)) {
         $messages['prenom'] = 'Le prenom est obligatoire.';
     }
 
     $nom = $_POST['nom'] ?? '';
 
-    if (empty($nom)){
+    if (empty($nom)) {
         $messages['nom'] = 'Le nom est obligatoire.';
     }
 
     $username = $_POST['username'] ?? '';
 
-    if (empty($username)){
+    if (empty($username)) {
         $messages['username'] = 'Le username est obligatoire.';
     }
 
@@ -135,8 +133,8 @@ if (IS_POST) {
         <!--Bloc entête-Header block-->
 
         <main>
-            
-            <div class="fs-4 text-center my-5">Entrez vos informations de création de compte.</div>
+
+            <div class="fs-4 text-center my-5">Entrez vos informations.</div>
 
             <!--Formulaire authenfification-Authentication form-->
             <div class="col-md-4 mx-auto">
@@ -197,15 +195,15 @@ if (IS_POST) {
 
                     <div class="py-3 text-danger">* Champs requis</div>
 
-                    <button type="submit" class="btn btn-primary">Envoyer</button>
+                    <button type="submit" name="submit" class="btn btn-primary">Envoyer</button>
 
                 </form>
 
                 <div id="global-message" class="my-3 <?= $globalMessageColor ?>"><?= $messages['global'] ?? '' ?></div>
 
-                    <div class="py-3"><a href="<?= Page::Connexion->url() ?>">Connexion à un compte</a></div>
+                <div class="py-3"><a href="<?= Page::Connexion->url() ?>">Connexion à un compte</a></div>
 
-                </div>
+            </div>
 
         </main>
 
