@@ -5,7 +5,8 @@ class ItemDAL
     public static string $OrderBy = 'DESC';
     public static array $filtre = ['a'];
 
-    public static function selectAll(PDO $connexion): array {
+    public static function selectAll(PDO $connexion): array
+    {
 
         $where = '';
 
