@@ -44,7 +44,7 @@ $cssAdd = ['/public/css/catalogue.css',
         <main>
 
             <!--Bloc ?-->
-            
+            <?php include_once TEMPLATE . '/catalogueItem.php'; ?>
             <!--Bloc ?-->
 
         </main>
