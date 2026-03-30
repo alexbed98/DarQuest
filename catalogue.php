@@ -2,6 +2,21 @@
 
 session_start();
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+
+    if ($email !== false) {
+        $_SESSION['email'] = $email;
+    } else {
+        $_SESSION['email'] = $_POST['email'] ?? '';
+        $_SESSION['error_email'] = 'Courriel invalide ou manquant.';
+    }
+
+    header('Location: connexion.php');
+    exit;
+}
+
 if(isset($_SESSION['email'])) {
     echo "Bienvenue, " . $_SESSION['email'] . "!";
 }

@@ -2,8 +2,6 @@
 
 session_start();
 
-
-
 // les require et les include
 
 // require_once 'core/error-exception.php';
