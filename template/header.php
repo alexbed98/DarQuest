@@ -13,6 +13,7 @@
             <a class='headerButtons' href="">Énigma</a>
             <a class='headerButtons' href="<?= Page::Panier->url() ?>">Panier</a>
             <a href="<?= Page::Connexion->url() ?>"><img class="avatar" src="/public/img/avatar.jpg" alt="Avatar"></a>
+            <a href="logout.php">logout</a>
         </div>
 
     </div>

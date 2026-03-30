@@ -35,7 +35,32 @@ class AccountDAL
 
     }
     
-    
+    public static function selectAlias(PDO $connexion, string $email): false|string {
+
+        $sql = "SELECT alias from joueurs where courriel=:email";
+
+        $statement = $connexion->prepare($sql); 
+
+        $statement->bindValue('email', $email, PDO::PARAM_STR);
+             
+        $statement->execute();
+
+        return $statement->fetchColumn();
+
+    }
+
+    public static function courrielExistant(PDO $connexion, string $email): bool
+    {
+        $sql = "SELECT COUNT(*) FROM joueurs WHERE courriel = :email";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue(':email', $email, PDO::PARAM_STR);
+        
+        $statement->execute();
+
+        return $statement->fetchColumn() > 0;
+    }
 }
 
 
