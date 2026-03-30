@@ -1,5 +1,11 @@
 <?php
 
+session_start();
+
+if(isset($_SESSION['email'])) {
+    echo "Bienvenue, " . $_SESSION['email'] . "!";
+}
+
 // les require et les include
 // a decommenter quand on les utilisent
 
