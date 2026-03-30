@@ -46,7 +46,7 @@ $cssAdd = ['/public/css/catalogue.css',
         
     </div>
     <!--Contenant principal-->
-   
+
 </body>
 </html>
 
