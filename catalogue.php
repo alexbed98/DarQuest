@@ -8,13 +8,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($email !== false) {
         $_SESSION['email'] = $email;
+
+        header('Location: catalogue.php');
+        exit;
+
     } else {
         $_SESSION['email'] = $_POST['email'] ?? '';
         $_SESSION['error_email'] = 'Courriel invalide ou manquant.';
-    }
 
-    header('Location: login.php');
-    exit;
+        header('Location: login.php');
+        exit;
+    }
 }
 
 if(isset($_SESSION['email'])) {
