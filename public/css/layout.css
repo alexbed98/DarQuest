@@ -40,6 +40,20 @@ body {
     padding: 5px;
     color: #2c2c2c;
     border-radius: 8px;
+    display: inline-block;
+    transition: transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.headerButtons:hover,
+.headerButtons:focus-visible {
+    background-color: #b8c4ea;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(78, 93, 143, 0.28);
+}
+
+.headerButtons:focus-visible {
+    outline: 2px solid #4e5d8f;
+    outline-offset: 2px;
 }
 
 main {
@@ -62,6 +76,14 @@ main {
     width: 80px;
     margin-left: 0.3em;
     margin-right: 0.5em;
+    border-radius: 10px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.headerLeft a:hover .logo,
+.headerLeft a:focus-visible .logo {
+    transform: scale(1.06) rotate(-2deg);
+    box-shadow: 0 4px 8px rgba(78, 93, 143, 0.3);
 }
 
 .avatar {
@@ -70,6 +92,14 @@ main {
     border-radius: 100%;
     margin-right: 0.5em;
     border: 2px solid #7e89b4;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.avatar:hover,
+.avatar:focus-visible {
+    transform: scale(1.05);
+    border-color: #4e5d8f;
+    box-shadow: 0 4px 8px rgba(78, 93, 143, 0.32);
 }
 
 
