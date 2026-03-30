@@ -75,8 +75,7 @@ if (IS_POST) {
     } else {
 
         $connexion = Database::getConnexion($dbConfig);
-        // $user = AccountDAL::selectByEmail($connexion, $email);
-        $user = false;
+        $user = AccountDAL::selectByEmail($connexion, $email);
 
         if ($user === false) {
 
@@ -85,21 +84,22 @@ if (IS_POST) {
 
             if (AccountDAL::insertOne($connexion, $username, $prenom, $nom, $courriel, $motDePasse)) {
 
-                $subject = 'Merci d\'avoir créé un compte.';
+                $subject = 'Création de compte DarQuest.';
 
                 $message = <<<HTML
                 <h1>Merci d'avoir créé un compte.</h1>
-                <a href="http://darquest.ca:8080">Validez votre courriel</a>
+                <a style="text-decoration: underline" href="http://darquest.ca">
+                    Cliquez ici pour validez votre courriel</a>
                 HTML;
 
-                // Email::readConfig(SRC . '/gmail.ini');
+                Email::readConfig(SRC . '/gmail.ini');
 
-                // if (true || Email::send($email, $subject, $message)) {
+                if (Email::send($email, $subject, $message)) {
 
-                //     $_SESSION['new-account'] = true;
-                //     header('Location: ' . Page::Connexion->url());
+                    $_SESSION['new-account'] = true;
+                    header('Location: ' . Page::Connexion->url());
 
-                // }
+                }
 
             }
 
@@ -143,39 +143,39 @@ if (IS_POST) {
 
                     <div style="display: flex; flex-direction: row;">
                         <div class="mb-3" style="margin-right: 8px">
-                            <label for="prenom" class="form-label"><span class="text-danger">* </span>Prénom</label>
+                            <label for="prenom" class="form-label">Prénom</label>
                             <input name="prenom" class="form-control" id="prenom" autofocus>
                             <div id="prenomHelp" class="form-text text-danger"><?= $messages['prenom'] ?? '' ?></div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="nom" class="form-label"><span class="text-danger">* </span>Nom</label>
+                            <label for="nom" class="form-label">Nom</label>
                             <input name="nom" class="form-control" id="nom" autofocus>
                             <div id="nomHelp" class="form-text text-danger"><?= $messages['nom'] ?? '' ?></div>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="username" class="form-label"><span class="text-danger">* </span>Username</label>
+                        <label for="username" class="form-label">Username</label>
                         <input name="username" class="form-control" id="username" autofocus>
                         <div id="usernameHelp" class="form-text text-danger"><?= $messages['username'] ?? '' ?></div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="email" class="form-label"><span class="text-danger">* </span>Courriel</label>
+                        <label for="email" class="form-label">Courriel</label>
                         <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp">
                         <div id="emailHelp" class="form-text text-danger"><?= $messages['email'] ?? '' ?></div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="password" class="form-label"><span class="text-danger">* </span>Mot de passe</label>
+                        <label for="password" class="form-label">Mot de passe</label>
                         <input name="password" type="password" class="form-control" id="empasswordail"
                             aria-describedby="passwordHelp">
                         <div id="passwordHelp" class="form-text text-danger"><?= $messages['password'] ?? '' ?></div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="password2" class="form-label"><span class="text-danger">* </span>Confirmez le mot de
+                        <label for="password2" class="form-label">Confirmation du mot de
                             passe</label>
                         <input name="password2" type="password" class="form-control" id="empasswordail2"
                             aria-describedby="password2Help">
@@ -192,8 +192,6 @@ if (IS_POST) {
                         </ul>
 
                     </div>
-
-                    <div class="py-3 text-danger">* Champs requis</div>
 
                     <button type="submit" name="submit" class="btn btn-primary">Envoyer</button>
 
