@@ -19,9 +19,38 @@ if (!isset($_SESSION['panier'])) {
 	];
 }
 
-// Retirer un item
+// Gestion du panier
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-	// Retirer
+	// Ajouter un item
+	if (isset($_POST['add_id'], $_POST['add_nom'], $_POST['add_image'], $_POST['add_prix'])) {
+		$add_id = $_POST['add_id'];
+		$add_nom = $_POST['add_nom'];
+		$add_image = $_POST['add_image'];
+		$add_prix = floatval($_POST['add_prix']);
+		$add_quantite = isset($_POST['add_quantite']) ? max(1, intval($_POST['add_quantite'])) : 1;
+
+		// Vérifier si l'item existe déjà dans le panier
+		$found = false;
+		foreach ($_SESSION['panier'] as &$item) {
+			if ($item['id'] == $add_id) {
+				$item['quantite'] += $add_quantite;
+				$found = true;
+				break;
+			}
+		}
+		unset($item);
+		if (!$found) {
+			$_SESSION['panier'][] = [
+				'id' => $add_id,
+				'nom' => $add_nom,
+				'image' => $add_image,
+				'prix' => $add_prix,
+				'quantite' => $add_quantite
+			];
+		}
+	}
+
+	// Retirer un item
 	if (isset($_POST['remove_id'])) {
 		$_SESSION['panier'] = array_filter(
 			$_SESSION['panier'],
@@ -31,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		);
 		$_SESSION['panier'] = array_values($_SESSION['panier']);
 	}
+
 	// Modifier quantité
 	if (isset($_POST['update_id'], $_POST['update_qty'])) {
 		foreach ($_SESSION['panier'] as &$item) {

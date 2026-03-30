@@ -76,7 +76,14 @@ $items = ItemDAL::selectAll($connexion);
                     <div class="nom"><?= $item["nom"] ?></div>
                     <div class="quantite"><?= $item["quantiteStock"] ?></div>
                     <div class="prix"><?= $item["prix"] ?></div>
-                    <button>Ajouter</button>
+                    <form method="post" action="/panier.php" style="display:inline; margin:0;">
+                        <input type="hidden" name="add_id" value="<?= $item['idItem'] ?>">
+                        <input type="hidden" name="add_nom" value="<?= htmlspecialchars($item['nom']) ?>">
+                        <input type="hidden" name="add_image" value="<?= htmlspecialchars($item['photo']) ?>">
+                        <input type="hidden" name="add_prix" value="<?= $item['prix'] ?>">
+                        <input type="number" name="add_quantite" value="1" min="1" max="<?= $item['quantiteStock'] ?>" style="width:60px;">
+                        <button type="submit">Ajouter au panier</button>
+                    </form>
                 </div>
             </div>
         <?php endforeach; ?>
