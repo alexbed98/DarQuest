@@ -1,5 +1,9 @@
 <?php
 
+session_start();
+
+
+
 // les require et les include
 
 // require_once 'core/error-exception.php';
@@ -24,14 +28,15 @@ $globalMessageColor = 'text-danger';
 if (IS_POST) {
 
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
-    
-    if ( !is_string($email) ) {
 
-        $messages['email'] = 'Le courriel est obligatoire.';
-
+    if ($email !== false) {
+        $_SESSION['email'] = $email;
+    } 
+    else {
+        $messages['email'] = 'Courriel invalide ou manquant.';
         $email = $_POST['email'] ?? '';
+    }
 
-    }    
 
     $password = $_POST['password'] ?? '';
 
