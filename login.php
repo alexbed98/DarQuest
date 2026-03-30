@@ -57,7 +57,8 @@ if (IS_POST) {
     } else {
 
         $connexion = Database::getConnexion($dbConfig);
-        //$user = AccountDAL::selectByEmail($connexion, $email);
+        /*
+        $user = AccountDAL::selectByEmail($connexion, $email);
         $user = false;
         if($user !== false && password_verify($password, $user['password'])) {
             
@@ -72,7 +73,7 @@ if (IS_POST) {
 
             $messages['global'] = 'Informations d\'authentification invalides.';
 
-        }       
+        }  */     
 
     }
     
@@ -118,7 +119,7 @@ if (!empty($_SESSION['new-account'])) {
             <!--Formulaire authenfification-Authentication form-->
             <div class="col-md-4 mx-auto">                         
 
-                <form class="form-style" method="post" novalidate>
+                <form class="form-style" method="post" novalidate action="catalogue.php">
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Courriel</label>
