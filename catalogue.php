@@ -6,7 +6,7 @@ if(isset($_SESSION['email'])) {
     echo "Bienvenue, " . $_SESSION['email'] . "!";
 }
 else {
-    echo "Merde, tu n'es pas connecté.";
+    echo "Tu n'es pas connecté.";
 }
 
 // les require et les include
