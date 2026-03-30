@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['error_email'] = 'Courriel invalide ou manquant.';
     }
 
-    header('Location: connexion.php');
+    header('Location: login.php');
     exit;
 }
 
