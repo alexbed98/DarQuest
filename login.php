@@ -34,7 +34,7 @@ if (!empty($_SESSION['new-account'])) {
     $showNewAccountMessage = true;
     unset($_SESSION['new-account']);
 
-}   
+}
 
 ?>
 <!DOCTYPE html>

@@ -8,19 +8,6 @@ class ItemDAL
     public static function selectAll(PDO $connexion): array {
 
         $where = '';
-        $params = [];
-
-        if (count(self::$filtre) > 0) {
-            $conditions = [];
-
-            foreach (self::$filtre as $index => $f) {
-                $key = ":type$index";
-                $conditions[] = "typeItem = $key";
-                $params[$key] = $f;
-            }
-
-            $where = 'WHERE ' . implode(' OR ', $conditions);
-        }
 
         $sql = "SELECT idItem, nom, quantiteStock, prix, photo, typeItem 
                 FROM Items 
@@ -28,7 +15,7 @@ class ItemDAL
                 ORDER BY prix " . self::$OrderBy;
 
         $statement = $connexion->prepare($sql);
-        $statement->execute($params);
+        $statement->execute();
 
         return $statement->fetchAll();
     }
