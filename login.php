@@ -1,7 +1,10 @@
 <?php
 
 session_start();
+$email = $_SESSION['email'] ?? '';
+$messages['email'] = $_SESSION['error_email'] ?? '';
 
+unset($_SESSION['error_email']);
 // les require et les include
 
 // require_once 'core/error-exception.php';
@@ -22,60 +25,8 @@ $cssAdd = ['/public/css/catalogue.css',
            '/public/css/layout.css',
            '/public/css/form.css'];
 
-$email = '';
-$messages = [];
 
 $globalMessageColor = 'text-danger';
-
-if (IS_POST) {
-
-    $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
-
-    if ($email !== false) {
-        $_SESSION['email'] = $email;
-    } 
-    else {
-        $messages['email'] = 'Courriel invalide ou manquant.';
-        $email = $_POST['email'] ?? '';
-    }
-
-
-    $password = $_POST['password'] ?? '';
-
-    if (empty($password)) {
-
-        $messages['password'] = 'Le mot de passe est obligatoire.';
-
-    }
-    
-    if (count($messages) > 0) {
-
-        $messages['global'] = 'Le formulaire est invalide.';
-
-    } else {
-
-        $connexion = Database::getConnexion($dbConfig);
-        /*
-        $user = AccountDAL::selectByEmail($connexion, $email);
-        $user = false;
-        if($user !== false && password_verify($password, $user['password'])) {
-            
-            session_regenerate_id();
-
-            $_SESSION['id'] = $user['id'];
-            $_SESSION['role'] = $user['role'];
-
-            header('Location:' . Page::Home->url());
-
-        } else {
-
-            $messages['global'] = 'Informations d\'authentification invalides.';
-
-        }  */     
-
-    }
-    
-}
 
 $showNewAccountMessage = false;
 
@@ -135,7 +86,7 @@ if (!empty($_SESSION['new-account'])) {
 
                 </form>
 
-                <div id="global-message" class="my-5 <?= $globalMessageColor ?>"><?= $messages['global'] ?? '' ?></dib>
+                <div id="global-message" class="my-5 <?= $globalMessageColor ?>"><?= $messages['global'] ?? '' ?></div>
 
                 <div class="py-3"><a href="<?= Page::CreationCompte->url() ?>">Je n'ai pas de compte</a></div>
             </div>
