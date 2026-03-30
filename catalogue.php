@@ -1,5 +1,12 @@
 <?php
 
+require_once 'src/initialization.php';
+require_once 'src/Page.php';
+require_once 'core/Validation.php';
+require_once 'core/Database.php';
+require_once 'src/AccountDAL.php';
+require_once 'core/Email.php';
+
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
