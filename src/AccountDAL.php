@@ -35,7 +35,19 @@ class AccountDAL
 
     }
     
-    
+    public static function selectUsername(PDO $connexion, string $email): false|array {
+
+        $sql = "SELECT username from joueurs where email=:email";
+
+        $statement = $connexion->prepare($sql); 
+
+        $statement->bindValue('email', $email, PDO::PARAM_STR);
+             
+        $statement->execute();
+
+        return $statement->fetch();
+
+    }
 }
 
 

@@ -20,9 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
-
+$connexion = Database::getConnexion($dbConfig);
 if(isset($_SESSION['email'])) {
-    echo "Bienvenue, " . $_SESSION['email'] . "!";
+    $username = AccountDAL::selectUsername($connexion, $_SESSION['email']);
+    echo "Bienvenue, " . $username . "!";
 }
 else {
     echo "Tu n'es pas connecté.";
