@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $connexion = Database::getConnexion($dbConfig);
 if(isset($_SESSION['email'])) {
     $username = AccountDAL::selectAlias($connexion, $_SESSION['email']);
-    echo "Bienvenue, " . $username . "!";
+    echo "Bienvenue, " . $username['alias'] . "!";
 }
 else {
     echo "Tu n'es pas connecté.";
