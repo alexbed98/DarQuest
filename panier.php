@@ -2,8 +2,17 @@
 
 session_start();
 
+require_once 'src/initialization.php';
+require_once 'src/Page.php';
+require_once 'core/Validation.php';
+require_once 'core/Database.php';
+require_once 'src/AccountDAL.php';
+require_once 'core/Email.php';
+
+$connexion = Database::getConnexion($dbConfig);
 if(isset($_SESSION['email'])) {
-    echo "Bienvenue, " . $_SESSION['email'] . "!";
+    $username = AccountDAL::selectAlias($connexion, $_SESSION['email']);
+    echo "Bienvenue, " . $username . "!";
 }
 else {
     echo "Tu n'es pas connecté.";
