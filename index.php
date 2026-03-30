@@ -10,6 +10,7 @@ require_once 'src/AccountDAL.php';
 require_once 'core/Email.php';
 
 $connexion = Database::getConnexion($dbConfig);
+
 if(isset($_SESSION['email'])) {
     $username = AccountDAL::selectAlias($connexion, $_SESSION['email']);
     echo "Bienvenue, " . $username . "!";
@@ -44,7 +45,6 @@ $cssAdd = ['/public/css/catalogue.css',
         <main>
 
             <!--Bloc ?-->
-            <?php include_once TEMPLATE . '/catalogueItem.php'; ?>
             <!--Bloc ?-->
 
         </main>
