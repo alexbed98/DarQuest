@@ -45,7 +45,7 @@ class AccountDAL
              
         $statement->execute();
 
-        return $statement->fetch();
+        return $statement->fetchColumn();
 
     }
 }
