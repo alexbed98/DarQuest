@@ -48,6 +48,17 @@ class AccountDAL
         return $statement->fetchColumn();
 
     }
+
+    public static function courrielExistant(PDO $connexion, string $email): bool
+{
+    $sql = "SELECT COUNT(*) FROM joueurs WHERE courriel = :email";
+
+    $statement = $connexion->prepare($sql);
+    $statement->bindValue(':email', $email, PDO::PARAM_STR);
+    $statement->execute();
+
+    return $statement->fetchColumn() > 0;
+}
 }
 
 

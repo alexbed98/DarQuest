@@ -17,10 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: catalogue.php');
         exit;
 
-    } else {
-        $_SESSION['email'] = $_POST['email'] ?? '';
-        $_SESSION['error_email'] = 'Courriel invalide ou manquant.';
-
+    }
+    if (!AccountDAL::courrielExistant($connexion, $email)) {
+        $_SESSION['error_email'] = 'Ce compte n’existe pas.';
         header('Location: login.php');
         exit;
     }
