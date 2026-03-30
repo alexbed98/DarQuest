@@ -8,9 +8,10 @@ require_once 'core/Validation.php';
 require_once 'core/Database.php';
 require_once 'src/AccountDAL.php';
 require_once 'core/Email.php';
-require_once(__DIR__ . "/catalogueItem.php");
+
 
 $connexion = Database::getConnexion($dbConfig);
+require_once(__DIR__ . "/catalogueItem.php");
 if(isset($_SESSION['email'])) {
     $username = AccountDAL::selectAlias($connexion, $_SESSION['email']);
     echo "Bienvenue, " . $username . "!";
