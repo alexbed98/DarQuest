@@ -8,6 +8,7 @@ require_once 'core/Validation.php';
 require_once 'core/Database.php';
 require_once 'src/AccountDAL.php';
 require_once 'core/Email.php';
+require_once 'src/catalogueItem.php';
 
 $connexion = Database::getConnexion($dbConfig);
 if(isset($_SESSION['email'])) {
