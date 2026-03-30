@@ -14,7 +14,6 @@ session_unset();
 // Destroy the session
 session_destroy();
 header('Location: catalogue.php');
-// echo "You have been logged out."
 ?>
 
 </body>
