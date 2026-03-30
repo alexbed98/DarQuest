@@ -8,7 +8,7 @@ require_once 'core/Validation.php';
 require_once 'core/Database.php';
 require_once 'src/AccountDAL.php';
 require_once 'core/Email.php';
-require_once 'core/catalogueItem.php';
+
 
 $connexion = Database::getConnexion($dbConfig);
 if(isset($_SESSION['email'])) {
@@ -45,7 +45,7 @@ $cssAdd = ['/public/css/catalogue.css',
         <main>
 
             <!--Bloc ?-->
-            <?php include_once TEMPLATE . '/catalogueItem.php'; ?>
+            
             <!--Bloc ?-->
 
         </main>
