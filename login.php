@@ -109,23 +109,21 @@ if (!empty($_SESSION['new-account'])) {
             <!--Formulaire authenfification-Authentication form-->
             <div class="col-md-4 mx-auto">                         
 
-                <form method="post" novalidate>
+                <form class="form-style" method="post" novalidate>
 
                     <div class="mb-3">
-                        <label for="email" class="form-label"><span class="text-danger">* </span>Courriel</label>
+                        <label for="email" class="form-label">Courriel</label>
                         <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" value="<?= htmlspecialchars($email) ?>" autofocus>
                         <div id="emailHelp" class="form-text text-danger"><?= $messages['email'] ?? '' ?></div>
                     </div>
 
                     <div class="mb-3">
-                        <label for="password" class="form-label"><span class="text-danger">* </span>Mot de passe</label>
+                        <label for="password" class="form-label">Mot de passe</label>
                         <input name="password" type="password" class="form-control" id="empasswordail" aria-describedby="passwordHelp">
                         <div id="passwordHelp" class="form-text text-danger"><?= $messages['password'] ?? '' ?></div>
                     </div>
-                    
-                    <div class="py-3 text-danger">* Champs requis</div>
 
-                    <button type="submit" class="btn btn-primary">Envoyer</button>
+                    <button type="submit" class="btn btn-primary submit">Envoyer</button>
 
                 </form>
 

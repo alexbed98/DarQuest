@@ -11,7 +11,8 @@ require_once 'src/Page.php';
 const ACTIVE_PAGE = Page::Panier;
 
 $cssAdd = ['/public/css/catalogue.css',
-           '/public/css/layout.css'];
+           '/public/css/layout.css',
+           '/public/css/panier.css'];
 
 ?>
 <!DOCTYPE html>
@@ -31,7 +32,6 @@ $cssAdd = ['/public/css/catalogue.css',
         <!--Bloc entête-Header block-->
         
         <main>
-            <h1 class="py-3 mt-3">DarQuest</h1>
 
             <!--Bloc ?-->
             <?php include_once TEMPLATE . '/paniers.php'; ?>
