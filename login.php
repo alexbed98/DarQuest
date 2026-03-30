@@ -9,6 +9,10 @@ session_start();
 // require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
+require_once 'core/Validation.php';
+require_once 'core/Database.php';
+require_once 'src/AccountDAL.php';
+require_once 'core/Email.php';
 
 // on retourne a l'accueil si lutilisateur est deja logged in
 if (IS_AUTH) header('Location: '. Page::Home->url());
@@ -53,8 +57,8 @@ if (IS_POST) {
     } else {
 
         $connexion = Database::getConnexion($dbConfig);
-        $user = AccountDAL::selectByEmail($connexion, $email);
-
+        //$user = AccountDAL::selectByEmail($connexion, $email);
+        $user = false;
         if($user !== false && password_verify($password, $user['password'])) {
             
             session_regenerate_id();
