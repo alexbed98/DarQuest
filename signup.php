@@ -1,11 +1,14 @@
 <?php
 
+session_start();
+
 // les require et les include
 // a decommenter quand on les utilisent
 
 // require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
+require_once 'core/Validation.php';
 
 // on retourne a l'accueil si lutilisateur est deja logged in
 if (IS_AUTH)
@@ -29,23 +32,23 @@ $globalMessageColor = 'text-danger';
 
 if (IS_POST) {
 
-    if (!empty($prenom)) {
-        $prenom = $_POST['prenom'] ?? '';
-    } else {
+    $prenom = $_POST['prenom'] ?? '';
+    if (empty($prenom)) {
         $messages['prenom'] = 'Le prenom est obligatoire.';
     }
+    else{
+        $_SESSION['prenom'] = $prenom;
+    }
 
-    if (!empty($nom)) {
-        $nom = $_POST['nom'] ?? '';
-    } else {
+    $nom = $_POST['nom'] ?? '';
+    if (empty($nom)) {
         $messages['nom'] = 'Le nom est obligatoire.';
     }
 
-    if (!empty($username)) {
-        $username = $_POST['username'] ?? '';
-    } else {
+    $username = $_POST['username'] ?? '';
+    if (empty($username)) {
         $messages['username'] = 'Le username est obligatoire.';
-    }
+    }     
 
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
 
@@ -136,7 +139,7 @@ if (IS_POST) {
             <!--Formulaire authenfification-Authentication form-->
             <div class="col-md-4 mx-auto">
 
-                <form method="post" novalidate>
+                <form method="post" action="catalogue.php">
 
                     <div style="display: flex; flex-direction: row;">
                         <div class="mb-3" style="margin-right: 8px">
@@ -196,7 +199,7 @@ if (IS_POST) {
 
                 </form>
 
-                <div id="global-message" class="my-3 <?= $globalMessageColor ?>"><?= $messages['global'] ?? '' ?></dib>
+                <div id="global-message" class="my-3 <?= $globalMessageColor ?>"><?= $messages['global'] ?? '' ?></div>
 
                     <div class="py-3"><a href="<?= Page::Connexion->url() ?>">Connexion à un compte</a></div>
 

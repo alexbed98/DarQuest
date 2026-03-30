@@ -1,11 +1,21 @@
 <?php
 
+session_start();
+if(isset($_SESSION['prenom']))
+    echo $_SESSION['prenom'];
+else
+    echo 'Aucun prenom dans la session';
+
+
 // les require et les include
 // a decommenter quand on les utilisent
 
 // require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
+
+
+
 
 // identification de la page active
 const ACTIVE_PAGE = Page::Catalogue;

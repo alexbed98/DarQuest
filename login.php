@@ -5,6 +5,7 @@
 // require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
+require_once 'core/Validation.php';
 
 // on retourne a l'accueil si lutilisateur est deja logged in
 if (IS_AUTH) header('Location: '. Page::Home->url());
@@ -56,6 +57,7 @@ if (IS_POST) {
 
             $_SESSION['id'] = $user['id'];
             $_SESSION['role'] = $user['role'];
+            $_SESSION['username'] = $user['username'];
 
             header('Location:' . Page::Home->url());
 
