@@ -2,3 +2,15 @@
     text-align: center;
     width: 100%;
 }
+
+.form-style {
+    display: flex;
+    flex-direction: column;
+}
+
+.submit {
+    margin-top: 32px;
+    background-color: rgb(82, 157, 243);
+    width: 50%;
+    align-self: center;
+}

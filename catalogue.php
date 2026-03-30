@@ -1,11 +1,41 @@
 <?php
-
-// les require et les include
-// a decommenter quand on les utilisent
-
-// require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
+require_once 'core/Validation.php';
+require_once 'core/Database.php';
+require_once 'src/AccountDAL.php';
+require_once 'core/Email.php';
+
+$connexion = Database::getConnexion($dbConfig);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+
+    if ($email === false) {
+        $_SESSION['error_email'] = 'Courriel invalide.';
+        header('Location: login.php');
+        exit;
+    }
+
+    if (!AccountDAL::courrielExistant($connexion, $email)) {
+        $_SESSION['error_email'] = 'Ce compte n’existe pas.';
+        header('Location: login.php');
+        exit;
+    }
+
+    $_SESSION['email'] = $email;
+
+    header('Location: index.php');
+    exit;
+}
+
+if (isset($_SESSION['email'])) {
+    $username = AccountDAL::selectAlias($connexion, $_SESSION['email']);
+    echo "Bienvenue, " . $username . "!";
+} else {
+    echo "Tu n'es pas connecté.";
+}
 
 // identification de la page active
 const ACTIVE_PAGE = Page::Catalogue;
@@ -31,10 +61,9 @@ $cssAdd = ['/public/css/catalogue.css',
         <!--Bloc entête-Header block-->
         
         <main>
-            <h1 class="py-3 mt-3">DarQuest</h1>
 
             <!--Bloc ?-->
-        <?php include_once TEMPLATE . '/listItems.php'; ?>
+        <?php include_once TEMPLATE . '/list.php'; ?>
             
             <!--Bloc ?-->
 

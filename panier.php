@@ -1,17 +1,29 @@
 <?php
 
-// les require et les include
-// a decommenter quand on les utilisent
+session_start();
 
-// require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
+require_once 'core/Validation.php';
+require_once 'core/Database.php';
+require_once 'src/AccountDAL.php';
+require_once 'core/Email.php';
+
+$connexion = Database::getConnexion($dbConfig);
+if(isset($_SESSION['email'])) {
+    $username = AccountDAL::selectAlias($connexion, $_SESSION['email']);
+    echo "Bienvenue, " . $username . "!";
+}
+else {
+    echo "Tu n'es pas connecté.";
+}
 
 // identification de la page active
 const ACTIVE_PAGE = Page::Panier;
 
 $cssAdd = ['/public/css/catalogue.css',
-           '/public/css/layout.css'];
+           '/public/css/layout.css',
+           '/public/css/panier.css'];
 
 ?>
 <!DOCTYPE html>
@@ -31,7 +43,6 @@ $cssAdd = ['/public/css/catalogue.css',
         <!--Bloc entête-Header block-->
         
         <main>
-            <h1 class="py-3 mt-3">DarQuest</h1>
 
             <!--Bloc ?-->
             <?php include_once TEMPLATE . '/paniers.php'; ?>

@@ -19,11 +19,6 @@ $dbConfig = [
 ];
 
 $connexion = Database::getConnexion($dbConfig);
-ItemDAL::resetItems($connexion);
-ItemDAL::insertArme($connexion, 'hache', 10, 100, 'hache.jpg', 1, 'Une hache légendaire', '60', 'hache');
-ItemDAL::insertArmure($connexion, 'armure', 5, 200, 'armure.jpg', 1, 'metal', 'xl');
-ItemDAL::insertSort($connexion, 'sort', 20, 50, 'potion.jpg', 1, 1, 2, 's');
-ItemDAL::insertPotion($connexion, 'potion', 15, 30, 'potion.jpg', 1, 0, 1);
 $items = ItemDAL::selectAll($connexion);
 
 // $electedFilters = isset($_POST['filtre']) ? $_POST['filtre'] : [];

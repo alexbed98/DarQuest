@@ -1,17 +1,26 @@
 <header>
     <div class="header">
-        <a class="" href="/index.php"><img class="logo" src="/public/img/okk.avif" alt="Logo"></a>
 
-        <h1 class="titre"><?= ACTIVE_PAGE->text() ?></h1>
-        <div class="pages">
-            <a href="<?= Page::Catalogue->url() ?>">Items</a>
-            <a href="">Admin</a>
-            <a href="">Inventaire</a>
-            <a href="">Énigma</a>
-            <a href="">Panier</a>
+        <div class="headerLeft">
+            <a href="/index.php"><img class="logo" src="/public/img/darquest_logo_01.png" alt="Logo"></a>
+            <h1 class="titre"><?= ACTIVE_PAGE->text() ?></h1>
         </div>
-        <div>
-            <img class="avatar" src="/public/img/close-up-of-grass-1.jpg" alt="Avatar">
+
+        <div class="headerRight">
+            <a class='headerButtons' href="<?= Page::Catalogue->url() ?>">Items</a>
+            <a class='headerButtons' href="">Admin</a>
+            <a class='headerButtons' href="">Inventaire</a>
+            <a class='headerButtons' href="">Énigma</a>
+            <a class='headerButtons' href="<?= Page::Panier->url() ?>">Panier</a>
+            <a href="<?= Page::Connexion->url() ?>"><img class="avatar" src="/public/img/avatar.jpg" alt="Avatar"></a>
+            <a href="logout.php" class="logout-btn" title="Se déconnecter">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+            </a>
         </div>
-</div>
+
+    </div>
 </header>

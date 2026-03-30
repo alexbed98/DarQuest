@@ -45,11 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 $total = 0;
 ?>
-<div class="container py-5">
-	<h2 class="mb-4">Mon Panier</h2>
-	<div class="table-responsive">
-		<table class="table align-middle">
-			<thead class="table-light">
+<section class="panier-section">
+	<div class="panier-table-wrapper">
+		<table class="panier-table">
+			<thead>
 				<tr>
 					<th scope="col">Produit</th>
 					<th scope="col">Prix unitaire</th>
@@ -59,29 +58,34 @@ $total = 0;
 				</tr>
 			</thead>
 			<tbody>
+				<?php if (empty($_SESSION['panier'])): ?>
+					<tr>
+						<td colspan="5" class="panier-empty">Votre panier est vide.</td>
+					</tr>
+				<?php endif; ?>
 				<?php foreach ($_SESSION['panier'] as $item):
 					$sous_total = $item['prix'] * $item['quantite'];
 					$total += $sous_total;
 				?>
 				<tr>
 					<td>
-						<div class="d-flex align-items-center">
-							<img src="<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['nom']) ?>" width="60" class="me-3 rounded">
-							<span><?= htmlspecialchars($item['nom']) ?></span>
+						<div class="panier-product">
+							<img src="<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['nom']) ?>" class="panier-thumb">
+							<span class="panier-product-name"><?= htmlspecialchars($item['nom']) ?></span>
 						</div>
 					</td>
-					<td><?= number_format($item['prix'], 2, ',', ' ') ?>&nbsp;$</td>
+					<td><?= number_format($item['prix']) ?>&nbsp;Pièces d'or</td>
 					<td>
-						<form method="post" class="d-flex align-items-center auto-submit-form" style="gap:0.5rem;">
+						<form method="post" class="panier-qty-form auto-submit-form">
 							<input type="hidden" name="update_id" value="<?= $item['id'] ?>">
-							<input type="number" name="update_qty" class="form-control auto-submit-input" value="<?= $item['quantite'] ?>" min="1" style="width:80px;">
+							<input type="number" name="update_qty" class="panier-qty-input auto-submit-input" value="<?= $item['quantite'] ?>" min="1">
 						</form>
 					</td>
-					<td><?= number_format($sous_total, 2, ',', ' ') ?>&nbsp;$</td>
+					<td><?= number_format($sous_total) ?>&nbsp;Pièces d'or</td>
 					<td>
-						<form method="post" style="display:inline;">
+						<form method="post">
 							<input type="hidden" name="remove_id" value="<?= $item['id'] ?>">
-							<button type="submit" class="btn btn-danger btn-sm">Retirer</button>
+							<button type="submit" class="panier-remove-button">Retirer</button>
 						</form>
 					</td>
 				</tr>
@@ -89,11 +93,11 @@ $total = 0;
 			</tbody>
 		</table>
 	</div>
-	<div class="d-flex justify-content-end align-items-center mt-4">
-		<h4 class="me-4">Total : <span class="text-success"><?= number_format($total, 2, ',', ' ') ?>&nbsp;$</span></h4>
-		<button class="btn btn-primary btn-lg" <?= empty($_SESSION['panier']) ? 'disabled' : '' ?>>Passer la commande</button>
+	<div class="panier-summary">
+		<p class="panier-total">Total : <span class="panier-total-value"><?= number_format($total) ?>&nbsp;Pièces d'or</span></p>
+		<button class="panier-checkout-button" <?= empty($_SESSION['panier']) ? 'disabled' : '' ?>>Passer la commande</button>
 	</div>
-</div>
+</section>
 <script>
 // Soumission automatique du formulaire à chaque changement de quantité
 document.querySelectorAll('.auto-submit-input').forEach(function(input) {

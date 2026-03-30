@@ -1,11 +1,23 @@
 <?php
 
-// les require et les include
-// a decommenter quand on les utilisent
+session_start();
 
-// require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
+require_once 'core/Validation.php';
+require_once 'core/Database.php';
+require_once 'src/AccountDAL.php';
+require_once 'core/Email.php';
+
+$connexion = Database::getConnexion($dbConfig);
+
+if(isset($_SESSION['email'])) {
+    $username = AccountDAL::selectAlias($connexion, $_SESSION['email']);
+    echo "Bienvenue, " . $username . "!";
+}
+else {
+    echo "Tu n'es pas connecté.";
+}
 
 // identification de la page active
 const ACTIVE_PAGE = Page::Home;
@@ -33,7 +45,7 @@ $cssAdd = ['/public/css/catalogue.css',
         <main>
 
             <!--Bloc ?-->
-            
+            <?php include_once TEMPLATE . '/list.php'; ?>
             <!--Bloc ?-->
 
         </main>
