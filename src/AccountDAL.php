@@ -35,7 +35,7 @@ class AccountDAL
 
     }
     
-    public static function selectAlias(PDO $connexion, string $email): false|array {
+    public static function selectAlias(PDO $connexion, string $email): false|string {
 
         $sql = "SELECT alias from joueurs where courriel=:email";
 
