@@ -9,17 +9,18 @@ class ItemDAL
     public static function selectAll(PDO $connexion): array
     {
 
-        $where = '';
-        if (count(self::$filtre) > 0) {
-            $where = 'WHERE typeItem = "' . self::$filtre[0] . '"  ';
-            if (count(self::$filtre) > 2)
-                foreach (self::$filtre as $f) {
-                    if ($f != self::$filtre[0])
-                        $where .= 'OR typeItem = "' . $f . '"  ';
-                }
-        }
+        // $where = '';
+        // if (count(self::$filtre) > 0) {
+        //     $where = 'WHERE typeItem = "' . self::$filtre[0] . '"  ';
+        //     if (count(self::$filtre) > 2)
+        //         foreach (self::$filtre as $f) {
+        //             if ($f != self::$filtre[0])
+        //                 $where .= 'OR typeItem = "' . $f . '"  ';
+        //         }
+        // }
 
-        $sql = "SELECT idItem, nom, quantiteStock, prix, photo,typeItem from Items " . $where . self::$OrderBy;
+        $sql = "SELECT idItem, nom, quantiteStock, prix, photo,typeItem from Items " . self::$OrderBy;
+        // $sql = "SELECT idItem, nom, quantiteStock, prix, photo,typeItem from Items " . $where . self::$OrderBy;
 
         $statement = $connexion->prepare($sql);
 
