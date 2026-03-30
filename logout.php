@@ -13,8 +13,8 @@ session_unset();
 
 // Destroy the session
 session_destroy();
-
-echo "You have been logged out."
+header('Location: catalogue.php');
+// echo "You have been logged out."
 ?>
 
 </body>
