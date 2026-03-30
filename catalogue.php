@@ -6,6 +6,8 @@ require_once 'core/Database.php';
 require_once 'src/AccountDAL.php';
 require_once 'core/Email.php';
 
+$connexion = Database::getConnexion($dbConfig);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
