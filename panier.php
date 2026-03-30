@@ -18,13 +18,6 @@ else {
     echo "Tu n'es pas connecté.";
 }
 
-// les require et les include
-// a decommenter quand on les utilisent
-
-// require_once 'core/error-exception.php';
-require_once 'src/initialization.php';
-require_once 'src/Page.php';
-
 // identification de la page active
 const ACTIVE_PAGE = Page::Panier;
 

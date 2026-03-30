@@ -5,8 +5,8 @@ $email = $_SESSION['email'] ?? '';
 $messages['email'] = $_SESSION['error_email'] ?? '';
 
 unset($_SESSION['error_email']);
-// les require et les include
 
+// les require et les include
 // require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
@@ -15,7 +15,6 @@ require_once 'core/Database.php';
 require_once 'src/AccountDAL.php';
 require_once 'core/Email.php';
 
-// on retourne a l'accueil si lutilisateur est deja logged in
 if (IS_AUTH) header('Location: '. Page::Home->url());
 
 // identification de la page active

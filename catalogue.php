@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $_SESSION['email'] = $email;
 
-    header('Location: catalogue.php');
+    header('Location: index.php');
     exit;
 }
 
