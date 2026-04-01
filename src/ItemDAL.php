@@ -1,9 +1,5 @@
 <?php
 
-////////////////////////////////////////////////////////////////////////////////
-//pls never change my code without me knowing because it's not like it's my 
-//fault that the ai or whoever that was suppose to 'clean up' the code messes up.
-////////////////////////////////////////////////////////////////////////////////
 class ItemDAL
 {
     public static string $OrderBy = 'DESC';
