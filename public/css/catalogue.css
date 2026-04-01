@@ -1,8 +1,5 @@
 .catalogue {
     display: flex;
-    border: 2px solid black;
-    min-height: 500px;
-    margin-top: 10px;
 }
 
 .options {
@@ -11,7 +8,7 @@
     min-width: 150px;
     width: 0dp;
     height: 0dpx;
-    margin: 20px;
+    margin: 10px;
     padding: 10px;
 }
 
@@ -19,7 +16,6 @@
     display: flex;
     flex-wrap: wrap;
     align-content: start;
-    padding: 10px;
 }
 
 .item {
