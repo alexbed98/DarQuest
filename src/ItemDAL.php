@@ -1,9 +1,5 @@
 <?php
 
-////////////////////////////////////////////////////////////////////////////////
-//pls never change my code without me knowing because it's not like it's my 
-//fault that the ai or whoever that was suppose to 'clean up' the code messes up.
-////////////////////////////////////////////////////////////////////////////////
 class ItemDAL
 {
     public static string $OrderBy = 'DESC';
@@ -14,10 +10,9 @@ class ItemDAL
 
         $where = '';
 
-      
         $sql = "SELECT idItem, nom, quantiteStock, prix, photo, typeItem 
                 FROM Items 
-                $where
+                $where 
                 ORDER BY prix " . self::$OrderBy;
 
         $statement = $connexion->prepare($sql);
@@ -72,7 +67,7 @@ class ItemDAL
         $statement->bindValue(':pEstDisponible', $pEstDisponible, PDO::PARAM_INT);
         $statement->bindValue(':pInstantane', $pInstantane, PDO::PARAM_INT);
         $statement->bindValue(':prarete', $prarete, PDO::PARAM_INT);
-        $statement->bindValue(':ptype', $ptype, PDO::PARAM_STR); // FIX <- sure, that works too
+        $statement->bindValue(':ptype', $ptype, PDO::PARAM_STR); // FIX
 
         $result = $statement->execute();
         $statement->closeCursor();
