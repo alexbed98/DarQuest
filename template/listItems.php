@@ -5,57 +5,9 @@ use Dom\Document;
 include_once 'core/Database.php';
 include_once 'src/ItemDAL.php';
 include_once 'src/initialization.php';
-$dbConfig = [
-    "dbHost" => "127.0.0.1",
-    "dbName" => "darquest",
-    "dbUser" => "root",
-    "dbPass" => "",
-    "dbParams" => [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_CASE => PDO::CASE_NATURAL,
-        PDO::ATTR_ORACLE_NULLS => PDO::NULL_EMPTY_STRING,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-    ],
-];
 
 $connexion = Database::getConnexion($dbConfig);
 $items = ItemDAL::selectAll($connexion);
-
-// $electedFilters = isset($_POST['filtre']) ? $_POST['filtre'] : [];
-function a(){
-ItemDAL::addToFilter("A");
-
-}
-if ($_SERVER['REQUEST_METHOD'] === 'POST') //{ function fixFiltre()
-{
-
-$items = ItemDAL::selectAll($connexion);
-    // if (isset($_POST['arme'])) {
-    //     ItemDAL::addToFilter("A");
-    //     $_GET['arme'] = true;
-    // } 
-    // //else
-    //     ItemDAL::removeFromFilter("A");
-
-    // if (isset($_REQUEST['armure']))
-    //     ItemDAL::addToFilter("R");
-    // else
-    //     ItemDAL::removeFromFilter("R");
-
-    // if (isset($_REQUEST['potion']))
-    //     ItemDAL::addToFilter("P");
-    // else
-    //     ItemDAL::removeFromFilter("P");
-
-    // if (isset($_REQUEST['sort']))
-    //     ItemDAL::addToFilter("S");
-    // else
-    //     ItemDAL::removeFromFilter("S");
-
-    //echo "<script>alert('" . count(ItemDAL::$filtre) . "');</script>";
-
-}
-
 ?>
 
 <div class="catalogue">

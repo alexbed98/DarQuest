@@ -1,5 +1,9 @@
 <?php
 
+////////////////////////////////////////////////////////////////////////////////
+//pls never change my code without me knowing because it's not like it's my 
+//fault that the ai or whoever that was suppose to 'clean up' the code messes up.
+////////////////////////////////////////////////////////////////////////////////
 class ItemDAL
 {
     public static string $OrderBy = 'DESC';
@@ -8,28 +12,39 @@ class ItemDAL
     public static function selectAll(PDO $connexion): array
     {
 
+         $where = '';
+        // $params = [];
+
+        //this makes it so that only the weapon type is selected
+        // if (count(self::$filtre) > 0) {
+        //     $conditions = [];
+
+        //     foreach (self::$filtre as $index => $f) {
+        //         $key = ":type$index";
+        //         $conditions[] = "typeItem = $key";
+        //         $params[$key] = $f;
+        //     }
+
+        //     $where = 'WHERE ' . implode(' OR ', $conditions);
+        // }
+
+        /* my original code, pls don't remove
         $where = '';
-        $params = [];
-
-        if (count(self::$filtre) > 0) {
-            $conditions = [];
-
-            foreach (self::$filtre as $index => $f) {
-                $key = ":type$index";
-                $conditions[] = "typeItem = $key";
-                $params[$key] = $f;
+        if(count(self::$filtre) > 0){
+            $where = 'WHERE ';
+            foreach(self::$filtre as $f){
+                $where .= 'typeItem = "' . $f . '" OR ';
             }
-
-            $where = 'WHERE ' . implode(' OR ', $conditions);
         }
 
+        */
         $sql = "SELECT idItem, nom, quantiteStock, prix, photo, typeItem 
                 FROM Items 
-                $where 
+                $where
                 ORDER BY prix " . self::$OrderBy;
 
         $statement = $connexion->prepare($sql);
-        $statement->execute($params);
+        $statement->execute();
 
         return $statement->fetchAll();
     }
@@ -80,7 +95,7 @@ class ItemDAL
         $statement->bindValue(':pEstDisponible', $pEstDisponible, PDO::PARAM_INT);
         $statement->bindValue(':pInstantane', $pInstantane, PDO::PARAM_INT);
         $statement->bindValue(':prarete', $prarete, PDO::PARAM_INT);
-        $statement->bindValue(':ptype', $ptype, PDO::PARAM_STR); // FIX
+        $statement->bindValue(':ptype', $ptype, PDO::PARAM_STR); // FIX <- sure, that works too
 
         $result = $statement->execute();
         $statement->closeCursor();
