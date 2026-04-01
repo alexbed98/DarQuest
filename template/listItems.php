@@ -8,6 +8,7 @@ include_once 'src/initialization.php';
 
 $connexion = Database::getConnexion($dbConfig);
 $items = ItemDAL::selectAll($connexion);
+
 ?>
 
 <div class="catalogue">
@@ -76,38 +77,3 @@ $items = ItemDAL::selectAll($connexion);
         </form>
     </div>
 </div>
-<script>
-    // $("#filtre").on('change', function () {
-    //     this.form.submit();
-    // });
-    function filter() {
-        // alert(< ?= count(ItemDAL::$filtre) ?>);
-
-
-        // < ?php
-        // if ($_POST['input#arme'])
-        //     echo "alert('yes');";
-        // // ItemDAL::addToFilter("A");
-        // else
-        //     echo "alert('nope');";
-        // // ItemDAL::removeFromFilter("A");
-        // // if($_GET['armure'] != null)
-        // //     ItemDAL::addToFilter("R");
-        // // else
-        // //     ItemDAL::removeFromFilter("R");
-        // // if($_GET['potion'] != null)
-        // //     ItemDAL::addToFilter("P");
-        // // else
-        // //     ItemDAL::removeFromFilter("P");
-        // // if($_GET['sort'] != null)
-        // //     ItemDAL::addToFilter("S");
-        // // else
-        // //     ItemDAL::removeFromFilter("S");
-
-        // ?>
-
-        // //  alert(< ?= count(ItemDAL::$filtre) ?>);
-    }
-
-    function changeLayout(what) { }
-</script>

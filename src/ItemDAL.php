@@ -12,32 +12,9 @@ class ItemDAL
     public static function selectAll(PDO $connexion): array
     {
 
-         $where = '';
-        // $params = [];
-
-        //this makes it so that only the weapon type is selected
-        // if (count(self::$filtre) > 0) {
-        //     $conditions = [];
-
-        //     foreach (self::$filtre as $index => $f) {
-        //         $key = ":type$index";
-        //         $conditions[] = "typeItem = $key";
-        //         $params[$key] = $f;
-        //     }
-
-        //     $where = 'WHERE ' . implode(' OR ', $conditions);
-        // }
-
-        /* my original code, pls don't remove
         $where = '';
-        if(count(self::$filtre) > 0){
-            $where = 'WHERE ';
-            foreach(self::$filtre as $f){
-                $where .= 'typeItem = "' . $f . '" OR ';
-            }
-        }
 
-        */
+      
         $sql = "SELECT idItem, nom, quantiteStock, prix, photo, typeItem 
                 FROM Items 
                 $where

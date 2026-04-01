@@ -45,7 +45,7 @@ $cssAdd = ['/public/css/catalogue.css',
         <main>
 
             <!--Bloc ?-->
-            <?php include_once TEMPLATE . '/list.php'; ?>
+            <?php include_once TEMPLATE . '/listItems.php'; ?>
             <!--Bloc ?-->
 
         </main>
