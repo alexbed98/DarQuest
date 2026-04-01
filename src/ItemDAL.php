@@ -5,10 +5,14 @@ class ItemDAL
     public static string $OrderBy = 'DESC';
     public static array $filtre = ['a'];
 
+    //-------------------------------------------------------------------------------
+    //Selectionne tout la liste d'items et affiche selon le prix 
+    //(A modifier pour filtre)
+    //-------------------------------------------------------------------------------
     public static function selectAll(PDO $connexion): array
     {
 
-        $where = '';
+        $where = ' WHERE estDisponible = true && quantiteStock > 0 ';
 
       
         $sql = "SELECT idItem, nom, quantiteStock, prix, photo, typeItem 
@@ -21,7 +25,10 @@ class ItemDAL
 
         return $statement->fetchAll();
     }
-
+    //-------------------------------------------------------------------------------
+    //Selectionne tout la liste d'items et affiche selon le prix 
+    //(A modifier pour filtre) (Est le meme que select all pour le moment)
+    //-------------------------------------------------------------------------------
     public static function selectAllOrderByPrice(PDO $connexion): array {
 
         $sql = "SELECT idItem, nom, quantiteStock, prix, photo, typeItem 
@@ -33,7 +40,9 @@ class ItemDAL
 
         return $statement->fetchAll();
     }
-
+    //-------------------------------------------------------------------------------
+    //Insertion d'item arme en utilisant la procedure 'ajouterArme'
+    //-------------------------------------------------------------------------------
     public static function insertArme(PDO $connexion, string $pNom,int $pQuantite,int $pPrix, string $pPhoto, int $pEstDisponible, string $pDescription, string $pEfficacite, string $pGenreArme): bool {
 
         $sql = "CALL ajouterArme(:pNom,:pQuantite,:pPrix,:pPhoto,:pEstDisponible,:pDescription,:pEfficacite,:pGenreArme);";
@@ -54,7 +63,9 @@ class ItemDAL
 
         return $result;
     }
-
+    //-------------------------------------------------------------------------------
+    //Insertion d'item sort en utilisant la procedure 'ajouterSort'
+    //-------------------------------------------------------------------------------
     public static function insertSort(PDO $connexion, string $pNom,int $pQuantite,int $pPrix, string $pPhoto, int $pEstDisponible, int $pInstantane, int $prarete, string $ptype): bool {
 
         $sql = "CALL ajouterSort(:pNom,:pQuantite,:pPrix,:pPhoto,:pEstDisponible,:pInstantane,:prarete,:ptype);";
@@ -75,7 +86,9 @@ class ItemDAL
 
         return $result;
     }
-
+    //-------------------------------------------------------------------------------
+    //Insertion d'item armure en utilisant la procedure 'ajouterArmure'
+    //-------------------------------------------------------------------------------
     public static function insertArmure(PDO $connexion, string $pNom,int $pQuantite,int $pPrix, string $pPhoto, int $pEstDisponible, string $pMatiere, string $pTaille): bool {
 
         $sql = "CALL ajouterArmure(:pNom,:pQuantite,:pPrix,:pPhoto,:pEstDisponible,:pMatiere,:pTaille);";
@@ -95,7 +108,9 @@ class ItemDAL
 
         return $result;
     }
-
+    //-------------------------------------------------------------------------------
+    //Insertion d'item potion en utilisant la procedure 'ajouterPotion'
+    //-------------------------------------------------------------------------------
     public static function insertPotion(PDO $connexion, string $pNom,int $pQuantite,int $pPrix, string $pPhoto, int $pEstDisponible, string $pEffet, int $pDuree): bool {
 
         $sql = "CALL ajouterPotion(:pNom,:pQuantite,:pPrix,:pPhoto,:pEstDisponible,:pEffet,:pDuree);";
@@ -115,7 +130,10 @@ class ItemDAL
 
         return $result;
     }
-
+    //-------------------------------------------------------------------------------
+    //Insertion d'un type de sort a la table TypeSorts 
+    //(A probablement besoin d'etre changer?)
+    //-------------------------------------------------------------------------------
     public static function insertSortType(PDO $connexion,string $typeSort,string $uneDescription,int $ptVie,int $ptDegat): bool {
 
         $sql = "INSERT INTO TypeSorts (typeSort, uneDescription, ptVie, ptDegat) 
@@ -130,7 +148,10 @@ class ItemDAL
 
         return $statement->execute();
     }
-
+    //-------------------------------------------------------------------------------
+    //Enleve tout les items de les tables: Armes, Armures, Sorts, Potions et Items
+    //(Ne pas utiliser pour ne pas surcompliquer des erreurs)
+    //-------------------------------------------------------------------------------
     public static function resetItems(PDO $connexion): bool {
 
         try {
