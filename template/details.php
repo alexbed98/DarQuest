@@ -14,7 +14,7 @@
     <div id="prix">
         <p>Prix: </p>
         <p id="prixItem" type="number">35</p>
-        <p>Balise img avec logo pièce</p>
+        <p>🪙</p>
     </div>
     <input type="number" name="update_qty" class="panier-qty-input auto-submit-input" value="1" min="1">
 </div>
