@@ -19,40 +19,32 @@ $items = ItemDAL::selectAll($connexion);
         <form id="trier">
             <div>
                 <legend>Trier par:</legend>
-                <!-- <input type="radio" id="prix" value="prix" onclick="this.form.submit()" /> -->
-                <!-- <input type="radio" id="prix" value="prix" onclick="changeLayout('prix')" /> -->
-                <input type="radio" id="prix" value="prix" onclick="changeLayout('prix')" />
+                <input type="radio" id="prix" value="prix"/>
                 <label for="prix">Prix</label>
                 <div></div>
-                <input type="radio" id="type" value="Type" onclick="changeLayout('type')" />
+                <input type="radio" id="type" value="Type" />
                 <label for="type">Type</label>
                 <div></div>
-                <input type="radio" id="" value="" onclick="this.form.submit()" />
+                <input type="radio" id="" value=""/>
                 <label for=""></label>
             </div>
         </form>
             <div>
                 <legend>Filtrer:</legend>
-                <!-- <input class="filtre" type="checkbox" id="arme" name="arme" value="A" onchange="filter(this.value)" /> -->
-                <!-- <input class="filtre" type="checkbox" id="arme" name="arme" value="A" onchange="filter()" /> -->
-                <!-- <input class="filtre" type="checkbox" id="arme" name="arme" value="A" onchange="< ?php fixFiltre()?>" /> -->
-                <input class="filtre" type="checkbox" id="arme" name="filtre" value="A" onclick="from.submit()" <?php if(in_array('A',ItemDAL::$filtre)) echo 'checked="checked"'?>/>
+                <input class="filtre" type="checkbox" id="arme" name="filtre" value="A"/>
                 <label for="armes">Armes</label>
                 <div></div>
-                <!-- <input class="filtre" type="checkbox" id="armure" id="armure" value="R" onchange="filter()" /> -->
-                <input class="filtre" type="checkbox" id="armure" name="filtre" value="R" onchange="this.form.submit()" />
+                <input class="filtre" type="checkbox" id="armure" name="filtre" value="R"/>
                 <label for="armure">Armures</label>
                 <div></div>
-                <!-- <input class="filtre" type="checkbox" id="potion" id="potion" value="P" onchange="filter()" /> -->
-                <input class="filtre" type="checkbox" id="potion" name="filtre" value="P" onchange="this.form.submit()" />
+                <input class="filtre" type="checkbox" id="potion" name="filtre" value="P"/>
                 <label for="potion">Potion</label>
                 <div></div>
-                <!-- <input class="filtre" type="checkbox" id="sort" id="sort" value="S" onchange="filter()" /> -->
-                <input class="filtre" type="checkbox" id="sort" name="filtre" value="S" onchange="this.form.submit()" />
+                <input class="filtre" type="checkbox" id="sort" name="filtre" value="S"/>
                 <label for="sort">Sort</label>
                 <div></div>
 
-                <input class="filtre" type="checkbox" id="sub" id="sub" onchange="this.form.submit()" />
+                <input class="filtre" type="checkbox" id="sub" id="sub"/>
 
             </div>
 
@@ -77,3 +69,11 @@ $items = ItemDAL::selectAll($connexion);
         </form>
     </div>
 </div>
+@{
+    <script>
+        function changeLayout(criterion) {
+            const items = document.querySelectorAll('.item');
+            alert(items);
+        }
+    </script>
+}
