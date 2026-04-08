@@ -24,8 +24,67 @@ $cssAdd = ['/public/css/catalogue.css',
            '/public/css/layout.css',
            '/public/css/form.css'];
 
-
 $globalMessageColor = 'text-danger';
+
+// Valider le formulaire lorsqu'il est soumit
+if (IS_POST) {
+
+    // recuperation du email
+    // si email inexsitant => null
+    // si email est existant mais invalide => false
+    // si email est existant et valide => email (string)
+    $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+    
+    // si null ou false
+    if ( !is_string($email) ) {
+
+        $messages['email'] = 'Le courriel est obligatoire.';
+
+        // remettre a vide
+        $email = $_POST['email'] ?? '';
+    }    
+
+    // recuperation du password
+    $password = $_POST['password'] ?? '';
+
+    // si vide
+    if (empty($password)) {
+
+        $messages['password'] = 'Le mot de passe est obligatoire.';
+
+    }
+    
+    // si au moins 1 message d'erreur
+    if (count($messages) > 0) {
+
+        $messages['global'] = 'Le formulaire est invalide.';
+
+    } else {
+
+        $connexion = Database::getConnexion($dbConfig);
+        $user = AccountDAL::selectByEmail($connexion, $email);
+
+        if($user !== false && password_verify($password, $user['password'])) {
+            
+            // Bonne pratique de regénérer le Session ID avant d'ajouter des informations sensibles
+            session_regenerate_id();
+
+            // Ajout en session de id et role
+            $_SESSION['id'] = $user['id'];
+            $_SESSION['role'] = $user['role'];
+
+            // Redirige à l'accueil
+            header('Location:' . Page::Home->url());
+
+        } else {
+
+            $messages['global'] = 'Les informations d\'authentification ne sont pas celles attendues.';
+
+        }       
+
+    }
+    
+}
 
 $showNewAccountMessage = false;
 
