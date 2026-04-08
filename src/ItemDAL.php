@@ -3,7 +3,7 @@
 class ItemDAL
 {
     public static string $OrderBy = 'DESC';
-    public static array $filtre = ['a'];
+    public static array $filtre = [];
 
     //-------------------------------------------------------------------------------
     //Selectionne tout la liste d'items et affiche selon le prix 
