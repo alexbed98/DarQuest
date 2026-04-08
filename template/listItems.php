@@ -53,7 +53,7 @@ $items = ItemDAL::selectAll($connexion);
 
             <div class="item">
                 <div style="border: 2px solid black;">
-                    <img src=<?= $item['photo'] ?> alt="Image de l'article" style="width: 100px; height: 100px;">
+                    <!-- <img src="<?= $item['photo'] ?>" alt="Image de l'article" style="width: 100px; height: 100px;"> -->
                 </div>
                 <div
                     style="border: 2px solid black; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 5px; margin-top: 10px; width: 300px;">
