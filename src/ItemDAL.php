@@ -33,6 +33,19 @@ class ItemDAL
         return $statement->fetchAll();
     }
 
+    public static function selectById(PDO $connexion, int $idItem): false|array
+    {
+        $sql = "SELECT idItem, nom, quantiteStock, prix, photo, typeItem
+                FROM Items
+                WHERE idItem = :idItem";
+
+        $statement = $connexion->prepare($sql);
+        $statement->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->fetch();
+    }
+
     public static function insertArme(PDO $connexion, string $pNom,int $pQuantite,int $pPrix, string $pPhoto, int $pEstDisponible, string $pDescription, string $pEfficacite, string $pGenreArme): bool {
 
         $sql = "CALL ajouterArme(:pNom,:pQuantite,:pPrix,:pPhoto,:pEstDisponible,:pDescription,:pEfficacite,:pGenreArme);";

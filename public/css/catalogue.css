@@ -22,3 +22,33 @@
     width: 0dpx;
     margin: 20px;
 }
+
+.cart-toast {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 8px 10px 14px 10px;
+    padding: 10px 14px;
+    border: 2px solid #7e89b4;
+    border-radius: 10px;
+    background-color: #d7e0f6;
+    font-weight: 600;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.cart-toast-hide {
+    opacity: 0;
+    transform: translateY(-8px);
+}
+
+.cart-toast-close {
+    border: 1px solid #7e89b4;
+    background-color: #94A3D9;
+    border-radius: 8px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}

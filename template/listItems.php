@@ -57,7 +57,6 @@ $items = ItemDAL::selectAll($connexion);
             </div>
 
     </div>
-        <form id="filtrer" method="post">
     <div class="list-item">
         <?php foreach ($items as $item): ?>
 
@@ -70,10 +69,13 @@ $items = ItemDAL::selectAll($connexion);
                     <div class="nom"><?= $item["nom"] ?></div>
                     <div class="quantite"><?= $item["quantiteStock"] ?></div>
                     <div class="prix"><?= $item["prix"] ?></div>
-                    <button>Ajouter</button>
+                    <!-- Ce formulaire envoie l'id de l'item à catalogue.php pour l'ajout panier utilisateur. -->
+                    <form method="post" action="" style="margin: 0;">
+                        <input type="hidden" name="add_item_id" value="<?= (int) $item['idItem'] ?>">
+                        <button type="submit">Ajouter</button>
+                    </form>
                 </div>
             </div>
         <?php endforeach; ?>
-        </form>
     </div>
 </div>
