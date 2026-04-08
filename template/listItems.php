@@ -9,8 +9,6 @@ include_once 'src/initialization.php';
 $connexion = Database::getConnexion($dbConfig);
 $items = ItemDAL::selectAll($connexion);
 
-$IS_AUTH = IS_AUTH;
-
 ?>
 
 <div class="catalogue">
@@ -63,7 +61,7 @@ $IS_AUTH = IS_AUTH;
                     <div class="quantite"><?= $item["quantiteStock"] ?></div>
                     <div class="prix"><?= $item["prix"] ?></div>
                     <?php if (IS_AUTH) : ?>
-                    <button>Ajoutasdaer</button>
+                    <button>Ajouter</button>
                     <?php endif; ?>
                 </div>
             </div>
