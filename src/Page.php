@@ -6,6 +6,7 @@ enum Page
     case Details;
     case Connexion;
     case Panier;
+    case Inventaire;
     case CreationCompte;
 
 
@@ -18,6 +19,7 @@ enum Page
             Page::Details => 'Détails',
             Page::Connexion => 'Connexion',
             Page::Panier => 'Panier',
+            Page::Inventaire => 'Inventaire',
             Page::CreationCompte => 'Création de compte'
         };
 
@@ -32,6 +34,7 @@ enum Page
             Page::Details => '/detail',
             Page::Connexion => '/login',
             Page::Panier => '/panier',
+            Page::Inventaire => '/inventaire',
             Page::CreationCompte => '/signup'
         };
 

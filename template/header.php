@@ -12,7 +12,7 @@
                 <?php if (IS_ADMIN): ?>
                     <a class='headerButtons' href="">Admin</a>
                 <?php endif; ?>
-                <a class='headerButtons' href="">Inventaire</a>
+                <a class='headerButtons' href="<?= Page::Inventaire->url() ?>">Inventaire</a>
                 <a class='headerButtons' href="">Énigma</a>
                 <a class='headerButtons' href="<?= Page::Panier->url() ?>">Panier</a>
             <?php endif; ?>

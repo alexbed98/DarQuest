@@ -96,7 +96,19 @@ $total = 0;
 	</div>
 	<div class="panier-summary">
 		<p class="panier-total">Total : <span class="panier-total-value"><?= number_format($total) ?>&nbsp;Pièces d'or</span></p>
-		<button class="panier-checkout-button" <?= empty($panier) ? 'disabled' : '' ?>>Passer la commande</button>
+		<?php
+		$commandeNotice = $_SESSION['commande_notice'] ?? '';
+		unset($_SESSION['commande_notice']);
+		?>
+		<?php if ($commandeNotice === 'success'): ?>
+			<p class="panier-notice panier-notice-success">Commande passée ! Les items ont été ajoutés à votre inventaire.</p>
+		<?php elseif ($commandeNotice === 'error'): ?>
+			<p class="panier-notice panier-notice-error">Or insuffisant pour passer la commande.</p>
+		<?php endif; ?>
+		<form method="post" action="<?= Page::Panier->url() ?>">
+			<input type="hidden" name="passer_commande" value="1">
+			<button type="submit" class="panier-checkout-button" <?= empty($panier) ? 'disabled' : '' ?>>Passer la commande</button>
+		</form>
 	</div>
 </section>
 <script>

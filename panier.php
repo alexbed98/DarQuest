@@ -8,15 +8,32 @@ require_once 'core/Validation.php';
 require_once 'core/Database.php';
 require_once 'src/AccountDAL.php';
 require_once 'src/CartDAL.php';
+require_once 'src/InventaireDAL.php';
 require_once 'core/Email.php';
 
 $connexion = Database::getConnexion($dbConfig);
-if(isset($_SESSION['email'])) {
-    $username = AccountDAL::selectAlias($connexion, $_SESSION['email']);
-    echo "Bienvenue, " . $username . "!";
-}
-else {
-    echo "Tu n'es pas connecté.";
+
+// Traiter la commande
+if (IS_POST && isset($_POST['passer_commande']) && !empty($_SESSION['id'])) {
+    $idJoueur = (int) $_SESSION['id'];
+    $cartKey  = 'panier_user_' . $idJoueur;
+    $panier   = $_SESSION[$cartKey] ?? [];
+
+    if (!empty($panier)) {
+        $ok = InventaireDAL::commander($connexion, $idJoueur, $panier);
+
+        if ($ok) {
+            // Vider le panier en session et en BD
+            $_SESSION[$cartKey] = [];
+            CartDAL::saveCart($connexion, $idJoueur, []);
+            $_SESSION['commande_notice'] = 'success';
+        } else {
+            $_SESSION['commande_notice'] = 'error';
+        }
+    }
+
+    header('Location: ' . Page::Panier->url());
+    exit;
 }
 
 // identification de la page active
