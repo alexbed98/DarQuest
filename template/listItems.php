@@ -29,7 +29,7 @@ $items = ItemDAL::selectAll($connexion);
             </div>
             <div>
                 <legend>Filtrer:</legend>
-                <input class="filtre" type="checkbox" id="arme" name="filtre" value="A"/>
+                <input class="filtre" type="checkbox" id="arme" name="filtre" value="A" onclick="changeLayout('A')"/>
                 <label for="armes">Armes</label>
                 <div></div>
                 <input class="filtre" type="checkbox" id="armure" name="filtre" value="R"/>
