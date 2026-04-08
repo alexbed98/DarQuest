@@ -1,11 +1,5 @@
 <?php
 
-session_start();
-$email = $_SESSION['email'] ?? '';
-$messages['email'] = $_SESSION['error_email'] ?? '';
-
-unset($_SESSION['error_email']);
-
 // les require et les include
 // require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
@@ -24,6 +18,10 @@ $cssAdd = ['/public/css/catalogue.css',
            '/public/css/layout.css',
            '/public/css/form.css'];
 
+$email = '';
+$password = '';
+$messages = [];
+
 $globalMessageColor = 'text-danger';
 
 // Valider le formulaire lorsqu'il est soumit
@@ -36,13 +34,13 @@ if (IS_POST) {
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
     
     // si null ou false
-    if ( !is_string($email) ) {
+    if ( !is_string($email) || $email === '' ) {
 
         $messages['email'] = 'Le courriel est obligatoire.';
 
         // remettre a vide
         $email = $_POST['email'] ?? '';
-    }    
+    }
 
     // recuperation du password
     $password = $_POST['password'] ?? '';
@@ -66,7 +64,7 @@ if (IS_POST) {
 
         if($user !== false && password_verify($password, $user['password'])) {
             
-            // Bonne pratique de regénérer le Session ID avant d'ajouter des informations sensibles
+            // regeneration de la session id pour eviter certaines erreurs
             session_regenerate_id();
 
             // Ajout en session de id et role
@@ -78,7 +76,7 @@ if (IS_POST) {
 
         } else {
 
-            $messages['global'] = 'Les informations d\'authentification ne sont pas celles attendues.';
+            $messages['global'] = 'Les informations d\'authentification sont invalides';
 
         }       
 
@@ -146,7 +144,7 @@ if (!empty($_SESSION['new-account'])) {
 
                 <div id="global-message" class="my-5 <?= $globalMessageColor ?>"><?= $messages['global'] ?? '' ?></div>
 
-                <div class="py-3"><a href="<?= Page::CreationCompte->url() ?>">Je n'ai pas de compte</a></div>
+                <div style="text-align: center" class="py-3"><a href="<?= Page::CreationCompte->url() ?>">Je n'ai pas de compte</a></div>
             </div>
             <!--Formulaire authenfification-Authentication form-->
 

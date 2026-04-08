@@ -1,0 +1,25 @@
+.my-tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.my-tooltip-text {
+  display: none;
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  width: 220px;
+  top: 25px;
+  left: 0;
+}
+
+.my-tooltip:hover .my-tooltip-text {
+  display: block;
+}
+
+.my-info-icon {
+  font-size: 22px;
+  color: rgb(90, 90, 90);
+}
