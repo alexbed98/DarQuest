@@ -1,39 +1,35 @@
 <?php
-// Simulation d'un panier en session (exemple statique)
-if (!isset($_SESSION['panier'])) {
-	$_SESSION['panier'] = [
-		[
-			'id' => 1,
-			'nom' => 'Produit 1',
-			'image' => '/public/img/produit1.jpg',
-			'prix' => 15.00,
-			'quantite' => 2
-		],
-		[
-			'id' => 2,
-			'nom' => 'Produit 2',
-			'image' => '/public/img/produit2.jpg',
-			'prix' => 25.00,
-			'quantite' => 1
-		],
-	];
+// La clé de session du panier est liée à l'utilisateur connecté.
+if (!empty($_SESSION['id'])) {
+	$cartSessionKey = 'panier_user_' . (int) $_SESSION['id'];
+} elseif (!empty($_SESSION['email'])) {
+	$cartSessionKey = 'panier_user_' . md5(strtolower((string) $_SESSION['email']));
+} else {
+	$cartSessionKey = 'panier_guest';
 }
+
+if (!isset($_SESSION[$cartSessionKey]) || !is_array($_SESSION[$cartSessionKey])) {
+	$_SESSION[$cartSessionKey] = [];
+}
+
+// Alias local vers le panier de l'utilisateur courant.
+$panier = &$_SESSION[$cartSessionKey];
 
 // Retirer un item
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	// Retirer
 	if (isset($_POST['remove_id'])) {
-		$_SESSION['panier'] = array_filter(
-			$_SESSION['panier'],
+		$panier = array_filter(
+			$panier,
 			function ($item) {
 				return $item['id'] != $_POST['remove_id'];
 			}
 		);
-		$_SESSION['panier'] = array_values($_SESSION['panier']);
+		$panier = array_values($panier);
 	}
 	// Modifier quantité
 	if (isset($_POST['update_id'], $_POST['update_qty'])) {
-		foreach ($_SESSION['panier'] as &$item) {
+		foreach ($panier as &$item) {
 			if ($item['id'] == $_POST['update_id']) {
 				$qty = (int)$_POST['update_qty'];
 				$item['quantite'] = max(1, $qty);
@@ -41,6 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			}
 		}
 		unset($item);
+	}
+
+	// Synchroniser avec la BD si l'utilisateur est connecté
+	if (!empty($_SESSION['id']) && isset($connexion)) {
+		CartDAL::saveCart($connexion, (int) $_SESSION['id'], $panier);
 	}
 }
 $total = 0;
@@ -58,12 +59,12 @@ $total = 0;
 				</tr>
 			</thead>
 			<tbody>
-				<?php if (empty($_SESSION['panier'])): ?>
+				<?php if (empty($panier)): ?>
 					<tr>
 						<td colspan="5" class="panier-empty">Votre panier est vide.</td>
 					</tr>
 				<?php endif; ?>
-				<?php foreach ($_SESSION['panier'] as $item):
+				<?php foreach ($panier as $item):
 					$sous_total = $item['prix'] * $item['quantite'];
 					$total += $sous_total;
 				?>
@@ -95,7 +96,7 @@ $total = 0;
 	</div>
 	<div class="panier-summary">
 		<p class="panier-total">Total : <span class="panier-total-value"><?= number_format($total) ?>&nbsp;Pièces d'or</span></p>
-		<button class="panier-checkout-button" <?= empty($_SESSION['panier']) ? 'disabled' : '' ?>>Passer la commande</button>
+		<button class="panier-checkout-button" <?= empty($panier) ? 'disabled' : '' ?>>Passer la commande</button>
 	</div>
 </section>
 <script>

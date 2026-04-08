@@ -30,8 +30,8 @@ const PRODUCT_IMG = URL_ROOT . 'upload';
 
 // constante pour simplifier le code
 define('IS_POST', $_SERVER['REQUEST_METHOD'] === 'POST');
-define('IS_AUTH', isset($_SESSION['id']));
-define('IS_ADMIN', IS_AUTH && $_SESSION['role'] === 1);
+define('IS_AUTH', isset($_SESSION['email']) || isset($_SESSION['id']));
+define('IS_ADMIN', IS_AUTH && !empty($_SESSION['role']) && $_SESSION['role'] === 1);
 
 //=======================================================
 
