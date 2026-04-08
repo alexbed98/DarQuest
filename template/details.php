@@ -13,33 +13,48 @@
     
     <div id="prix">
         <p>Prix: </p>
-        <p>35</p>
-        <p>Balise img avec logo pièce</p>
+        <p id="prixItem" type="number">35</p>
+        <p>🪙</p>
     </div>
-
-    <div id="controleQuantite">
-        <button>Flèche en bas</button>
-        <p>Quantité voulue</p>
-        <button>Flèche en haut</button>
-    </div>
+    <input type="number" name="update_qty" class="panier-qty-input auto-submit-input" value="1" min="1">
 </div>
-
 
 <!-- Côté droit de la page -->
 <div class="conteneur">
     <div id="nbPiece">
         <p>Nombre de pièces:</p>
-        <p>500</p>
+        <p>500🪙</p>
     </div>
 
+    <div class="conteneur" style="display: flex; justify-content: center; align-items: center;">
+        <img src="image/photo.avif" alt="image item" style="height: 300px; width: 500px;">
+    </div>
 
-    <image><p>Une image</p></image>
+    <div style="display: flex; flex-direction: row; justify-content: space-around; margin-top: 4em;">
+        <p id="prixTotal"></p>
+        <button>Ajouter au panier</button>
+    </div>
 
-    <p>Total $$$</p>
-    <p>Ajouter au panier</p>
 </div>
 
 </div>
 
+
+<script>
+    const prixUnitaire = parseInt(document.querySelector('#prixItem').textContent);
+    const inputQty = document.querySelector('.panier-qty-input');
+    const prixTotalElement = document.querySelector('#prixTotal');
+
+    function calculPrixTotal() {
+        const quantite = parseInt(inputQty.value);
+        const prixTotal = prixUnitaire * quantite;
+
+        prixTotalElement.textContent = prixTotal + ' 🪙';
+    }
+
+    calculPrixTotal();
+
+    inputQty.addEventListener('input', calculPrixTotal);
+</script>
 
 

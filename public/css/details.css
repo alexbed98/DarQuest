@@ -5,8 +5,6 @@
 
 .conteneur{
     flex: 1;
-    border-style: solid;
-    border-color: black;
 }
 
 #prix{
@@ -15,10 +13,10 @@
     color: orange;
 }
 
-#quantiteStock{
+#quantiteStock {
     display: flex;
     flex-direction: row;
-    color:red
+    color:red;
 }
 
 #nbPiece{
@@ -34,4 +32,9 @@
     flex-direction: row;
     justify-content: right;
     color: green;
+}
+
+#totalBoutonPanier {
+    display: flex;
+    flex-direction: row;
 }
