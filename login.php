@@ -32,14 +32,15 @@ if (IS_POST) {
     // si email est existant mais invalide => false
     // si email est existant et valide => email (string)
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+
+    $email = $_POST['email'] ?? '';
     
-    // si null ou false
-    if ( !is_string($email) || $email === '' ) {
+    $email = $_POST['email'] ?? '';
 
+    if (empty($email)) {
         $messages['email'] = 'Le courriel est obligatoire.';
-
-        // remettre a vide
-        $email = $_POST['email'] ?? '';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $messages['email'] = 'Le courriel n\'est pas valide.';
     }
 
     // recuperation du password
@@ -62,14 +63,15 @@ if (IS_POST) {
         $connexion = Database::getConnexion($dbConfig);
         $user = AccountDAL::selectByEmail($connexion, $email);
 
-        if($user !== false && password_verify($password, $user['password'])) {
+        if($user !== false && password_verify($password, $user['motDePAsse'])) {
             
             // regeneration de la session id pour eviter certaines erreurs
             session_regenerate_id();
 
             // Ajout en session de id et role
-            $_SESSION['id'] = $user['id'];
-            $_SESSION['role'] = $user['role'];
+            $_SESSION['email'] = $email;
+            $_SESSION['id'] = $user['idJoueur'];
+            $_SESSION['role'] = $user['estAdmin'];
 
             // Redirige à l'accueil
             header('Location:' . Page::Home->url());
@@ -124,7 +126,7 @@ if (!empty($_SESSION['new-account'])) {
             <!--Formulaire authenfification-Authentication form-->
             <div class="col-md-4 mx-auto">                         
 
-                <form class="form-style" method="post" novalidate action="catalogue.php">
+                <form class="form-style" method="post" novalidate>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Courriel</label>
@@ -134,7 +136,7 @@ if (!empty($_SESSION['new-account'])) {
 
                     <div class="mb-3">
                         <label for="password" class="form-label">Mot de passe</label>
-                        <input name="password" type="password" class="form-control" id="empasswordail" aria-describedby="passwordHelp">
+                        <input name="password" type="password" class="form-control" id="password" aria-describedby="passwordHelp">
                         <div id="passwordHelp" class="form-text text-danger"><?= $messages['password'] ?? '' ?></div>
                     </div>
 
