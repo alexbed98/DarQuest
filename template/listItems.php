@@ -9,6 +9,8 @@ include_once 'src/initialization.php';
 $connexion = Database::getConnexion($dbConfig);
 $items = ItemDAL::selectAll($connexion);
 
+$IS_AUTH = IS_AUTH;
+
 ?>
 
 <div class="catalogue">
@@ -16,7 +18,6 @@ $items = ItemDAL::selectAll($connexion);
         <div style="border: 1px solid black; border-radius: 5px;">
             Nb pièces
         </div>
-        <form id="trier">
             <div>
                 <legend>Trier par:</legend>
                 <input type="radio" id="prix" value="prix"/>
@@ -28,7 +29,6 @@ $items = ItemDAL::selectAll($connexion);
                 <input type="radio" id="" value=""/>
                 <label for=""></label>
             </div>
-        </form>
             <div>
                 <legend>Filtrer:</legend>
                 <input class="filtre" type="checkbox" id="arme" name="filtre" value="A"/>
@@ -62,7 +62,9 @@ $items = ItemDAL::selectAll($connexion);
                     <div class="nom"><?= $item["nom"] ?></div>
                     <div class="quantite"><?= $item["quantiteStock"] ?></div>
                     <div class="prix"><?= $item["prix"] ?></div>
-                    <button>Ajouter</button>
+                    <?php if (IS_AUTH) : ?>
+                    <button>Ajoutasdaer</button>
+                    <?php endif; ?>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -71,9 +73,11 @@ $items = ItemDAL::selectAll($connexion);
 </div>
 @{
     <script>
-        function changeLayout(criterion) {
-            const items = document.querySelectorAll('.item');
+        function changeLayout(val) {
+            const items = document.querySelectorAll('.filtre');
+            alert(val);
             alert(items);
+
         }
     </script>
 }
