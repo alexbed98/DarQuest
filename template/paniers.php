@@ -75,14 +75,14 @@ $total = 0;
 							<span class="panier-product-name"><?= htmlspecialchars($item['nom']) ?></span>
 						</div>
 					</td>
-					<td><?= number_format($item['prix']) ?>&nbsp;Pièces d'or</td>
+					<td><?= number_format($item['prix']) ?>&nbsp;🪙</td>
 					<td>
 						<form method="post" class="panier-qty-form auto-submit-form">
 							<input type="hidden" name="update_id" value="<?= $item['id'] ?>">
 							<input type="number" name="update_qty" class="panier-qty-input auto-submit-input" value="<?= $item['quantite'] ?>" min="1">
 						</form>
 					</td>
-					<td><?= number_format($sous_total) ?>&nbsp;Pièces d'or</td>
+					<td><?= number_format($sous_total) ?>&nbsp;🪙</td>
 					<td>
 						<form method="post">
 							<input type="hidden" name="remove_id" value="<?= $item['id'] ?>">
@@ -95,7 +95,7 @@ $total = 0;
 		</table>
 	</div>
 	<div class="panier-summary">
-		<p class="panier-total">Total : <span class="panier-total-value"><?= number_format($total) ?>&nbsp;Pièces d'or</span></p>
+		<p class="panier-total">Total : <span class="panier-total-value"><?= number_format($total) ?>&nbsp;🪙</span></p>
 		<?php
 		$commandeNotice = $_SESSION['commande_notice'] ?? '';
 		unset($_SESSION['commande_notice']);
