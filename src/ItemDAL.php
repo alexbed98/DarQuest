@@ -2,48 +2,72 @@
 
 class ItemDAL
 {
-    public static string $OrderBy = 'DESC';
+    public static string $OrderByWhat = 'prix';
+    public static string $OrderByDirection = 'DESC';
     public static array $filtre = [];
 
     //-------------------------------------------------------------------------------
-    //Selectionne tout la liste d'items et affiche selon le prix 
-    //(A modifier pour filtre)
+    //Selectionne tout la liste d'items
+    //(S'ajuste selon les filtres et l'ordre d'affichage)
     //-------------------------------------------------------------------------------
-    public static function selectAll(PDO $connexion): array
+    public static function select(PDO $connexion): array
     {
 
         $where = ' WHERE estDisponible = true && quantiteStock > 0 ';
 
-      
+        if (count(self::$filtre) > 0) {
+            $where .= " && (typeItem =  '" . self::$filtre[0] . "' ";
+            if (count(self::$filtre) > 1) {
+
+                for ($index = 1; $index < count(self::$filtre); $index++) {
+                    $where .= " || typeItem = '" . self::$filtre[$index] . "'";
+                }
+            }
+            $where .= ')';
+        }
+
         $sql = "SELECT idItem, nom, quantiteStock, prix, photo, typeItem 
                 FROM Items 
                 $where
-                ORDER BY prix " . self::$OrderBy;
+                ORDER BY " . self::$OrderByWhat . " " . self::$OrderByDirection;
 
         $statement = $connexion->prepare($sql);
         $statement->execute();
 
         return $statement->fetchAll();
     }
+    //----------------------------------------------------------------------------------------------------------------------
+    //Change ce qui doit s'afficher sur la liste d'items selon le typeItem
+    //(Verifie si le filtre n'est pas déjà appliqué, sinon il l'enleve) <= (Pour eviter les erreurs causé par les doublons)
+    //----------------------------------------------------------------------------------------------------------------------
+    public static function changeFilter(string $filter): void
+    {
+        if (in_array($filter, self::$filtre)) {
+            self::$filtre = array_diff(self::$filtre, [$filter]);
+        } else {
+            array_push(self::$filtre, $filter);
+        }
+    }
     //-------------------------------------------------------------------------------
-    //Selectionne tout la liste d'items et affiche selon le prix 
-    //(A modifier pour filtre) (Est le meme que select all pour le moment)
+    //Change l'ordre d'affichage des items selon le prix ou le type
+    //(Evite les erreurs causé par des colones non-existants)
     //-------------------------------------------------------------------------------
-    public static function selectAllOrderByPrice(PDO $connexion): array {
-
-        $sql = "SELECT idItem, nom, quantiteStock, prix, photo, typeItem 
-                FROM Items 
-                ORDER BY prix";
-
-        $statement = $connexion->prepare($sql);
-        $statement->execute();
-
-        return $statement->fetchAll();
+    public static function changeOrder(string $order): void
+    {
+        switch ($order) {
+            case 'prix':
+                self::$OrderByWhat = 'prix';
+                break;
+            case 'type' || 'typeItem':
+                self::$OrderByWhat = 'typeItem';
+                break;
+        }
     }
     //-------------------------------------------------------------------------------
     //Insertion d'item arme en utilisant la procedure 'ajouterArme'
     //-------------------------------------------------------------------------------
-    public static function insertArme(PDO $connexion, string $pNom,int $pQuantite,int $pPrix, string $pPhoto, int $pEstDisponible, string $pDescription, string $pEfficacite, string $pGenreArme): bool {
+    public static function insertArme(PDO $connexion, string $pNom, int $pQuantite, int $pPrix, string $pPhoto, int $pEstDisponible, string $pDescription, string $pEfficacite, string $pGenreArme): bool
+    {
 
         $sql = "CALL ajouterArme(:pNom,:pQuantite,:pPrix,:pPhoto,:pEstDisponible,:pDescription,:pEfficacite,:pGenreArme);";
 
@@ -66,7 +90,8 @@ class ItemDAL
     //-------------------------------------------------------------------------------
     //Insertion d'item sort en utilisant la procedure 'ajouterSort'
     //-------------------------------------------------------------------------------
-    public static function insertSort(PDO $connexion, string $pNom,int $pQuantite,int $pPrix, string $pPhoto, int $pEstDisponible, int $pInstantane, int $prarete, string $ptype): bool {
+    public static function insertSort(PDO $connexion, string $pNom, int $pQuantite, int $pPrix, string $pPhoto, int $pEstDisponible, int $pInstantane, int $prarete, string $ptype): bool
+    {
 
         $sql = "CALL ajouterSort(:pNom,:pQuantite,:pPrix,:pPhoto,:pEstDisponible,:pInstantane,:prarete,:ptype);";
 
@@ -89,7 +114,8 @@ class ItemDAL
     //-------------------------------------------------------------------------------
     //Insertion d'item armure en utilisant la procedure 'ajouterArmure'
     //-------------------------------------------------------------------------------
-    public static function insertArmure(PDO $connexion, string $pNom,int $pQuantite,int $pPrix, string $pPhoto, int $pEstDisponible, string $pMatiere, string $pTaille): bool {
+    public static function insertArmure(PDO $connexion, string $pNom, int $pQuantite, int $pPrix, string $pPhoto, int $pEstDisponible, string $pMatiere, string $pTaille): bool
+    {
 
         $sql = "CALL ajouterArmure(:pNom,:pQuantite,:pPrix,:pPhoto,:pEstDisponible,:pMatiere,:pTaille);";
 
@@ -111,7 +137,8 @@ class ItemDAL
     //-------------------------------------------------------------------------------
     //Insertion d'item potion en utilisant la procedure 'ajouterPotion'
     //-------------------------------------------------------------------------------
-    public static function insertPotion(PDO $connexion, string $pNom,int $pQuantite,int $pPrix, string $pPhoto, int $pEstDisponible, string $pEffet, int $pDuree): bool {
+    public static function insertPotion(PDO $connexion, string $pNom, int $pQuantite, int $pPrix, string $pPhoto, int $pEstDisponible, string $pEffet, int $pDuree): bool
+    {
 
         $sql = "CALL ajouterPotion(:pNom,:pQuantite,:pPrix,:pPhoto,:pEstDisponible,:pEffet,:pDuree);";
 
@@ -134,7 +161,8 @@ class ItemDAL
     //Insertion d'un type de sort a la table TypeSorts 
     //(A probablement besoin d'etre changer?)
     //-------------------------------------------------------------------------------
-    public static function insertSortType(PDO $connexion,string $typeSort,string $uneDescription,int $ptVie,int $ptDegat): bool {
+    public static function insertSortType(PDO $connexion, string $typeSort, string $uneDescription, int $ptVie, int $ptDegat): bool
+    {
 
         $sql = "INSERT INTO TypeSorts (typeSort, uneDescription, ptVie, ptDegat) 
                 VALUES (:typeSort, :uneDescription, :ptVie, :ptDegat);";
@@ -152,7 +180,8 @@ class ItemDAL
     //Enleve tout les items de les tables: Armes, Armures, Sorts, Potions et Items
     //(Ne pas utiliser pour ne pas surcompliquer des erreurs)
     //-------------------------------------------------------------------------------
-    public static function resetItems(PDO $connexion): bool {
+    public static function resetItems(PDO $connexion): bool
+    {
 
         try {
             $connexion->exec("TRUNCATE TABLE Armes");
