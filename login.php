@@ -63,12 +63,12 @@ if (IS_POST) {
         $connexion = Database::getConnexion($dbConfig);
         $user = AccountDAL::selectByEmail($connexion, $email);
 
-        if($user !== false && password_verify($password, $user['motDePAsse'])) {
+        if($user !== false && password_verify($password, $user['motDePasse'])) {
             
             // regeneration de la session id pour eviter certaines erreurs
             session_regenerate_id();
 
-            // Ajout en session de id et role
+            // Ajout en session de email, id et role
             $_SESSION['email'] = $email;
             $_SESSION['id'] = $user['idJoueur'];
             $_SESSION['role'] = $user['estAdmin'];
@@ -80,10 +80,9 @@ if (IS_POST) {
 
             $messages['global'] = 'Les informations d\'authentification sont invalides';
 
-        }       
+        }
 
     }
-    
 }
 
 $showNewAccountMessage = false;
