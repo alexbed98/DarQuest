@@ -13,28 +13,10 @@
     color: orange;
 }
 
-#quantiteStock {
-    display: flex;
-    flex-direction: row;
-    color:red;
-}
 
 #nbPiece{
     display: flex;
     flex-direction: row;
     justify-content: right;
     color: blue;
-}
-
-
-#controleQuantite{
-    display: flex;
-    flex-direction: row;
-    justify-content: right;
-    color: green;
-}
-
-#totalBoutonPanier {
-    display: flex;
-    flex-direction: row;
 }
