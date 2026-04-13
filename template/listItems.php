@@ -75,17 +75,19 @@ $items = ItemDAL::select($connexion);
         <?php foreach ($items as $item): ?>
 
             <div class="item">
-                <div style="border: 2px solid black;">
-                    <img src="<?= $item['photo'] ?>" alt="Image de l'article" style="width: 100px; height: 100px;">
+                <div class="background" style="background-image: url('/public/img/backgrounds/background06');">
+                    <img class="image-item" src=/public/img/items/<?= $item['photo'] ?> alt="Image de l'article">
                 </div>
                 <div
                     style="border: 2px solid black; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 5px; margin-top: 10px; width: 300px;">
                     <div class="nom"><?= $item["nom"] ?></div>
                     <div class="quantite"><?= $item["quantiteStock"] ?></div>
                     <div class="prix"><?= $item["prix"] ?></div>
-                    <?php if (IS_AUTH): ?>
-                        <button>Ajouter</button>
-                    <?php endif; ?>
+                    <!-- Ce formulaire envoie l'id de l'item à catalogue.php pour l'ajout panier utilisateur. -->
+                    <form method="post" action="" style="margin: 0;">
+                        <input type="hidden" name="add_item_id" value="<?= (int) $item['idItem'] ?>">
+                        <button type="submit">Ajouter</button>
+                    </form>
                 </div>
             </div>
         <?php endforeach; ?>
