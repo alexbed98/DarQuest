@@ -12,7 +12,8 @@ require_once 'src/Page.php';
 
 $cssAdd = ['/public/css/catalogue.css',
            '/public/css/layout.css',
-           '/public/css/details.css'
+           '/public/css/details.css',
+           '/public/css/panier.css',
            ];
 
 ?>

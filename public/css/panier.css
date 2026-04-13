@@ -112,6 +112,27 @@
     align-items: center;
     justify-content: flex-end;
     gap: 20px;
+    flex-wrap: wrap;
+}
+
+.panier-notice {
+    width: 100%;
+    text-align: center;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.panier-notice-success {
+    background-color: #d4edda;
+    border: 1px solid #85c98f;
+    color: #1a5c28;
+}
+
+.panier-notice-error {
+    background-color: #f8d7da;
+    border: 1px solid #e08080;
+    color: #7a1a1a;
 }
 
 .panier-total {

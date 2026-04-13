@@ -1,11 +1,5 @@
 <?php
 
-session_start();
-$email = $_SESSION['email'] ?? '';
-$messages['email'] = $_SESSION['error_email'] ?? '';
-
-unset($_SESSION['error_email']);
-
 // les require et les include
 // require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
@@ -24,8 +18,72 @@ $cssAdd = ['/public/css/catalogue.css',
            '/public/css/layout.css',
            '/public/css/form.css'];
 
+$email = '';
+$password = '';
+$messages = [];
 
 $globalMessageColor = 'text-danger';
+
+// Valider le formulaire lorsqu'il est soumit
+if (IS_POST) {
+
+    // recuperation du email
+    // si email inexsitant => null
+    // si email est existant mais invalide => false
+    // si email est existant et valide => email (string)
+    $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
+
+    $email = $_POST['email'] ?? '';
+    
+    $email = $_POST['email'] ?? '';
+
+    if (empty($email)) {
+        $messages['email'] = 'Le courriel est obligatoire.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $messages['email'] = 'Le courriel n\'est pas valide.';
+    }
+
+    // recuperation du password
+    $password = $_POST['password'] ?? '';
+
+    // si vide
+    if (empty($password)) {
+
+        $messages['password'] = 'Le mot de passe est obligatoire.';
+
+    }
+    
+    // si au moins 1 message d'erreur
+    if (count($messages) > 0) {
+
+        $messages['global'] = 'Le formulaire est invalide.';
+
+    } else {
+
+        $connexion = Database::getConnexion($dbConfig);
+        $user = AccountDAL::selectByEmail($connexion, $email);
+
+        if($user !== false && password_verify($password, $user['motDePasse'])) {
+            
+            // regeneration de la session id pour eviter certaines erreurs
+            session_regenerate_id();
+
+            // Ajout en session de email, id et role
+            $_SESSION['email'] = $email;
+            $_SESSION['id'] = $user['idJoueur'];
+            $_SESSION['role'] = $user['estAdmin'];
+
+            // Redirige à l'accueil
+            header('Location:' . Page::Home->url());
+
+        } else {
+
+            $messages['global'] = 'Les informations d\'authentification sont invalides';
+
+        }
+
+    }
+}
 
 $showNewAccountMessage = false;
 
@@ -67,7 +125,7 @@ if (!empty($_SESSION['new-account'])) {
             <!--Formulaire authenfification-Authentication form-->
             <div class="col-md-4 mx-auto">                         
 
-                <form class="form-style" method="post" novalidate action="catalogue.php">
+                <form class="form-style" method="post" novalidate>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Courriel</label>
@@ -77,7 +135,7 @@ if (!empty($_SESSION['new-account'])) {
 
                     <div class="mb-3">
                         <label for="password" class="form-label">Mot de passe</label>
-                        <input name="password" type="password" class="form-control" id="empasswordail" aria-describedby="passwordHelp">
+                        <input name="password" type="password" class="form-control" id="password" aria-describedby="passwordHelp">
                         <div id="passwordHelp" class="form-text text-danger"><?= $messages['password'] ?? '' ?></div>
                     </div>
 
@@ -87,7 +145,7 @@ if (!empty($_SESSION['new-account'])) {
 
                 <div id="global-message" class="my-5 <?= $globalMessageColor ?>"><?= $messages['global'] ?? '' ?></div>
 
-                <div class="py-3"><a href="<?= Page::CreationCompte->url() ?>">Je n'ai pas de compte</a></div>
+                <div style="text-align: center" class="py-3"><a href="<?= Page::CreationCompte->url() ?>">Je n'ai pas de compte</a></div>
             </div>
             <!--Formulaire authenfification-Authentication form-->
 

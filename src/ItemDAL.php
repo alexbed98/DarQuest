@@ -104,7 +104,7 @@ class ItemDAL
         $statement->bindValue(':pEstDisponible', $pEstDisponible, PDO::PARAM_INT);
         $statement->bindValue(':pInstantane', $pInstantane, PDO::PARAM_INT);
         $statement->bindValue(':prarete', $prarete, PDO::PARAM_INT);
-        $statement->bindValue(':ptype', $ptype, PDO::PARAM_STR); // FIX <- sure, that works too
+        $statement->bindValue(':ptype', $ptype, PDO::PARAM_STR); // FIX
 
         $result = $statement->execute();
         $statement->closeCursor();

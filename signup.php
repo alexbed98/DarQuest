@@ -18,7 +18,8 @@ const ACTIVE_PAGE = Page::CreationCompte;
 $cssAdd = [
     '/public/css/catalogue.css',
     '/public/css/layout.css',
-    '/public/css/form.css'
+    '/public/css/form.css',
+    '/public/css/signup.css'
 ];
 
 $email = '';
@@ -139,7 +140,7 @@ if (IS_POST) {
             <!--Formulaire authenfification-Authentication form-->
             <div class="col-md-4 mx-auto">
 
-                <form method="post" novalidate>
+                <form class="form-style" method="post" novalidate>
 
                     <div style="display: flex; flex-direction: row;">
                         <div class="mb-3" style="margin-right: 8px">
@@ -168,7 +169,22 @@ if (IS_POST) {
                     </div>
 
                     <div class="mb-3">
-                        <label for="password" class="form-label">Mot de passe</label>
+                        <div style="display: flex;">
+                            <label for="password" class="form-label">Mot de passe</label>
+                        <div class="my-tooltip">
+                        <span class="my-info-icon">ⓘ</span>
+
+                        <div class="my-tooltip-text">
+                            Le mot de passe doit contenir :
+                            <ul>
+                                <li>au moins une lettre minuscule</li>
+                                <li>au moins une lettre majuscule</li>
+                                <li>au moins un chiffre</li>
+                                <li>au moins un symbole @#-_$%^&+=§!?</li>
+                            </ul>
+                        </div>
+                        </div>
+                    </div>
                         <input name="password" type="password" class="form-control" id="empasswordail"
                             aria-describedby="passwordHelp">
                         <div id="passwordHelp" class="form-text text-danger"><?= $messages['password'] ?? '' ?></div>
@@ -182,24 +198,14 @@ if (IS_POST) {
                         <div id="passwordHelp2" class="form-text text-danger"><?= $messages['password2'] ?? '' ?></div>
                     </div>
 
-                    <div>
-                        Le mot de passe doit contenir :
-                        <ul>
-                            <li>au moins une lettre minuscule</li>
-                            <li>au moins une lettre majuscule</li>
-                            <li>au moins un chiffre</li>
-                            <li>au moins un symbole @#-_$%^&+=§!?</li>
-                        </ul>
-
-                    </div>
-
-                    <button type="submit" name="submit" class="btn btn-primary">Envoyer</button>
+                    <button type="submit" name="submit" class="btn btn-primary submit">Envoyer</button>
 
                 </form>
 
                 <div id="global-message" class="my-3 <?= $globalMessageColor ?>"><?= $messages['global'] ?? '' ?></div>
 
-                <div class="py-3"><a href="<?= Page::Connexion->url() ?>">Connexion à un compte</a></div>
+                <div style="text-align: center" class="py-3"><a href="<?= Page::Connexion->url() ?>">Connexion à un
+                        compte</a></div>
 
             </div>
 
