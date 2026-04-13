@@ -54,8 +54,8 @@
 }
 
 .background {
-    border: 2px solid #4d4d4d;
-    border-radius: 5px;
+    border: 1px solid #7e89b4;
+    border-radius: 4px;
     background-size: cover;
     background-position: center;
 }
@@ -64,4 +64,16 @@
     width: 300px; 
     height: 200px;
     
+}
+
+.info-item {
+    border: 2px solid #7e89b4;
+    border-radius: 4px;
+    display: flex; 
+    flex-direction: row; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding: 5px; 
+    margin-top: 10px; 
+    width: 300px;
 }
