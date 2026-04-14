@@ -27,7 +27,7 @@
     
     <div style="display: flex; flex-direction: row; justify-content: space-around; margin-top: 2em;">
         <div>
-            <button>Ajouter au panier</button>
+            <button class="panier-checkout-button">Ajouter au panier</button>
         </div>
 
         <div id="nbPiece">
@@ -39,19 +39,12 @@
 
 <!-- Côté droit de la page -->
 <div class="conteneur">
-
-
     <div class="conteneur" style="display: flex; justify-content: center; align-items: center;">
         <img src="image/photo.avif" alt="image item" style="height: 300px; width: 500px;">
     </div>
-
-
-
 </div>
 
 </div>
-
-
 <script>
     const prixUnitaire = parseInt(document.querySelector('#prixItem').textContent);
     const inputQty = document.querySelector('.panier-qty-input');

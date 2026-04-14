@@ -20,3 +20,12 @@
     justify-content: right;
     color: blue;
 }
+
+.panier-checkout-button {
+    border: 1px solid #7e89b4;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
