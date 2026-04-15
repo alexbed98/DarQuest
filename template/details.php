@@ -1,5 +1,6 @@
 <?php
 
+include_once 'core/Database.php';
 include_once 'src/initialization.php';
 require_once 'src/ItemDAL.php';
 require_once 'src/CartDAL.php';
