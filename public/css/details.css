@@ -7,10 +7,9 @@
     flex: 1;
 }
 
-#prix{
+.flexRow{
     display: flex;
     flex-direction: row;
-    color: orange;
 }
 
 
@@ -20,3 +19,8 @@
     justify-content: right;
     color: blue;
 }
+
+.conteneurFlex{
+    display: flex;
+}
+
