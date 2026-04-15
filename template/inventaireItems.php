@@ -29,7 +29,7 @@
             $photo = (string) $item['photo'];
             $image = ($photo !== '' && $photo[0] === '/')
                 ? $photo
-                : '/public/img/' . ltrim($photo, '/');
+                : '/public/img/items/' . ltrim($photo, '/');
         ?>
             <div class="item inventaire-item">
                 <div class="inventaire-img-wrapper">
