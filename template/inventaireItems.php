@@ -1,21 +1,41 @@
 <div class="catalogue">
 
-    <!-- Panneau latéral (filtre/tri désactivé pour l'instant) -->
+    <!-- Panneau latéral (filtre/tri) -->
     <div class="options">
         <div class="inventaire-gold">
             <span><?= number_format($gold) ?>&nbsp;🪙</span>
         </div>
-        <div class="inventaire-filters-placeholder">
-            <p class="inventaire-soon">Trier par :</p>
-            <label class="inventaire-filter-label"><input type="radio" disabled> Prix</label>
-            <label class="inventaire-filter-label"><input type="radio" disabled> Type</label>
+        <form method="get" action="" id="inventaire-filters-form">
+            <div class="inventaire-filters-placeholder" style="opacity:1;">
+                <p class="inventaire-soon">Trier par :</p>
+                <label class="inventaire-filter-label">
+                    <input type="radio" name="tri" value="nom" <?= ($triActif === 'nom') ? 'checked' : '' ?> onchange="this.form.submit()"> Nom
+                </label>
+                <label class="inventaire-filter-label">
+                    <input type="radio" name="tri" value="prix_asc" <?= ($triActif === 'prix_asc') ? 'checked' : '' ?> onchange="this.form.submit()"> Prix ↑
+                </label>
+                <label class="inventaire-filter-label">
+                    <input type="radio" name="tri" value="prix_desc" <?= ($triActif === 'prix_desc') ? 'checked' : '' ?> onchange="this.form.submit()"> Prix ↓
+                </label>
+                <label class="inventaire-filter-label">
+                    <input type="radio" name="tri" value="type" <?= ($triActif === 'type') ? 'checked' : '' ?> onchange="this.form.submit()"> Type
+                </label>
 
-            <p class="inventaire-soon">Filtrer :</p>
-            <label class="inventaire-filter-label"><input type="checkbox" disabled> Armes</label>
-            <label class="inventaire-filter-label"><input type="checkbox" disabled> Armures</label>
-            <label class="inventaire-filter-label"><input type="checkbox" disabled> Potions</label>
-            <label class="inventaire-filter-label"><input type="checkbox" disabled> Sorts</label>
-        </div>
+                <p class="inventaire-soon">Filtrer :</p>
+                <label class="inventaire-filter-label">
+                    <input type="checkbox" name="filtre[]" value="A" <?= in_array('A', $filtresActifs) ? 'checked' : '' ?> onchange="this.form.submit()"> Armes
+                </label>
+                <label class="inventaire-filter-label">
+                    <input type="checkbox" name="filtre[]" value="R" <?= in_array('R', $filtresActifs) ? 'checked' : '' ?> onchange="this.form.submit()"> Armures
+                </label>
+                <label class="inventaire-filter-label">
+                    <input type="checkbox" name="filtre[]" value="P" <?= in_array('P', $filtresActifs) ? 'checked' : '' ?> onchange="this.form.submit()"> Potions
+                </label>
+                <label class="inventaire-filter-label">
+                    <input type="checkbox" name="filtre[]" value="S" <?= in_array('S', $filtresActifs) ? 'checked' : '' ?> onchange="this.form.submit()"> Sorts
+                </label>
+            </div>
+        </form>
     </div>
 
     <!-- Grille des items -->

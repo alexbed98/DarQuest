@@ -14,6 +14,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
     padding: 5px 15px;
     border: 2px solid #7e89b4;
     border-radius: 12px;
@@ -54,6 +55,26 @@ body {
 .headerButtons:focus-visible {
     outline: 2px solid #4e5d8f;
     outline-offset: 2px;
+}
+
+.headerCenter {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+}
+
+.header-gold {
+    background: linear-gradient(135deg, #94A3D9 0%, #7e89b4 100%);
+    border: 1px solid #6a75a0;
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #fff;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
 }
 
 main {

@@ -36,10 +36,9 @@ class ItemDAL
 
         return $statement->fetchAll();
     }
-
-    //----------------------------------------------------------------------------------------------------------------------
-    // Selectionne un item par son id
-    //----------------------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------
+    //Selectionne un item par son id
+    //-------------------------------------------------------------------------------
     public static function selectById(PDO $connexion, int $idItem): false|array
     {
         $sql = "SELECT idItem, nom, quantiteStock, prix, photo, typeItem
@@ -52,7 +51,6 @@ class ItemDAL
 
         return $statement->fetch();
     }
-
 
     //----------------------------------------------------------------------------------------------------------------------
     //Change ce qui doit s'afficher sur la liste d'items selon le typeItem

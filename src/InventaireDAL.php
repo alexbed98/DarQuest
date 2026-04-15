@@ -3,18 +3,43 @@
 class InventaireDAL
 {
     /**
-     * Retourne tous les items de l'inventaire d'un joueur avec les infos de l'item.
+     * Retourne les items de l'inventaire d'un joueur avec tri et filtres optionnels.
+     * $orderBy : 'prix_asc', 'prix_desc', 'type' — défaut : 'nom'
+     * $filtres  : tableau de typeItem ('A', 'R', 'P', 'S')
      */
-    public static function getInventaire(PDO $pdo, int $idJoueur): array
+    public static function getInventaire(PDO $pdo, int $idJoueur, string $orderBy = 'nom', array $filtres = []): array
     {
+        $allowedOrders = [
+            'prix_asc'  => 'i.prix ASC',
+            'prix_desc' => 'i.prix DESC',
+            'type'      => 'i.typeItem ASC',
+            'nom'       => 'i.nom ASC',
+        ];
+        $order = $allowedOrders[$orderBy] ?? 'i.nom ASC';
+
+        $where = 'WHERE inv.idJoueur = :idJoueur';
+
+        $allowedTypes = ['A', 'R', 'P', 'S'];
+        $filtres = array_values(array_intersect($filtres, $allowedTypes));
+
+        if (!empty($filtres)) {
+            $placeholders = implode(', ', array_map(fn($i) => ":type$i", array_keys($filtres)));
+            $where .= " AND i.typeItem IN ($placeholders)";
+        }
+
         $sql = "SELECT i.idItem, i.nom, i.prix, i.photo, i.typeItem, inv.quantiteInventaire
                 FROM inventaires inv
                 JOIN items i ON i.idItem = inv.idItem
-                WHERE inv.idJoueur = :idJoueur
-                ORDER BY i.nom ASC";
+                $where
+                ORDER BY $order";
 
         $stmt = $pdo->prepare($sql);
         $stmt->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+
+        foreach ($filtres as $i => $type) {
+            $stmt->bindValue(":type$i", $type, PDO::PARAM_STR);
+        }
+
         $stmt->execute();
 
         return $stmt->fetchAll();
