@@ -27,8 +27,12 @@ if (IS_POST && isset($_POST['vendre_id'])) {
     exit;
 }
 
+// Lire les paramètres de tri et filtre depuis GET
+$triActif     = in_array($_GET['tri'] ?? '', ['prix_asc', 'prix_desc', 'type']) ? $_GET['tri'] : 'nom';
+$filtresActifs = array_intersect((array) ($_GET['filtre'] ?? []), ['A', 'R', 'P', 'S']);
+
 // Charger l'inventaire du joueur
-$inventaire = InventaireDAL::getInventaire($connexion, $idJoueur);
+$inventaire = InventaireDAL::getInventaire($connexion, $idJoueur, $triActif, array_values($filtresActifs));
 
 // Charger les pièces d'or du joueur
 $joueur = $connexion->prepare("SELECT gold FROM joueurs WHERE idJoueur = :id");
