@@ -27,7 +27,7 @@ $items = ItemDAL::select($connexion);
 
         document.getElementById('setLayout').submit(); //Soumet le formulaire pour rafraichir la page et afficher les items selon les nouveaux critères
     }
-
+    
 </script>
 
 <div class="catalogue">
