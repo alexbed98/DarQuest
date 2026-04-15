@@ -1,0 +1,11 @@
+.profil-stats {
+    background-color: lightgrey; 
+    text-align: center; 
+    display: flex; 
+    flex-direction: column;
+}
+
+.stats-text {
+    font-size: 15px;
+    margin-bottom: 6px;
+}

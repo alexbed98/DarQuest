@@ -21,7 +21,6 @@ const VENDOR = ROOT . '/vendor';
 // url publique
 const URL_ROOT = '/';
 
-// On pourrait faire des constantes pour d'autres url
 const IMG = URL_ROOT . 'public/img';
 const CSS = URL_ROOT . 'public/css';
 const PRODUCT_IMG = URL_ROOT . 'upload';
