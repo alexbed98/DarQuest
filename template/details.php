@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
                 $_SESSION[$cartSessionKey] = [];
             }
 
-  
+            $found = false;
 
             foreach ($_SESSION[$cartSessionKey] as &$cartItem) {
                 if ($cartItem['id'] == $item['idItem']) {
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
             }
             unset($cartItem);
 
-            $found = false;
+            
 
             if (!$found) {
 
