@@ -1,3 +1,4 @@
+
 <header>
     <div class="header">
 
@@ -7,6 +8,7 @@
         </div>
 
         <?php if (IS_AUTH): ?>
+            
             <?php
                 $headerCon = $connexion ?? Database::getConnexion($dbConfig);
                 $goldStmt = $headerCon->prepare("SELECT gold FROM joueurs WHERE idJoueur = :id");

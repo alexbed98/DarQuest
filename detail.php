@@ -6,6 +6,7 @@
 // require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
+include_once 'core/Database.php';
 
 // identification de la page active
  const ACTIVE_PAGE = Page::Details;
