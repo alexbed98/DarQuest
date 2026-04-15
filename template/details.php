@@ -9,6 +9,7 @@ $connexion = Database::getConnexion($dbConfig);
 
 $id = isset($_GET['idItem']) ? intval($_GET['idItem']) : 0;
 
+
 $stmt = $connexion->prepare("SELECT * FROM items WHERE idItem = ?");
 $stmt->execute([$id]);
 
@@ -119,7 +120,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
         }
     }
 
-    header('Location: details.php?idItem=' . $itemId);
+    header('Location: ' . $_SERVER['REQUEST_URI']);
     exit;
 }
 
