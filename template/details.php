@@ -9,6 +9,7 @@ $connexion = Database::getConnexion($dbConfig);
 
 $id = isset($_GET['idItem']) ? intval($_GET['idItem']) : 0;
 
+
 $stmt = $connexion->prepare("SELECT * FROM items WHERE idItem = ?");
 $stmt->execute([$id]);
 
@@ -70,7 +71,9 @@ function getCartSessionKey(): string
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
 
     $itemId = filter_input(INPUT_POST, 'add_item_id', FILTER_VALIDATE_INT);
-
+    $qty = filter_input(INPUT_POST, 'update_qty', FILTER_VALIDATE_INT);
+    $qty = ($qty && $qty > 0) ? $qty : 1;
+    
     if ($itemId) {
 
         $item = ItemDAL::selectById($connexion, $itemId);
@@ -83,11 +86,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
                 $_SESSION[$cartSessionKey] = [];
             }
 
-            $found = false;
+  
 
             foreach ($_SESSION[$cartSessionKey] as &$cartItem) {
                 if ($cartItem['id'] == $item['idItem']) {
-                    $cartItem['quantite']++;
+                    $cartItem['quantite'] += $qty;
                     $_SESSION['cart_notice'] = 'Quantité mise à jour.';
                     $found = true;
                     break;
@@ -95,19 +98,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
             }
             unset($cartItem);
 
+            $found = false;
+
             if (!$found) {
 
                 $photo = (string) $item['photo'];
                 $image = ($photo !== '' && $photo[0] === '/')
                     ? $photo
-                    : '/public/img/' . ltrim($photo, '/');
+                    : '/public/img/items/' . ltrim($photo, '/');
 
                 $_SESSION[$cartSessionKey][] = [
                     'id' => (int) $item['idItem'],
                     'nom' => (string) $item['nom'],
                     'image' => $image,
                     'prix' => (float) $item['prix'],
-                    'quantite' => 1,
+                    'quantite' => $qty,
                 ];
 
                 $_SESSION['cart_notice'] = 'Item ajouté au panier.';
@@ -119,9 +124,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
         }
     }
 
-    header('Location: details.php?idItem=' . $itemId);
+    header('Location: ' . $_SERVER['REQUEST_URI']);
     exit;
 }
+
 
 
 ?>
@@ -156,41 +162,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
 
     <div class="conteneurFlex">
         <div class="flexRow">
-            <p><strong>Quantité en stock: </strong></p>
+            <p><strong>Quantité en stock: &nbsp;</strong></p>
             <p><?= $item['quantiteStock'] ?></p>
         </div>
 
         <div class="flexRow">
-            <p style="margin-left: 5em;"><strong>Prix: </strong></p>
+            <p style="margin-left: 2em;"><strong>Prix unitaire: &nbsp;</strong></p>
             <p id="prixItem"><?= $item['prix'] ?></p>
             <p>🪙</p>
         </div>
     </div>
     
-    <div class="conteneurFlex">
-        <input type="number" name="update_qty" class="panier-qty-input auto-submit-input" value="1" min="1">
-        <div class="flexRow">
-            <p style="margin-left: 9em;"><strong>Total: </strong></p>
-            <p id="prixTotal"></p>
-        </div>
-    </div>
-    
-    <div class="conteneurFlex" style="margin-top: 1em;">
-        <form method="POST">
-            <input type="hidden" name="add_item_id" value="<?= $item['idItem'] ?>">
-            <button type="submit">Ajouter au panier</button>
-        </form>
 
-        <div id="nbPiece">
-            <p style="margin-left: 3em;"><strong>Nombre de pièces: </strong></p>
-            <p>500🪙</p>
-        </div>
+    
+    <div>
+        <form method="POST" style="display: flex; margin-top: 1em;">
+            <input type="hidden" name="add_item_id" value="<?= $item['idItem'] ?>">
+            <input type="number" name="update_qty" class="panier-qty-input auto-submit-input" value="1" min="1" style="margin-right: 0.2em;">
+            <button type="submit" class="boutonAjouter">Ajouter au panier</button>
+            <div class="flexRow">
+                <p style="margin-left: 0.8em;"><strong>Total: </strong></p>
+                <p id="prixTotal"></p>
+            </div>
+        </form>
     </div>
 </div>
 
 <!-- Côté droit de la page -->
 <div class="conteneur">
-
     <div class="conteneur" style="display: flex; justify-content: center; align-items: center;">
         <img src="/public/img/items/<?= htmlspecialchars($item['photo']) ?>" 
             alt="image item" 
