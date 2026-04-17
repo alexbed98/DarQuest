@@ -23,7 +23,7 @@ const URL_ROOT = '/';
 
 const IMG = URL_ROOT . 'public/img';
 const CSS = URL_ROOT . 'public/css';
-const PRODUCT_IMG = URL_ROOT . 'upload';
+const AVATAR = URL_ROOT . 'upload/';
 
 //=======================================================
 

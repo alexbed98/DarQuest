@@ -7,6 +7,7 @@ require_once 'core/Validation.php';
 require_once 'core/Database.php';
 require_once 'src/AccountDAL.php';
 require_once 'core/Email.php';
+require_once 'core/Upload.php';
 
 // on retourne a l'accueil si lutilisateur est deja logged in
 if (!IS_AUTH)
@@ -34,10 +35,14 @@ $nom = $user['nom'];
 $motDePasse = $user['motDePasse'];
 $gold = $user['gold'];
 $estMage = $user['estMage'];
+$avatar = $user['avatar'];
 
 // pour les messages d'erreurs
 $messages = [];
 $globalMessageColor = 'text-danger';
+
+// type de fichiers accepter comme avatar
+$allowedTypes = ['image/png', 'image/jpeg', 'image/avif', 'image/webp'];
 
 if (IS_POST) {
 
@@ -155,28 +160,29 @@ if (IS_POST) {
                             <div style="display: flex; flex-direction: row;">
                                 <div class="mb-3" style="margin-right: 8px">
                                     <label for="prenom" class="form-label">Prénom</label>
-                                    <input name="prenom" class="form-control" id="prenom" autofocus>
+                                    <input name="prenom" value="<?= $prenom ?>" class="form-control" id="prenom" autofocus>
                                     <div id="prenomHelp" class="form-text text-danger"><?= $messages['prenom'] ?? '' ?>
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <label for="nom" class="form-label">Nom</label>
-                                    <input name="nom" class="form-control" id="nom" autofocus>
+                                    <input name="nom" value="<?= $nom ?>" class="form-control" id="nom" autofocus>
                                     <div id="nomHelp" class="form-text text-danger"><?= $messages['nom'] ?? '' ?></div>
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
-                                <input name="username" class="form-control" id="username" autofocus>
+                                <input name="username" class="form-control" 
+                                       id="username" value="<?= $username ?>" autofocus>
                                 <div id="usernameHelp" class="form-text text-danger"><?= $messages['username'] ?? '' ?>
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="email" class="form-label">Courriel</label>
-                                <input name="email" type="email" class="form-control" id="email"
+                                <input name="email" value="<?= $email ?>" type="email" class="form-control" id="email"
                                     aria-describedby="emailHelp">
                                 <div id="emailHelp" class="form-text text-danger"><?= $messages['email'] ?? '' ?></div>
                             </div>
@@ -216,8 +222,21 @@ if (IS_POST) {
                         </div>
                         <div style="flex: 1">
                             <div class="mb-3">
+                                <label for="image" class="form-label"></span>Avatar</label>
+
+                                <div style="margin-bottom: 10px;">
+                                    <img src="uploads/<?= $avatar ?>" alt="Avatar actuel" style="max-width: 150px; border-radius: 8px;">
+                                </div>
+
+                                <input name="image" type="file" class="form-control" 
+                                        id="image" aria-describedby="imageHelp" accept=".jpg,.png,.webp,.avif">
+
+                                <div id="imageHelp" class="form-text text-danger"></div>
+                            </div>
+
+                            <div class="mb-3">
                                 <label class="form-label">Nombre de pièces</label>
-                                <span class="form-control" style="background-color: lightgrey; text-align: center">
+                                <span class="form-control profil-gold">
                                     <?= $gold ?>&nbsp;🪙
                                 </span>
                             </div>

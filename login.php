@@ -72,6 +72,7 @@ if (IS_POST) {
             $_SESSION['email'] = $email;
             $_SESSION['id'] = $user['idJoueur'];
             $_SESSION['role'] = $user['estAdmin'];
+            $_SESSION['avatar'] = $user['avatar'];
 
             // Redirige à l'accueil
             header('Location:' . Page::Home->url());

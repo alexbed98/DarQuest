@@ -4,7 +4,7 @@ class AccountDAL
 {
     public static function selectByEmail(PDO $connexion, string $email): false|array {
 
-        $sql = "SELECT idJoueur, alias, prenom, nom, motDePasse, gold, estAdmin, estMage from Joueurs where courriel=:email";
+        $sql = "SELECT idJoueur, alias, prenom, nom, motDePasse, gold, estAdmin, estMage, avatar from Joueurs where courriel=:email";
 
         $statement = $connexion->prepare($sql); 
 

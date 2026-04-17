@@ -18,10 +18,10 @@
             <?php endif; ?>
             <!-- si on est connecté, en cliquant sur l'avatar on arrive a la page profil -->
             <?php if (IS_AUTH): ?>
-                <a href="<?= Page::Profil->url() ?>"><img class="avatar" src="/public/img/avatar.jpg" alt="Avatar"></a>
+                <a href="<?= Page::Profil->url() ?>"><img class="avatar" src="<?= AVATAR . 'avatar_default.jpg' ?>" alt="Avatar"></a>
             <!-- si on n'est pas connecté, en cliquant sur l'avatar on arrive a la page de connexion -->
             <?php else: ?>
-                <a href="<?= Page::Connexion->url() ?>"><img class="avatar" src="/public/img/avatar.jpg" alt="Avatar"></a>
+                <a href="<?= Page::Connexion->url() ?>"><img class="avatar" src="<?= AVATAR . 'avatar_default.jpg' ?>" alt="Avatar"></a>
             <?php endif; ?>
             <?php if (IS_AUTH): ?>
                 <a href="logout.php" class="logout-btn" title="Se déconnecter">
