@@ -6,28 +6,32 @@ require_once 'src/EnigmeDAL.php';
 
 $enigme = EnigneDAL::selectRandomEnigme(Database::getConnexion($dbConfig));
 $reponses = EnigneDAL::selectAllAnswers(Database::getConnexion($dbConfig), $enigme['idEnigme']);
+$message = '';
 
+shuffle($reponses);
 
+if (IS_POST) {
+//A ENLEVER SI PAS FAIT
+    #region reset rewards
+    $sql = "UPDATE Joueurs SET gold = 0, argent = 0, bronze = 0 WHERE courriel=:email";
 
-?>
-<script>
-function s(){
-<?php
-    $message = '';
-    $a = $_POST['answer'] ?? null;
-    if ($a != null) {
-        $message = 'not null';
-        if ($a == 1) {
-            AccountDAL::addReward(Database::getConnexion($dbConfig), $_SESSION['email'], $enigme['difficulte']);
-            $message = $a . '    ' . $enigme['difficulte'];
-        } 
+    $statement = $connexion->prepare($sql);
+
+    $statement->bindValue('email', $_SESSION['email'], PDO::PARAM_STR);
+
+    $statement->execute();
+    #endregion
+
+    $difficulte = $_POST['answer'] ?? null; //<- Si la réponse est bonne, elle retourn sa difficulter, sinon elle est null
+    if ($difficulte != null) {
+        AccountDAL::addReward(Database::getConnexion($dbConfig), $_SESSION['email'], $difficulte);//Ne pas remplacer $difficulte par $enigme['difficulte'] car elle donne la valeur du prochain enigme
+        $message = 'Bonne réponse';
+    } else {
+        $message = 'Mauvaise réponse';
     }
-    
-?>
-    document.getElementById('answerEnigme').submit();
-
 }
-</script>
+
+?>
 
 <div style="flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
     <input type="button" value="Demander pour de l'argent" onclick="alert('Demander pour de l\'argent')">
@@ -46,13 +50,16 @@ function s(){
 
         <?php foreach ($reponses as $index => $reponse): ?>
             <label for="reponse<?= $index + 1; ?>" style="margin: 5px; padding: 5px;">
-                <input type="radio" id="reponse<?= $index + 1; ?>" name="answer" value="<?= $reponse['estBonneReponse'] ?>" placeholder="Votre réponse">
+                <!-- Si la reponse soumise est bonne, retourn la difficulté pour que l'argent soit calculer en fonction, sinon donne rien -->
+                <input type="radio" id="reponse<?= $index + 1; ?>" name="answer"
+                    value="<?= $reponse['estBonneReponse'] == 1 ? $enigme['difficulte'] : null ?>"
+                    placeholder="Votre réponse">
                 <?= $reponse['reponse']; ?>
             </label>
         <?php endforeach; ?>
 
-        <button type="submit" style="width: 30%; margin:20px;" onclick="s()">Valider la réponse</button>
+        <button type="submit" style="width: 30%; margin:20px;">Valider la réponse</button>
+
+        <div><?php echo $message ?></div>
     </div>
 </form>
-
-<div><?php echo $message ?></div>

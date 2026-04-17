@@ -69,13 +69,13 @@ class AccountDAL
     {
         $sql = null;
         switch ($difficulte) {
-            case 'F' || 'f':
+            case 'F':
                 $sql = "UPDATE Joueurs SET bronze = bronze + 100 WHERE courriel=:email";
                 break;
-            case 'M' || 'm':
+            case 'M':
                 $sql = "UPDATE Joueurs SET argent = argent + 100 WHERE courriel=:email";
                 break;
-            case 'D' || 'd':
+            case 'D':
                 $sql = "UPDATE Joueurs SET gold = gold + 100 WHERE courriel=:email";
                 break;
         }
