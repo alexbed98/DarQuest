@@ -68,24 +68,46 @@ class InventaireDAL
         }
 
         // Déduire l'or
-        $upd = $pdo->prepare("UPDATE joueurs SET gold = gold - :total WHERE idJoueur = :id");
-        $upd->bindValue(':total', (int) $total, PDO::PARAM_INT);
-        $upd->bindValue(':id', $idJoueur, PDO::PARAM_INT);
-        $upd->execute();
+        $pdo->beginTransaction();
+        try {
+            $upd = $pdo->prepare("UPDATE joueurs SET gold = gold - :total WHERE idJoueur = :id");
+            $upd->bindValue(':total', (int) $total, PDO::PARAM_INT);
+            $upd->bindValue(':id', $idJoueur, PDO::PARAM_INT);
+            $upd->execute();
 
-        // Ajouter chaque item à l'inventaire (INSERT ou UPDATE si déjà présent)
-        $ins = $pdo->prepare(
-            "INSERT INTO inventaires (idJoueur, idItem, quantiteInventaire)
-             VALUES (:idJoueur, :idItem, :qte)
-             ON DUPLICATE KEY UPDATE quantiteInventaire = quantiteInventaire + :qte2"
-        );
+            // Ajouter chaque item à l'inventaire et décrémenter le stock
+            $ins = $pdo->prepare(
+                "INSERT INTO inventaires (idJoueur, idItem, quantiteInventaire)
+                 VALUES (:idJoueur, :idItem, :qte)
+                 ON DUPLICATE KEY UPDATE quantiteInventaire = quantiteInventaire + :qte2"
+            );
+            $updStock = $pdo->prepare(
+                "UPDATE items SET quantiteStock = quantiteStock - :qte WHERE idItem = :idItem AND quantiteStock >= :qte2"
+            );
 
-        foreach ($panier as $item) {
-            $ins->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
-            $ins->bindValue(':idItem', (int) $item['id'], PDO::PARAM_INT);
-            $ins->bindValue(':qte', (int) $item['quantite'], PDO::PARAM_INT);
-            $ins->bindValue(':qte2', (int) $item['quantite'], PDO::PARAM_INT);
-            $ins->execute();
+            foreach ($panier as $item) {
+                $ins->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $ins->bindValue(':idItem', (int) $item['id'], PDO::PARAM_INT);
+                $ins->bindValue(':qte', (int) $item['quantite'], PDO::PARAM_INT);
+                $ins->bindValue(':qte2', (int) $item['quantite'], PDO::PARAM_INT);
+                $ins->execute();
+
+                $updStock->bindValue(':qte', (int) $item['quantite'], PDO::PARAM_INT);
+                $updStock->bindValue(':qte2', (int) $item['quantite'], PDO::PARAM_INT);
+                $updStock->bindValue(':idItem', (int) $item['id'], PDO::PARAM_INT);
+                $updStock->execute();
+
+                if ($updStock->rowCount() === 0) {
+                    // Stock insuffisant pour cet item — annuler toute la transaction
+                    $pdo->rollBack();
+                    return false;
+                }
+            }
+
+            $pdo->commit();
+        } catch (\Exception $e) {
+            $pdo->rollBack();
+            return false;
         }
 
         return true;
@@ -129,7 +151,7 @@ class InventaireDAL
             $upd->execute();
         }
 
-        // Récupérer le prix de l'item et ajouter l'or au joueur
+        // Récupérer le prix de l'item, ajouter l'or au joueur et remettre le stock
         $prix = $pdo->prepare("SELECT prix FROM items WHERE idItem = :idItem");
         $prix->bindValue(':idItem', $idItem, PDO::PARAM_INT);
         $prix->execute();
@@ -143,6 +165,13 @@ class InventaireDAL
             $addGold->bindValue(':gain', $gain, PDO::PARAM_INT);
             $addGold->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
             $addGold->execute();
+
+            $restoreStock = $pdo->prepare(
+                "UPDATE items SET quantiteStock = quantiteStock + :qte WHERE idItem = :idItem"
+            );
+            $restoreStock->bindValue(':qte', $quantite, PDO::PARAM_INT);
+            $restoreStock->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+            $restoreStock->execute();
         }
 
         return true;
