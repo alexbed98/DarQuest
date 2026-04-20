@@ -5,6 +5,7 @@ use Dom\Document;
 include_once 'core/Database.php';
 include_once 'src/ItemDAL.php';
 include_once 'src/initialization.php';
+require_once 'src/AccountDAL.php';
 
 $connexion = Database::getConnexion($dbConfig);
 $items = ItemDAL::select($connexion);
@@ -26,14 +27,14 @@ $items = ItemDAL::select($connexion);
 
         document.getElementById('setLayout').submit(); //Soumet le formulaire pour rafraichir la page et afficher les items selon les nouveaux critères
     }
-
+    
 </script>
 
 <div class="catalogue">
     <div class="options">
         <div style="border: 1px solid black; border-radius: 5px;">
             <?php if (IS_AUTH) {
-                //besoin de changer pour qu'il affiche le nombre d'or de l'utilisateur connecté
+                echo number_format(AccountDAL::selectGold($connexion, $_SESSION['email'])) . '&nbsp;🪙';
             } else
                 echo '0'; ?>
         </div>

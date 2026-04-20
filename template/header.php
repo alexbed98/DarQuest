@@ -28,7 +28,7 @@
                     <a class='headerButtons' href="">Admin</a>
                 <?php endif; ?>
                 <a class='headerButtons' href="<?= Page::Inventaire->url() ?>">Inventaire</a>
-                <a class='headerButtons' href="">Énigma</a>
+                <a class='headerButtons' href="<?= Page::Enigme->url() ?>">Énigma</a>
                 <a class='headerButtons' href="<?= Page::Panier->url() ?>">Panier</a>
             <?php endif; ?>
             <a href="<?= Page::Connexion->url() ?>"><img class="avatar" src="/public/img/avatar.jpg" alt="Avatar"></a>
