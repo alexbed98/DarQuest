@@ -91,7 +91,7 @@ class AccountDAL
         }
         return true;
     }
-    public static function pertVie(PDO $connexion, string $email, string $difficulte): false|string
+    public static function takeDamage(PDO $connexion, string $email, string $difficulte): false|string
     {
         $sql = null;
         switch ($difficulte) {

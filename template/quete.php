@@ -11,16 +11,6 @@ $message = '';
 shuffle($reponses);
 
 if (IS_POST) {
-//A ENLEVER SI PAS FAIT
-    #region reset rewards
-    $sql = "UPDATE Joueurs SET gold = 0, argent = 0, bronze = 0,PointVie = 50 WHERE courriel=:email";
-
-    $statement = $connexion->prepare($sql);
-
-    $statement->bindValue('email', $_SESSION['email'], PDO::PARAM_STR);
-
-    $statement->execute();
-    #endregion
 
     $difficulte = $_POST['answer'] ?? null; //<- Si la réponse est bonne, elle retourn sa difficulter, sinon elle est null
     if ($difficulte != null) {
