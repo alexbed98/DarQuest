@@ -8,10 +8,12 @@
 .stats-text {
     font-size: 15px;
     margin-bottom: 6px;
+    background-color: rgb(199, 223, 240);
+    border-radius: 5px;
 }
 
 .profil-gold {
     background-color: rgb(182, 208, 229); 
-    text-align: center
+    text-align: center;
 }
 

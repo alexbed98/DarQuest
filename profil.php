@@ -34,6 +34,8 @@ $prenom = $user['prenom'];
 $nom = $user['nom'];
 $motDePasse = $user['motDePasse'];
 $gold = $user['gold'];
+$silver = $user['argent'];
+$bronze = $user['bronze'];
 $estMage = $user['estMage'];
 $avatar = $user['avatar'];
 
@@ -224,8 +226,8 @@ if (IS_POST) {
                             <div class="mb-3">
                                 <label for="image" class="form-label"></span>Avatar</label>
 
-                                <div style="margin-bottom: 10px;">
-                                    <img src="uploads/<?= $avatar ?>" alt="Avatar actuel" style="max-width: 150px; border-radius: 8px;">
+                                <div style="margin-bottom: 10px; display: flex;">
+                                    <img src="/upload/<?= $avatar ?>" alt="Avatar actuel" style="max-width: 60px; border-radius: 8px; margin: auto">
                                 </div>
 
                                 <input name="image" type="file" class="form-control" 
@@ -237,7 +239,7 @@ if (IS_POST) {
                             <div class="mb-3">
                                 <label class="form-label">Nombre de pièces</label>
                                 <span class="form-control profil-gold">
-                                    <?= $gold ?>&nbsp;🪙
+                                    <?= $gold ?>🥇,&nbsp;<?= $silver ?>🥈,&nbsp;<?= $bronze ?>🥉
                                 </span>
                             </div>
 
