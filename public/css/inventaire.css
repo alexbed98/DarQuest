@@ -1,57 +1,72 @@
 /* ===== INVENTAIRE ===== */
 
 .inventaire-gold {
-    border: 1px solid black;
-    border-radius: 5px;
-    padding: 6px 10px;
+    background: linear-gradient(135deg, #94A3D9 0%, #7e89b4 100%);
+    border: 1px solid #6a75a0;
+    border-radius: 8px;
+    padding: 10px 14px;
     text-align: center;
     font-weight: 700;
-    font-size: 1rem;
-    margin-bottom: 12px;
+    font-size: 1.05rem;
+    color: #fff;
+    letter-spacing: 0.03em;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 6px rgba(78, 93, 143, 0.25);
 }
 
 .inventaire-soon {
     font-weight: 600;
-    margin: 10px 0 4px;
-    color: #555;
+    margin: 12px 0 5px;
+    color: #4e5d8f;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .inventaire-filters-placeholder {
-    opacity: 0.45;
+    opacity: 0.5;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 5px;
 }
 
 .inventaire-filter-label {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 7px;
     font-size: 0.9rem;
     cursor: not-allowed;
+    color: #464646;
 }
 
 .inventaire-empty {
-    padding: 20px;
-    color: #888;
+    padding: 30px;
+    color: #7e89b4;
     font-size: 1.1rem;
+    font-style: italic;
 }
 
 /* Carte item */
 .inventaire-item {
     width: 180px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.inventaire-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(78, 93, 143, 0.22);
 }
 
 .inventaire-img-wrapper {
-    border: 2px solid black;
-    border-radius: 6px;
+    border: 2px solid #7e89b4;
+    border-radius: 10px;
     overflow: hidden;
     width: 180px;
     height: 160px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f5f5f5;
+    background: #eef0f8;
 }
 
 .inventaire-img-wrapper img {
@@ -61,10 +76,11 @@
 }
 
 .inventaire-info {
-    border: 2px solid black;
-    border-radius: 6px;
+    background: #f4f6fb;
+    border: 2px solid #7e89b4;
+    border-radius: 10px;
     margin-top: 8px;
-    padding: 8px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -73,6 +89,7 @@
 .inventaire-nom {
     font-weight: 700;
     font-size: 0.95rem;
+    color: #2c2c2c;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -80,12 +97,13 @@
 
 .inventaire-prix {
     font-size: 0.85rem;
-    color: #555;
+    color: #4e5d8f;
+    font-weight: 600;
 }
 
 .inventaire-qte {
     font-size: 0.82rem;
-    color: #777;
+    color: #7e89b4;
 }
 
 /* Formulaire Vendre */
@@ -97,24 +115,35 @@
 
 .inventaire-qty-input {
     width: 54px;
-    padding: 3px 5px;
-    border: 1px solid #aaa;
-    border-radius: 4px;
+    padding: 4px 6px;
+    border: 1px solid #7e89b4;
+    border-radius: 6px;
     font-size: 0.9rem;
     text-align: center;
+    background: #fff;
+    color: #2c2c2c;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.inventaire-qty-input:focus {
+    border-color: #4e5d8f;
 }
 
 .inventaire-vendre-btn {
     padding: 4px 10px;
-    border: 1px solid #555;
-    border-radius: 5px;
-    background: #e8e8e8;
+    border: 1px solid #b45a5a;
+    border-radius: 6px;
+    background: #f0dada;
     cursor: pointer;
     font-size: 0.88rem;
     font-weight: 600;
-    transition: background 0.15s;
+    color: #7a2020;
+    transition: background 0.15s, border-color 0.15s;
 }
 
 .inventaire-vendre-btn:hover {
-    background: #d0d0d0;
+    background: #e2b8b8;
+    border-color: #8a3030;
 }
+

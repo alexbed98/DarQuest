@@ -76,9 +76,12 @@ $items = ItemDAL::select($connexion);
         <?php foreach ($items as $item): ?>
 
             <div class="item">
-                <div class="background" style="background-image: url('/public/img/backgrounds/background06');">
+                <a href="detail.php?idItem=<?= $item['idItem'] ?>">
+                    <div class="background" style="background-image: url('/public/img/backgrounds/background06');">
                     <img class="image-item" src=/public/img/items/<?= $item['photo'] ?> alt="Image de l'article">
                 </div>
+                </a>
+
                 <div
                     style="border: 2px solid black; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 5px; margin-top: 10px; width: 300px;">
                     <div class="nom"><?= $item["nom"] ?></div>

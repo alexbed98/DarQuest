@@ -1,3 +1,4 @@
+
 <header>
     <div class="header">
 
@@ -5,6 +6,20 @@
             <a href="/index.php"><img class="logo" src="/public/img/darquest_logo_01.png" alt="Logo"></a>
             <h1 class="titre"><?= ACTIVE_PAGE->text() ?></h1>
         </div>
+
+        <?php if (IS_AUTH): ?>
+            
+            <?php
+                $headerCon = $connexion ?? Database::getConnexion($dbConfig);
+                $goldStmt = $headerCon->prepare("SELECT gold FROM joueurs WHERE idJoueur = :id");
+                $goldStmt->bindValue(':id', (int) $_SESSION['id'], PDO::PARAM_INT);
+                $goldStmt->execute();
+                $headerGold = (int) ($goldStmt->fetch()['gold'] ?? 0);
+            ?>
+            <div class="headerCenter">
+                <span class="header-gold">Nombre de pièces: <?= number_format($headerGold) ?>&nbsp;🪙</span>
+            </div>
+        <?php endif; ?>
 
         <div class="headerRight">
             <?php if (IS_AUTH): ?>
