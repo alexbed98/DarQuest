@@ -8,6 +8,7 @@ enum Page
     case Panier;
     case Inventaire;
     case CreationCompte;
+    case Profil;
     case Enigme;
 
 
@@ -22,6 +23,7 @@ enum Page
             Page::Panier => 'Panier',
             Page::Inventaire => 'Inventaire',
             Page::CreationCompte => 'Création de compte',
+            Page::Profil => 'Profil',
             Page::Enigme => 'Enigme',
         };
 
@@ -38,6 +40,7 @@ enum Page
             Page::Panier => '/panier',
             Page::Inventaire => '/inventaire',
             Page::CreationCompte => '/signup',
+            Page::Profil => '/profil' 
             Page::Enigme => '/enigme',
         };
 
