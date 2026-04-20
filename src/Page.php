@@ -40,7 +40,7 @@ enum Page
             Page::Panier => '/panier',
             Page::Inventaire => '/inventaire',
             Page::CreationCompte => '/signup',
-            Page::Profil => '/profil' 
+            Page::Profil => '/profil',
             Page::Enigme => '/enigme',
         };
 
