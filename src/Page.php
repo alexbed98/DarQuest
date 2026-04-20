@@ -9,6 +9,7 @@ enum Page
     case Inventaire;
     case CreationCompte;
     case Profil;
+    case Enigme;
 
 
     public function text(): string {
@@ -23,6 +24,7 @@ enum Page
             Page::Inventaire => 'Inventaire',
             Page::CreationCompte => 'Création de compte',
             Page::Profil => 'Profil',
+            Page::Enigme => 'Enigme',
         };
 
     }
@@ -39,6 +41,7 @@ enum Page
             Page::Inventaire => '/inventaire',
             Page::CreationCompte => '/signup',
             Page::Profil => '/profil' 
+            Page::Enigme => '/enigme',
         };
 
     }

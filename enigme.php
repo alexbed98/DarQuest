@@ -1,21 +1,20 @@
 <?php
 
-// les require et les include
-// a decommenter quand on les utilisent
+session_start();
 
-// require_once 'core/error-exception.php';
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
-include_once 'core/Database.php';
+require_once 'core/Validation.php';
+require_once 'core/Database.php';
+require_once 'src/AccountDAL.php';
+require_once 'core/Email.php';
 
-// identification de la page active
- const ACTIVE_PAGE = Page::Details;
+$connexion = Database::getConnexion($dbConfig);
+
+const ACTIVE_PAGE = Page::Enigme;
 
 $cssAdd = ['/public/css/catalogue.css',
-           '/public/css/layout.css',
-           '/public/css/details.css',
-           '/public/css/panier.css',
-           ];
+           '/public/css/layout.css'];
 
 ?>
 <!DOCTYPE html>
@@ -37,7 +36,7 @@ $cssAdd = ['/public/css/catalogue.css',
         <main>
 
             <!--Bloc ?-->
-            <?php include_once TEMPLATE . '/details.php'; ?>
+            <?php include_once TEMPLATE . '/quete.php'; ?>
             <!--Bloc ?-->
 
         </main>

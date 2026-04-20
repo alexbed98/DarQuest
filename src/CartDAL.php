@@ -23,7 +23,7 @@ class CartDAL
             $photo = (string) $row['photo'];
             $image = ($photo !== '' && $photo[0] === '/')
                 ? $photo
-                : '/public/img/' . ltrim($photo, '/');
+                : '/public/img/items/' . ltrim($photo, '/');
 
             $cart[] = [
                 'id'       => (int) $row['idItem'],

@@ -5,6 +5,7 @@ use Dom\Document;
 include_once 'core/Database.php';
 include_once 'src/ItemDAL.php';
 include_once 'src/initialization.php';
+require_once 'src/AccountDAL.php';
 
 $connexion = Database::getConnexion($dbConfig);
 $items = ItemDAL::select($connexion);
@@ -26,14 +27,14 @@ $items = ItemDAL::select($connexion);
 
         document.getElementById('setLayout').submit(); //Soumet le formulaire pour rafraichir la page et afficher les items selon les nouveaux critères
     }
-
+    
 </script>
 
 <div class="catalogue">
     <div class="options">
         <div style="border: 1px solid black; border-radius: 5px;">
             <?php if (IS_AUTH) {
-                //besoin de changer pour qu'il affiche le nombre d'or de l'utilisateur connecté
+                echo number_format(AccountDAL::selectGold($connexion, $_SESSION['email'])) . '&nbsp;🪙';
             } else
                 echo '0'; ?>
         </div>
@@ -79,6 +80,14 @@ $items = ItemDAL::select($connexion);
                     <img class="image-item" src=/public/img/items/<?= $item['photo'] ?> alt="Image de l'article">
                 </div>
                 <div class="info-item">
+                <a href="detail.php?idItem=<?= $item['idItem'] ?>">
+                    <div class="background" style="background-image: url('/public/img/backgrounds/background06');">
+                    <img class="image-item" src=/public/img/items/<?= $item['photo'] ?> alt="Image de l'article">
+                </div>
+                </a>
+
+                <div
+                    style="border: 2px solid black; display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 5px; margin-top: 10px; width: 300px;">
                     <div class="nom"><?= $item["nom"] ?></div>
                     <div class="quantite"><?= $item["quantiteStock"] ?></div>
                     <div class="prix"><?= $item["prix"] ?></div>

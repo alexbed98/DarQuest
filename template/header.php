@@ -1,3 +1,4 @@
+
 <header>
     <div class="header">
 
@@ -6,6 +7,20 @@
             <h1 class="titre"><?= ACTIVE_PAGE->text() ?></h1>
         </div>
 
+        <?php if (IS_AUTH): ?>
+            
+            <?php
+                $headerCon = $connexion ?? Database::getConnexion($dbConfig);
+                $goldStmt = $headerCon->prepare("SELECT gold FROM joueurs WHERE idJoueur = :id");
+                $goldStmt->bindValue(':id', (int) $_SESSION['id'], PDO::PARAM_INT);
+                $goldStmt->execute();
+                $headerGold = (int) ($goldStmt->fetch()['gold'] ?? 0);
+            ?>
+            <div class="headerCenter">
+                <span class="header-gold">Nombre de pièces: <?= number_format($headerGold) ?>&nbsp;🪙</span>
+            </div>
+        <?php endif; ?>
+
         <div class="headerRight">
             <?php if (IS_AUTH): ?>
                 <a class='headerButtons' href="<?= Page::Catalogue->url() ?>">Items</a>
@@ -13,7 +28,7 @@
                     <a class='headerButtons' href="">Admin</a>
                 <?php endif; ?>
                 <a class='headerButtons' href="<?= Page::Inventaire->url() ?>">Inventaire</a>
-                <a class='headerButtons' href="">Énigma</a>
+                <a class='headerButtons' href="<?= Page::Enigme->url() ?>">Énigma</a>
                 <a class='headerButtons' href="<?= Page::Panier->url() ?>">Panier</a>
             <?php endif; ?>
             <!-- si on est connecté, en cliquant sur l'avatar on arrive a la page profil -->
