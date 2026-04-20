@@ -98,6 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
             }
             unset($cartItem);
 
+            
+
             if (!$found) {
 
                 $photo = (string) $item['photo'];

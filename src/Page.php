@@ -8,6 +8,8 @@ enum Page
     case Panier;
     case Inventaire;
     case CreationCompte;
+    case Profil;
+    case Enigme;
 
 
     public function text(): string {
@@ -20,7 +22,9 @@ enum Page
             Page::Connexion => 'Connexion',
             Page::Panier => 'Panier',
             Page::Inventaire => 'Inventaire',
-            Page::CreationCompte => 'Création de compte'
+            Page::CreationCompte => 'Création de compte',
+            Page::Profil => 'Profil',
+            Page::Enigme => 'Enigme',
         };
 
     }
@@ -35,7 +39,9 @@ enum Page
             Page::Connexion => '/login',
             Page::Panier => '/panier',
             Page::Inventaire => '/inventaire',
-            Page::CreationCompte => '/signup'
+            Page::CreationCompte => '/signup',
+            Page::Profil => '/profil',
+            Page::Enigme => '/enigme',
         };
 
     }
