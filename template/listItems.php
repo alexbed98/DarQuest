@@ -31,12 +31,7 @@ $items = ItemDAL::select($connexion);
 
 <div class="catalogue">
     <div class="options">
-        <div style="border: 1px solid black; border-radius: 5px;">
-            <?php if (IS_AUTH) {
-                //besoin de changer pour qu'il affiche le nombre d'or de l'utilisateur connecté
-            } else
-                echo '0'; ?>
-        </div>
+
         <form id="setLayout" method="POST" action="">
             <div>
                 <legend>Trier par:</legend>

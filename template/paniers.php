@@ -43,6 +43,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	if (!empty($_SESSION['id']) && isset($connexion)) {
 		CartDAL::saveCart($connexion, (int) $_SESSION['id'], $panier);
 	}
+
+	header('Location: ' . Page::Panier->url());
+	exit;
 }
 $total = 0;
 ?>

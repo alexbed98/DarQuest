@@ -7,27 +7,37 @@
             <h1 class="titre"><?= ACTIVE_PAGE->text() ?></h1>
         </div>
 
-        <?php if (IS_AUTH): ?>
-            
-            <?php
-                $headerCon = $connexion ?? Database::getConnexion($dbConfig);
-                $goldStmt = $headerCon->prepare("SELECT gold FROM joueurs WHERE idJoueur = :id");
-                $goldStmt->bindValue(':id', (int) $_SESSION['id'], PDO::PARAM_INT);
-                $goldStmt->execute();
-                $headerGold = (int) ($goldStmt->fetch()['gold'] ?? 0);
-            ?>
-            <div class="headerCenter">
-                <span class="header-gold">Nombre de pièces: <?= number_format($headerGold) ?>&nbsp;🪙</span>
-            </div>
-        <?php endif; ?>
-
         <div class="headerRight">
             <?php if (IS_AUTH): ?>
+                <?php
+                    $headerCon = $connexion ?? Database::getConnexion($dbConfig);
+                    $goldStmt = $headerCon->prepare("SELECT gold FROM joueurs WHERE idJoueur = :id");
+                    $goldStmt->bindValue(':id', (int) $_SESSION['id'], PDO::PARAM_INT);
+                    $goldStmt->execute();
+                    $headerGold = (int) ($goldStmt->fetch()['gold'] ?? 0);
+                ?>
+                <span class="header-gold">Nombre de pièces: <?= number_format($headerGold) ?>&nbsp;🪙</span>
                 <a class='headerButtons' href="<?= Page::Catalogue->url() ?>">Items</a>
                 <?php if (IS_ADMIN): ?>
                     <a class='headerButtons' href="">Admin</a>
                 <?php endif; ?>
                 <a class='headerButtons' href="<?= Page::Inventaire->url() ?>">Inventaire</a>
+                <a class='headerButtons' href="">Énigma</a>
+                <?php
+                    $headerCartKey = !empty($_SESSION['id'])
+                        ? 'panier_user_' . (int) $_SESSION['id']
+                        : 'panier_guest';
+                    $headerCartCount = isset($_SESSION[$headerCartKey]) && is_array($_SESSION[$headerCartKey])
+                        ? array_sum(array_column($_SESSION[$headerCartKey], 'quantite'))
+                        : 0;
+                ?>
+                <a class='headerButtons cart-btn' href="<?= Page::Panier->url() ?>">Panier
+                    <?php if ($headerCartCount > 0): ?>
+                        <span class="cart-badge" id="cart-badge"><?= $headerCartCount ?></span>
+                    <?php else: ?>
+                        <span class="cart-badge cart-badge-hidden" id="cart-badge">0</span>
+                    <?php endif; ?>
+                </a>
                 <a class='headerButtons' href="<?= Page::Enigme->url() ?>">Énigma</a>
                 <a class='headerButtons' href="<?= Page::Panier->url() ?>">Panier</a>
             <?php endif; ?>
