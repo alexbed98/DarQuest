@@ -13,7 +13,7 @@ shuffle($reponses);
 if (IS_POST) {
 //A ENLEVER SI PAS FAIT
     #region reset rewards
-    $sql = "UPDATE Joueurs SET gold = 0, argent = 0, bronze = 0 WHERE courriel=:email";
+    $sql = "UPDATE Joueurs SET gold = 0, argent = 0, bronze = 0,PointVie = 50 WHERE courriel=:email";
 
     $statement = $connexion->prepare($sql);
 

@@ -86,6 +86,32 @@ class AccountDAL
 
             $statement->bindValue('email', $email, PDO::PARAM_STR);
 
+
+            return $statement->execute();
+        }
+        return true;
+    }
+    public static function pertVie(PDO $connexion, string $email, string $difficulte): false|string
+    {
+        $sql = null;
+        switch ($difficulte) {
+            case 'F':
+                $sql = "UPDATE Joueurs SET pointVie = pointVie - 3 WHERE courriel=:email";
+                break;
+            case 'M':
+                $sql = "UPDATE Joueurs SET pointVie = pointVie - 6 WHERE courriel=:email";
+                break;
+            case 'D':
+                $sql = "UPDATE Joueurs SET pointVie = pointVie - 10 WHERE courriel=:email";
+                break;
+        }
+
+        if ($sql != null) {
+
+            $statement = $connexion->prepare($sql);
+
+            $statement->bindValue('email', $email, PDO::PARAM_STR);
+
             
             return $statement->execute();
         }
