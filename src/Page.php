@@ -25,7 +25,7 @@ enum Page
             Page::Panier => 'Panier',
             Page::Inventaire => 'Inventaire',
             Page::CreationCompte => 'Création de compte',
-            Page::Admin => 'Administration'
+            Page::Admin => 'Administration',
             Page::Profil => 'Profil',
             Page::Enigme => 'Enigme',
         };
