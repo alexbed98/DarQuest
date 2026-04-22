@@ -3,7 +3,7 @@
     <!-- Panneau latéral (filtre/tri) -->
     <div class="options">
         <div class="inventaire-gold">
-            <span title="Or"><?= number_format($gold) ?>&nbsp;🪙</span>
+            <span title="Or"><?= number_format($gold) ?>&nbsp;🥇</span>
             <span title="Argent"><?= number_format($argent) ?>&nbsp;🥈</span>
             <span title="Bronze"><?= number_format($bronze) ?>&nbsp;🥉</span>
         </div>
@@ -22,7 +22,7 @@
             <button type="submit" name="convertir" value="argent_to_gold"
                 class="headerButtons inventaire-convertir-btn"
                 <?= $argent < 10 ? 'disabled title="Il faut au moins 10 argent"' : 'title="10 argent = 1 or"' ?>>
-                🥈→🪙 Convertir
+                🥈→🥇 Convertir
             </button>
         </form>
 
@@ -78,7 +78,7 @@
                 </div>
                 <div class="inventaire-info">
                     <span class="inventaire-nom"><?= htmlspecialchars($item['nom']) ?></span>
-                    <span class="inventaire-prix"><?= number_format((float) $item['prix']) ?>&nbsp;🪙</span>
+                    <span class="inventaire-prix"><?= number_format((float) $item['prix']) ?>&nbsp;🥇</span>
                     <form method="post" action="<?= Page::Inventaire->url() ?>" class="inventaire-vendre-form">
                         <input type="hidden" name="vendre_id" value="<?= (int) $item['idItem'] ?>">
                         <input

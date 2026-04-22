@@ -16,7 +16,7 @@
                     $goldStmt->execute();
                     $headerGold = (int) ($goldStmt->fetch()['gold'] ?? 0);
                 ?>
-                <span class="header-gold">Nombre de pièces: <?= number_format($headerGold) ?>&nbsp;🪙</span>
+                <span class="header-gold">Nombre de pièces: <?= number_format($headerGold) ?>&nbsp;🥇</span>
                 <a class='headerButtons' href="<?= Page::Catalogue->url() ?>">Items</a>
                 <?php if (IS_ADMIN): ?>
                     <a class='headerButtons' href="<?= Page::Admin->url() ?>">Admin</a>
