@@ -18,8 +18,10 @@ const VENDOR = ROOT . '/vendor';
 
 //=======================================================
 
-// url publique
-const URL_ROOT = '/';
+// url publique (compatible root and subfolder deployments)
+$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
+$baseUrl = rtrim($scriptDir, '/');
+define('URL_ROOT', ($baseUrl === '' ? '/' : $baseUrl . '/'));
 
 const IMG = URL_ROOT . 'public/img';
 const CSS = URL_ROOT . 'public/css';

@@ -3,7 +3,7 @@
     <div class="header">
 
         <div class="headerLeft">
-            <a href="/index.php"><img class="logo" src="/public/img/darquest_logo_01.png" alt="Logo"></a>
+            <a href="<?= URL_ROOT ?>index.php"><img class="logo" src="<?= IMG ?>/darquest_logo_01.png" alt="Logo"></a>
             <h1 class="titre"><?= ACTIVE_PAGE->text() ?></h1>
         </div>
 
