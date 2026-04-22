@@ -18,7 +18,7 @@ $items = ItemDAL::select($connexion);
         foreach ($filtre as $f) //Modifie les filtres selon les inputs checkbox cochés (name="filtre[]")
             ItemDAL::changeFilter($f);
 
-        if (isset($_POST['order'])) //Modifie l'odre selon l'input radio coché (name="order")
+        if (isset($_POST['order'])) //Modifie l'ordre selon l'input radio coché (name="order")
             ItemDAL::changeOrder($_POST['order']);
 
         $items = ItemDAL::select($connexion); //change/reset la liste d'items pour satisfaire les nouveaux critères
@@ -70,18 +70,25 @@ $items = ItemDAL::select($connexion);
         <?php foreach ($items as $item): ?>
 
             <div class="item">
-                <div class="background" style="background-image: url('/public/img/backgrounds/background06');">
-                    <img class="image-item" src=/public/img/items/<?= $item['photo'] ?> alt="Image de l'article">
-                </div>
-                <div class="info-item">
-                    <div class="nom"><?= $item["nom"] ?></div>
-                    <div class="quantite"><?= $item["quantiteStock"] ?></div>
-                    <div class="prix"><?= $item["prix"] ?></div>
-                    <!-- Ce formulaire envoie l'id de l'item à catalogue.php pour l'ajout panier utilisateur. -->
-                    <form method="post" action="" style="margin: 0;">
-                        <input type="hidden" name="add_item_id" value="<?= (int) $item['idItem'] ?>">
-                        <button type="submit">Ajouter</button>
-                    </form>
+                <a href="detail.php?idItem=<?= $item['idItem'] ?>">
+                    <div class="background" style="background-image: url('/public/img/backgrounds/background06');">
+                        <img class="image-item" src=/public/img/items/<?= $item['photo'] ?> alt="Image de l'article">
+                    </div>
+                </a>
+
+                <div <div class="item-info">
+                    <div class="item-info-top">
+                        <div class="nom"><?= $item["nom"] ?></div>
+                    </div>
+                    <div class="item-info-bottom">
+                        <div class="quantite">Qty: <?= $item["quantiteStock"] ?></div>
+                        <div class="prix"><?= $item["prix"] ?>&nbsp;🪙</div>
+                        <!-- Ce formulaire envoie l'id de l'item à catalogue.php pour l'ajout panier utilisateur. -->
+                        <form method="post" action="" style="margin: 0;">
+                            <input type="hidden" name="add_item_id" value="<?= (int) $item['idItem'] ?>">
+                            <button type="submit" class="item-add-btn">Ajouter</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         <?php endforeach; ?>
