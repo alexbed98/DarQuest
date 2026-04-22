@@ -128,7 +128,7 @@ class AccountDAL
 
             $statement->execute();
         }
-        return 'Vous aviez gagné 100 pièces ' . $piece . "!";
+        return 'Vous avez gagné 100 pièces ' . $piece . "!";
     }
     //-------------------------------------------------------------------------------
     //Enleve l'hp du joueur avec l'email correspondant selon la difficulter 
@@ -163,7 +163,7 @@ class AccountDAL
 
             $statement->execute();
         }
-        return 'Vous aviez perdu  ' . $hp . 'HP!';
+        return 'Vous avez perdu  ' . $hp . 'HP!';
     }
 
     public static function courrielExistant(PDO $connexion, string $email): bool
