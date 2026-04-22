@@ -152,7 +152,7 @@
         <div class="admin-form-grid two-cols">
             <div class="admin-field">
                 <label for="enigmeCategorie">Categorie</label>
-                <input id="enigmeCategorie" type="text" name="idCategorie" maxlength="1" />
+                <input id="enigmeCategorie" type="text" name="nomCategorie" maxlength="45" />
             </div>
 
             <div class="admin-field">
