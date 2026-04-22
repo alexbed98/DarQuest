@@ -22,7 +22,6 @@
                     <a class='headerButtons' href="<?= Page::Admin->url() ?>">Admin</a>
                 <?php endif; ?>
                 <a class='headerButtons' href="<?= Page::Inventaire->url() ?>">Inventaire</a>
-                <a class='headerButtons' href="">Énigma</a>
                 <?php
                     $headerCartKey = !empty($_SESSION['id'])
                         ? 'panier_user_' . (int) $_SESSION['id']
@@ -39,7 +38,6 @@
                     <?php endif; ?>
                 </a>
                 <a class='headerButtons' href="<?= Page::Enigme->url() ?>">Énigma</a>
-                <a class='headerButtons' href="<?= Page::Panier->url() ?>">Panier</a>
             <?php endif; ?>
             <!-- si on est connecté, en cliquant sur l'avatar on arrive a la page profil -->
             <?php if (IS_AUTH): ?>
