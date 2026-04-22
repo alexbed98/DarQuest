@@ -27,7 +27,7 @@ if (IS_POST) {
     <h1>Enigma</h1>
     <div>
         Nombre de pièces d'or : <span
-            id="gold"><?= number_format(AccountDAL::selectGold($connexion, $_SESSION['email'])) . '&nbsp;🪙'; ?></span>
+            id="gold"><?= number_format(AccountDAL::selectGold($connexion, $_SESSION['email'])) . '&nbsp;🥇'; ?></span>
     </div>
 </div>
 <form id="answerEnigme" method="POST" action="">
