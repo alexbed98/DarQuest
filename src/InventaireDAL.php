@@ -58,7 +58,7 @@ class InventaireDAL
         }
 
         // Vérifier que le joueur a assez d'or
-        $stmt = $pdo->prepare("SELECT gold FROM joueurs WHERE idJoueur = :id");
+        $stmt = $pdo->prepare("SELECT gold FROM Joueurs WHERE idJoueur = :id");
         $stmt->bindValue(':id', $idJoueur, PDO::PARAM_INT);
         $stmt->execute();
         $row = $stmt->fetch();
@@ -70,7 +70,7 @@ class InventaireDAL
         // Déduire l'or
         $pdo->beginTransaction();
         try {
-            $upd = $pdo->prepare("UPDATE joueurs SET gold = gold - :total WHERE idJoueur = :id");
+            $upd = $pdo->prepare("UPDATE Joueurs SET gold = gold - :total WHERE idJoueur = :id");
             $upd->bindValue(':total', (int) $total, PDO::PARAM_INT);
             $upd->bindValue(':id', $idJoueur, PDO::PARAM_INT);
             $upd->execute();
@@ -160,7 +160,7 @@ class InventaireDAL
         if ($itemRow !== false) {
             $gain = (int) $itemRow['prix'] * $quantite;
             $addGold = $pdo->prepare(
-                "UPDATE joueurs SET gold = gold + :gain WHERE idJoueur = :idJoueur"
+                "UPDATE Joueurs SET gold = gold + :gain WHERE idJoueur = :idJoueur"
             );
             $addGold->bindValue(':gain', $gain, PDO::PARAM_INT);
             $addGold->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);

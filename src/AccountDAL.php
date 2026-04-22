@@ -66,7 +66,7 @@ class AccountDAL
     public static function selectAlias(PDO $connexion, string $email): false|string
     {
 
-        $sql = "SELECT alias from joueurs where courriel=:email";
+        $sql = "SELECT alias from Joueurs where courriel=:email";
 
         $statement = $connexion->prepare($sql);
 
@@ -83,7 +83,7 @@ class AccountDAL
     public static function selectGold(PDO $connexion, string $email): false|string
     {
 
-        $sql = "SELECT gold from joueurs where courriel=:email";
+        $sql = "SELECT gold from Joueurs where courriel=:email";
 
         $statement = $connexion->prepare($sql);
 
@@ -168,7 +168,7 @@ class AccountDAL
 
     public static function courrielExistant(PDO $connexion, string $email): bool
     {
-        $sql = "SELECT COUNT(*) FROM joueurs WHERE courriel = :email";
+        $sql = "SELECT COUNT(*) FROM Joueurs WHERE courriel = :email";
 
         $statement = $connexion->prepare($sql);
 

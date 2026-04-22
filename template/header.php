@@ -11,7 +11,7 @@
             <?php if (IS_AUTH): ?>
                 <?php
                     $headerCon = $connexion ?? Database::getConnexion($dbConfig);
-                    $goldStmt = $headerCon->prepare("SELECT gold FROM joueurs WHERE idJoueur = :id");
+                    $goldStmt = $headerCon->prepare("SELECT gold FROM Joueurs WHERE idJoueur = :id");
                     $goldStmt->bindValue(':id', (int) $_SESSION['id'], PDO::PARAM_INT);
                     $goldStmt->execute();
                     $headerGold = (int) ($goldStmt->fetch()['gold'] ?? 0);
