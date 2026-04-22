@@ -10,7 +10,6 @@ enum Page
     case CreationCompte;
     case Profil;
     case Enigme;
-
     case Admin;
 
 
