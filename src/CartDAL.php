@@ -9,8 +9,8 @@ class CartDAL
     public static function loadCart(PDO $pdo, int $idJoueur): array
     {
         $sql = "SELECT p.idItem, p.quantitePanier, i.nom, i.prix, i.photo
-                FROM paniers p
-                JOIN items i ON i.idItem = p.idItem
+            FROM Paniers p
+            JOIN Items i ON i.idItem = p.idItem
                 WHERE p.idJoueur = :idJoueur";
 
         $stmt = $pdo->prepare($sql);
@@ -42,7 +42,7 @@ class CartDAL
      */
     public static function saveCart(PDO $pdo, int $idJoueur, array $panier): void
     {
-        $del = $pdo->prepare("DELETE FROM paniers WHERE idJoueur = :idJoueur");
+        $del = $pdo->prepare("DELETE FROM Paniers WHERE idJoueur = :idJoueur");
         $del->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
         $del->execute();
 
@@ -51,7 +51,7 @@ class CartDAL
         }
 
         $ins = $pdo->prepare(
-            "INSERT INTO paniers (idJoueur, idItem, quantitePanier) VALUES (:idJoueur, :idItem, :qty)"
+            "INSERT INTO Paniers (idJoueur, idItem, quantitePanier) VALUES (:idJoueur, :idItem, :qty)"
         );
 
         foreach ($panier as $item) {

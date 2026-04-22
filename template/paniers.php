@@ -15,38 +15,6 @@ if (!isset($_SESSION[$cartSessionKey]) || !is_array($_SESSION[$cartSessionKey]))
 // Alias local vers le panier de l'utilisateur courant.
 $panier = &$_SESSION[$cartSessionKey];
 
-// Retirer un item
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-	// Retirer
-	if (isset($_POST['remove_id'])) {
-		$panier = array_filter(
-			$panier,
-			function ($item) {
-				return $item['id'] != $_POST['remove_id'];
-			}
-		);
-		$panier = array_values($panier);
-	}
-	// Modifier quantité
-	if (isset($_POST['update_id'], $_POST['update_qty'])) {
-		foreach ($panier as &$item) {
-			if ($item['id'] == $_POST['update_id']) {
-				$qty = (int)$_POST['update_qty'];
-				$item['quantite'] = max(1, $qty);
-				break;
-			}
-		}
-		unset($item);
-	}
-
-	// Synchroniser avec la BD si l'utilisateur est connecté
-	if (!empty($_SESSION['id']) && isset($connexion)) {
-		CartDAL::saveCart($connexion, (int) $_SESSION['id'], $panier);
-	}
-
-	header('Location: ' . Page::Panier->url());
-	exit;
-}
 $total = 0;
 ?>
 <section class="panier-section">
