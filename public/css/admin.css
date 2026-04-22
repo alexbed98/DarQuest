@@ -1,0 +1,85 @@
+.mainButton {
+    border: 1px solid #7e89b4;
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #94A3D9;
+}
+
+.mainButton:hover,
+.mainButton:focus-visible {
+    background-color: #b8c4ea;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(78, 93, 143, 0.28);
+}
+
+
+.toggleForm {
+    max-width: 500px;
+    margin-top: 20px;
+}
+
+.toggleForm > div {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.toggleForm label {
+    width: 180px;
+    font-weight: 500;
+}
+
+.toggleForm input {
+    flex: 1;
+    padding: 6px;
+}
+
+.toggleForm input[type="checkbox"] {
+    flex: unset;
+    margin-left: 0;
+}
+
+.toggleForm button {
+    margin-top: 10px;
+}
+
+
+
+
+
+
+#demandesJoueurs {
+    max-width: 100%;
+}
+
+#demandesJoueurs > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.demande-text {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+}
+
+.demande-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-accepter {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-refuser {
+    background-color: #e74c3c;
+    color: white;
+}

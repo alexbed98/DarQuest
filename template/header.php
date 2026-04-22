@@ -19,7 +19,7 @@
                 <span class="header-gold">Nombre de pièces: <?= number_format($headerGold) ?>&nbsp;🪙</span>
                 <a class='headerButtons' href="<?= Page::Catalogue->url() ?>">Items</a>
                 <?php if (IS_ADMIN): ?>
-                    <a class='headerButtons' href="">Admin</a>
+                    <a class='headerButtons' href="<?= Page::Admin->url() ?>">Admin</a>
                 <?php endif; ?>
                 <a class='headerButtons' href="<?= Page::Inventaire->url() ?>">Inventaire</a>
                 <a class='headerButtons' href="">Énigma</a>
