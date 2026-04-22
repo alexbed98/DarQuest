@@ -64,7 +64,7 @@
 
 /* ── Item card info bar ───────────────────────────────────── */
 .item-info {
-    border: 2px solid #7e89b4;
+    border: 1px solid #7e89b4;
     border-radius: 0 0 10px 10px;
     background-color: #edf0f8;
     display: flex;
@@ -84,9 +84,9 @@
     justify-content: space-between;
 }
 
-.item-info .nom  { font-weight: 600; font-size: 0.9rem; }
-.item-info .prix { font-size: 0.85rem; color: #5a6580; }
-.item-info .quantite { font-size: 0.8rem; color: #7e89b4; }
+.item-info .nom  { font-weight: 600; font-size: 0.9rem; font-weight: bold; }
+.item-info .prix { font-size: 0.85rem; color: #5a6580; font-weight: bold }
+.item-info .quantite { font-size: 0.8rem; color: #7e89b4; font-weight: bold}
 
 .item-add-btn {
     text-decoration: none;
@@ -155,11 +155,8 @@
     transition: background-color 0.18s ease;
 }
 
-.cart-toast-close:hover {
-    background-color: #b8c4ea;
 .background {
     border: 1px solid #7e89b4;
-    border-radius: 5px;
     background-size: cover;
     background-position: center;
 }

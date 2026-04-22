@@ -81,8 +81,8 @@ $items = ItemDAL::select($connexion);
                         <div class="nom"><?= $item["nom"] ?></div>
                     </div>
                     <div class="item-info-bottom">
-                        <div class="quantite">Qty: <?= $item["quantiteStock"] ?></div>
-                        <div class="prix"><?= $item["prix"] ?>&nbsp;🥇</div>
+                        <div class="quantite">Quantité: <?= $item["quantiteStock"] ?></div>
+                        <div class="prix">Prix: <?= $item["prix"] ?>&nbsp;🥇</div>
                         <!-- Ce formulaire envoie l'id de l'item à catalogue.php pour l'ajout panier utilisateur. -->
                         <form method="post" action="" style="margin: 0;">
                             <input type="hidden" name="add_item_id" value="<?= (int) $item['idItem'] ?>">
