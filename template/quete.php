@@ -1,4 +1,6 @@
 <?php
+
+use Dom\Document;
 include_once 'core/Database.php';
 include_once 'src/initialization.php';
 require_once 'src/AccountDAL.php';
@@ -23,15 +25,16 @@ if (EnigneDAL::countAllEnigme(Database::getConnexion($dbConfig))) { //Verifie s'
 
 shuffle($reponses);
 
+
 if (IS_POST) {
 
-    $difficulte = $_POST['answer'] ?? null; //<- Si la réponse est bonne, elle retourn sa difficulter, sinon elle est null
-    if ($difficulte != null)
-        if ($difficulte != 0) {
-            AccountDAL::addReward(Database::getConnexion($dbConfig), $_SESSION['email'], $difficulte);//Ne pas remplacer $difficulte par $enigme['difficulte'] car elle donne la valeur du prochain enigme
-            $message = 'Bonne réponse';
+    $bonOuPas = $_POST['answer'] ?? null;
+    $difficulte = $_POST['difficulte'] ?? null;
+    if ($bonOuPas != null && $difficulte != null)
+        if ($bonOuPas == 1) {
+            $message =  AccountDAL::addReward(Database::getConnexion($dbConfig), $_SESSION['email'], $difficulte);//'Bonne réponse';
         } else {
-            $message = 'Mauvaise réponse';
+            $message = AccountDAL::takeDamage(Database::getConnexion($dbConfig), $_SESSION['email'], $difficulte);//'Mauvaise réponse';
         }
 }
 
@@ -52,6 +55,7 @@ if (IS_POST) {
         <?php if ($enigme): ?> <!-- S'il y a une quete, affiche sa question -->
             <div style="width: 45%; justify-items: center; border: 1px solid black; margin: 20px; padding: 5px;">
                 <h3><?php echo $enigme['enonce']; ?></h3>
+                <input type="hidden" name="difficulte" value="<?=$enigme['difficulte']?>">
             </div>
         <?php endif ?>
 
@@ -60,7 +64,7 @@ if (IS_POST) {
                 <label for="reponse<?= $index + 1; ?>" style="margin: 5px; padding: 5px;">
                     <!-- Si la reponse soumise est bonne, retourn la difficulté pour que l'argent soit calculer en fonction, sinon donne rien -->
                     <input type="radio" id="reponse<?= $index + 1; ?>" name="answer"
-                        value="<?= $reponse['estBonneReponse'] == 1 ? $enigme['difficulte'] : 0 ?>" placeholder="Votre réponse">
+                        value="<?= $reponse['estBonneReponse']  ?>" placeholder="Votre réponse">
                     <?= $reponse['reponse']; ?>
                 </label>
             <?php endforeach; ?>

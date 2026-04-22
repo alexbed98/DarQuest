@@ -2,6 +2,7 @@
 
 class EnigneDAL
 {
+public static $currentDif = '';
     //-------------------------------------------------------------------------------
     //Selectionne tout les enigmes et choisisez un aleatoirement
     //(return false s'il n'y a pas d'enigme choisi)
@@ -20,6 +21,8 @@ class EnigneDAL
             return false;
         }
         $randIndex = array_rand($randomEnigme);
+
+        //self::$currentDif = $randomEnigme[$randIndex]['difficulte'];
 
         return $randomEnigme[$randIndex];
     }
