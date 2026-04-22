@@ -10,7 +10,7 @@ $connexion = Database::getConnexion($dbConfig);
 $id = isset($_GET['idItem']) ? intval($_GET['idItem']) : 0;
 
 
-$stmt = $connexion->prepare("SELECT * FROM items WHERE idItem = ?");
+$stmt = $connexion->prepare("SELECT * FROM Items WHERE idItem = ?");
 $stmt->execute([$id]);
 
 $item = $stmt->fetch();
@@ -25,25 +25,25 @@ $details = null;
 switch ($item['typeItem']) {
 
     case 'A':
-        $stmt2 = $connexion->prepare("SELECT * FROM armes WHERE idItem = ?");
+        $stmt2 = $connexion->prepare("SELECT * FROM Armes WHERE idItem = ?");
         $stmt2->execute([$id]);
         $details = $stmt2->fetch(PDO::FETCH_ASSOC);
         break;
 
     case 'R':
-        $stmt2 = $connexion->prepare("SELECT * FROM armures WHERE idItem = ?");
+        $stmt2 = $connexion->prepare("SELECT * FROM Armures WHERE idItem = ?");
         $stmt2->execute([$id]);
         $details = $stmt2->fetch(PDO::FETCH_ASSOC);
         break;
 
     case 'P':
-        $stmt2 = $connexion->prepare("SELECT * FROM potions WHERE idItem = ?");
+        $stmt2 = $connexion->prepare("SELECT * FROM Potions WHERE idItem = ?");
         $stmt2->execute([$id]);
         $details = $stmt2->fetch(PDO::FETCH_ASSOC);
         break;
 
     case 'S':
-        $stmt2 = $connexion->prepare("SELECT * FROM sorts WHERE idItem = ?");
+        $stmt2 = $connexion->prepare("SELECT * FROM Sorts WHERE idItem = ?");
         $stmt2->execute([$id]);
         $details = $stmt2->fetch(PDO::FETCH_ASSOC);
         break;
@@ -103,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
                 $photo = (string) $item['photo'];
                 $image = ($photo !== '' && $photo[0] === '/')
                     ? $photo
-                    : '/public/img/items/' . ltrim($photo, '/');
+                    : IMG . '/items/' . ltrim($photo, '/');
 
                 $_SESSION[$cartSessionKey][] = [
                     'id' => (int) $item['idItem'],
