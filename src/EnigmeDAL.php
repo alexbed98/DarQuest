@@ -1,8 +1,8 @@
 <?php
 
-class EnigneDAL
+class EnigmeDAL
 {
-public static $currentDif = '';
+    public static $currentDif = '';
     //-------------------------------------------------------------------------------
     //Selectionne tout les enigmes et choisisez un aleatoirement
     //(return false s'il n'y a pas d'enigme choisi)
@@ -54,22 +54,39 @@ public static $currentDif = '';
         $sql = "SELECT COUNT(*) 
                 FROM Enigmes;";
 
+        $statement = $connexion->prepare($sql);
+        if (!$statement->execute()) {
+            return false;
+        }
+
+        $count = $statement->fetchColumn();
+        return $count !== false ? (string) $count : false;
+    }
+
     //-------------------------------------------------------------------------------
     // Insere une nouvelle enigme, retourne le nouvel ID ou false si echec
     //-------------------------------------------------------------------------------
     public static function insertEnigme(PDO $connexion, string $enonce, ?string $idCategorie, string $difficulte, int $estPigee): int|false
     {
-        $sql = "INSERT INTO Enigmes (enonce, idCategorie, difficulte, estPigee)
-                VALUES (:enonce, :idCategorie, :difficulte, :estPigee)";
+        // idEnigme is not auto-generated in this schema, compute the next id manually.
+        $idStmt = $connexion->prepare("SELECT COALESCE(MAX(idEnigme), 0) + 1 FROM Enigmes");
+        if (!$idStmt->execute()) {
+            return false;
+        }
+        $nextId = (int) $idStmt->fetchColumn();
+
+        $sql = "INSERT INTO Enigmes (idEnigme, enonce, idCategorie, difficulte, estPigee)
+                VALUES (:idEnigme, :enonce, :idCategorie, :difficulte, :estPigee)";
 
         $statement = $connexion->prepare($sql);
+        $statement->bindValue(':idEnigme', $nextId, PDO::PARAM_INT);
         $statement->bindValue(':enonce', $enonce, PDO::PARAM_STR);
         $statement->bindValue(':idCategorie', $idCategorie, $idCategorie !== null ? PDO::PARAM_STR : PDO::PARAM_NULL);
         $statement->bindValue(':difficulte', $difficulte, PDO::PARAM_STR);
         $statement->bindValue(':estPigee', $estPigee, PDO::PARAM_INT);
 
         if ($statement->execute()) {
-            return (int) $connexion->lastInsertId();
+            return $nextId;
         }
         return false;
     }
@@ -90,4 +107,9 @@ public static $currentDif = '';
         return $statement->execute();
     }
 
+}
+
+// Backward compatibility with existing calls using the old typo'ed class name.
+class EnigneDAL extends EnigmeDAL
+{
 }
