@@ -77,6 +77,9 @@ class AccountDAL
         return $statement->fetchColumn();
 
     }
+    //-------------------------------------------------------------------------------
+    //Select le nombre d'or d'un joueur selon son email
+    //-------------------------------------------------------------------------------
     public static function selectGold(PDO $connexion, string $email): false|string
     {
 
@@ -91,19 +94,30 @@ class AccountDAL
         return $statement->fetchColumn();
 
     }
-    public static function addReward(PDO $connexion, string $email, string $difficulte): false|string
+    //-------------------------------------------------------------------------------
+    //Ajouter 100 pièces de bronze/argent/or selon la difficulter au joueur avec
+    //l'email correspondant
+    //Il retourn une phrase pour indiquer au joueur ce qu'il a gagné
+    //-------------------------------------------------------------------------------
+    public static function addReward(PDO $connexion, string $email, string $difficulte): string
     {
         $sql = null;
+        $piece = '';
         switch ($difficulte) {
             case 'F':
                 $sql = "UPDATE Joueurs SET bronze = bronze + 100 WHERE courriel=:email";
+                $piece = 'de bronze';
                 break;
             case 'M':
                 $sql = "UPDATE Joueurs SET argent = argent + 100 WHERE courriel=:email";
+                $piece = 'd\'argent';
                 break;
             case 'D':
                 $sql = "UPDATE Joueurs SET gold = gold + 100 WHERE courriel=:email";
+                $piece = 'd\'or';
                 break;
+            default:
+                return 'Difficulter non reconnu';
         }
 
         if ($sql != null) {
@@ -112,24 +126,33 @@ class AccountDAL
 
             $statement->bindValue('email', $email, PDO::PARAM_STR);
 
-
-            return $statement->execute();
+            $statement->execute();
         }
-        return true;
+        return 'Vous aviez gagné 100 pièces ' . $piece . "!";
     }
-    public static function takeDamage(PDO $connexion, string $email, string $difficulte): false|string
+    //-------------------------------------------------------------------------------
+    //Enleve l'hp du joueur avec l'email correspondant selon la difficulter 
+    //Il retourn une phrase pour indiquer au joueur ce qu'il a perdu
+    //-------------------------------------------------------------------------------
+    public static function takeDamage(PDO $connexion, string $email, string $difficulte): string
     {
         $sql = null;
+        $hp = '';
         switch ($difficulte) {
             case 'F':
                 $sql = "UPDATE Joueurs SET pointVie = pointVie - 3 WHERE courriel=:email";
+                $hp = '3';
                 break;
             case 'M':
                 $sql = "UPDATE Joueurs SET pointVie = pointVie - 6 WHERE courriel=:email";
+                $hp = '6';
                 break;
             case 'D':
                 $sql = "UPDATE Joueurs SET pointVie = pointVie - 10 WHERE courriel=:email";
+                $hp = '10';
                 break;
+            default:
+                return 'Difficulter non reconnu';
         }
 
         if ($sql != null) {
@@ -138,10 +161,9 @@ class AccountDAL
 
             $statement->bindValue('email', $email, PDO::PARAM_STR);
 
-
-            return $statement->execute();
+            $statement->execute();
         }
-        return false;
+        return 'Vous aviez perdu  ' . $hp . 'HP!';
     }
 
     public static function courrielExistant(PDO $connexion, string $email): bool

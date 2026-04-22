@@ -42,7 +42,7 @@ enum Page
             Page::Panier => '/panier',
             Page::Inventaire => '/inventaire',
             Page::CreationCompte => '/signup',
-            Page::Admin => '/admin',
+            Page::Admin => '/admin.php',
             Page::Profil => '/profil',
             Page::Enigme => '/enigme',
         };
