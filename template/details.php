@@ -98,8 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
             }
             unset($cartItem);
 
-            
-
             if (!$found) {
 
                 $photo = (string) $item['photo'];
@@ -134,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
 
 <div class="mainContainer">
 <!-- Côté gauche de la page -->
-<div class="conteneur">
+<div class="conteneur, espacementGauche">
     <h2><?= htmlspecialchars($item['nom']) ?></h2>
 
     <?php if ($item['typeItem'] == 'A'): ?>
