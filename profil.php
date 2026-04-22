@@ -31,6 +31,7 @@ $user = AccountDAL::selectByEmail($connexion, $email);
 
 $username = $user['alias'];
 $prenom = $user['prenom'];
+$idJoueur = $user['idJoueur'];
 $nom = $user['nom'];
 $motDePasse = $user['motDePasse'];
 $gold = $user['gold'];
@@ -38,6 +39,7 @@ $silver = $user['argent'];
 $bronze = $user['bronze'];
 $estMage = $user['estMage'];
 $avatar = $user['avatar'];
+$ancienEmail = $email;
 
 // pour les messages d'erreurs
 $messages = [];
@@ -75,14 +77,42 @@ if (IS_POST) {
         $email = $_POST['email'] ?? '';
 
     }
+    else {
+        if(AccountDAL::selectByEmail($connexion, $email) && $email != $ancienEmail) {
+            $messages['email'] = 'Ce courriel existe déjà';
+        }
+    }
 
     $password = $_POST['password'] ?? '';
-    $password2 = $_POST['password2'] ?? '';
+    $newPassword = $_POST['newPassword'] ?? '';
 
-    if (empty($password) || $password !== $password2 || !Validation::passwordIsValid($password, MATCH_PATTERN, PASSWORD_SIZE)) {
+    if (!empty($newPassword))
+    {
+        if (empty($password)) {
+            $messages['password'] = 'Vous devez entrer votre mot de passe actuel';
+        }
+        else {
+            if (!Validation::passwordIsValid($newPassword, MATCH_PATTERN, PASSWORD_SIZE)){
+                $messages['newPassword'] = 'Le mot de passe ne respecte pas le format requis';
+            }
+            else{
+                if (!password_verify($password, $motDePasse)) {
+                    $messages['password'] = 'Le mot de passe est incorrect';
+                }
+            }
+        }
+    }
 
-        $messages['password'] = 'Le mot de passe est obligatoire et les deux champs Mots de passe doivent être identiques.';
+    $avatarFinal = $avatar;
 
+    $newAvatar = Upload::move(
+        'image',
+        'C:\wamp64\www\DarQuestMain\upload',
+        $allowedTypes
+    );
+
+    if ($newAvatar !== false && $newAvatar !== null) {
+        $avatarFinal = $newAvatar;
     }
 
     if (count($messages) > 0) {
@@ -90,46 +120,24 @@ if (IS_POST) {
         $messages['global'] = 'Le formulaire est invalide.';
 
     } else {
+        $finalPassword = $motDePasse;
 
-        $connexion = Database::getConnexion($dbConfig);
-        $user = AccountDAL::selectByEmail($connexion, $email);
-
-        if ($user === false) {
-
-            $motDePasse = password_hash($password, PASSWORD_DEFAULT);
-            $courriel = $email;
-
-            if (AccountDAL::insertOne($connexion, $username, $prenom, $nom, $courriel, $motDePasse)) {
-
-                $subject = 'Création de compte DarQuest.';
-
-                $message = <<<HTML
-                <h1>Merci d'avoir créé un compte.</h1>
-                <a style="text-decoration: underline" href="http://darquest.ca/login">
-                    Cliquez ici pour validez votre courriel</a>
-                HTML;
-
-                Email::readConfig(SRC . '/gmail.ini');
-
-                if (Email::send($email, $subject, $message)) {
-
-                    $_SESSION['new-account'] = true;
-                    header('Location: ' . Page::Connexion->url());
-
-                }
-
-            }
-
-        } else {
-
-            $messages['global'] = 'Ce courriel n\'est pas disponible pour créer un compte. ';
-
+        if (!empty($newPassword)){
+            $finalPassword = password_hash($newPassword, PASSWORD_DEFAULT);
         }
 
+        if (AccountDAL::updateJoueur($connexion, $idJoueur, $username, $prenom, $nom, $email, $finalPassword, $avatarFinal)){
+            $_SESSION['email'] = $email;
+            $_SESSION['avatar'] = $avatarFinal;
 
+            $user = AccountDAL::selectByEmail($connexion, $email);
 
+            $avatar = $user['avatar'];
+            $username = $user['alias'];
+            $prenom = $user['prenom'];
+            $nom = $user['nom'];
+        }
     }
-
 }
 
 ?>
@@ -155,7 +163,7 @@ if (IS_POST) {
 
             <div class="col-md-8 mx-auto">
 
-                <form class="form-style" method="post" novalidate>
+                <form class="form-style" method="post" enctype="multipart/form-data">
 
                     <div style="display: flex; flex-direction: row; gap: 20px">
                         <div style="flex: 1">
@@ -190,17 +198,17 @@ if (IS_POST) {
                             </div>
 
                             <div class="mb-3">
-                                <label for="password2" class="form-label">Mot de passe</label>
-                                <input name="password2" type="password" class="form-control" id="empasswordail2"
-                                    aria-describedby="password2Help">
-                                <div id="passwordHelp2" class="form-text text-danger">
-                                    <?= $messages['password2'] ?? '' ?>
+                                <label for="password" class="form-label">Mot de passe</label>
+                                <input name="password" type="password" class="form-control" id="empasswordail2"
+                                    aria-describedby="passwordHelp">
+                                <div id="passwordHelp" class="form-text text-danger">
+                                    <?= $messages['password'] ?? '' ?>
                                 </div>
                             </div>
 
                             <div class="mb-3">
                                 <div style="display: flex;">
-                                    <label for="password" class="form-label">Nouveau mot de passe</label>
+                                    <label for="newPassword" class="form-label">Nouveau mot de passe</label>
                                     <div class="my-tooltip">
                                         <span class="my-info-icon">ⓘ</span>
 
@@ -215,9 +223,9 @@ if (IS_POST) {
                                         </div>
                                     </div>
                                 </div>
-                                <input name="password" type="password" class="form-control" id="empasswordail"
-                                    aria-describedby="passwordHelp">
-                                <div id="passwordHelp" class="form-text text-danger"><?= $messages['password'] ?? '' ?>
+                                <input name="newPassword" type="password" class="form-control" id="empasswordail"
+                                    aria-describedby="newPasswordHelp">
+                                <div id="newPasswordHelp" class="form-text text-danger"><?= $messages['newPassword'] ?? '' ?>
                                 </div>
                             </div>
 

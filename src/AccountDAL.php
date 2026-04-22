@@ -18,6 +18,32 @@ class AccountDAL
 
     }
 
+    public static function updateJoueur(PDO $connexion, int $idJoueur, string $username, string $prenom, string $nom, 
+                            string $email, string $finalPassword, string $avatarFinal ): bool 
+    {
+
+        $sql = "UPDATE Joueurs 
+            SET alias = :alias,
+                prenom = :prenom,
+                nom = :nom,
+                courriel = :email,
+                motDePasse = :finalPassword,
+                avatar = :avatarFinal
+            WHERE idJoueur = :idJoueur";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+        $statement->bindValue(':alias', $username, PDO::PARAM_STR);
+        $statement->bindValue(':prenom', $prenom, PDO::PARAM_STR);
+        $statement->bindValue(':nom', $nom, PDO::PARAM_STR);
+        $statement->bindValue(':email', $email, PDO::PARAM_STR);
+        $statement->bindValue(':finalPassword', $finalPassword, PDO::PARAM_STR);
+        $statement->bindValue(':avatarFinal', $avatarFinal, PDO::PARAM_STR);        
+
+        return $statement->execute();
+    }
+
     public static function insertOne(PDO $connexion, string $username, string $prenom, string $nom, string $courriel, string $motDePasse, int $estMage = 0, int $estAdmin = 0): bool
     {
 
