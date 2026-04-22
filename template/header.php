@@ -7,31 +7,47 @@
             <h1 class="titre"><?= ACTIVE_PAGE->text() ?></h1>
         </div>
 
-        <?php if (IS_AUTH): ?>
-            
-            <?php
-                $headerCon = $connexion ?? Database::getConnexion($dbConfig);
-                $goldStmt = $headerCon->prepare("SELECT gold FROM joueurs WHERE idJoueur = :id");
-                $goldStmt->bindValue(':id', (int) $_SESSION['id'], PDO::PARAM_INT);
-                $goldStmt->execute();
-                $headerGold = (int) ($goldStmt->fetch()['gold'] ?? 0);
-            ?>
-            <div class="headerCenter">
-                <span class="header-gold">Nombre de pièces: <?= number_format($headerGold) ?>&nbsp;🪙</span>
-            </div>
-        <?php endif; ?>
-
         <div class="headerRight">
             <?php if (IS_AUTH): ?>
+                <?php
+                    $headerCon = $connexion ?? Database::getConnexion($dbConfig);
+                    $goldStmt = $headerCon->prepare("SELECT gold FROM joueurs WHERE idJoueur = :id");
+                    $goldStmt->bindValue(':id', (int) $_SESSION['id'], PDO::PARAM_INT);
+                    $goldStmt->execute();
+                    $headerGold = (int) ($goldStmt->fetch()['gold'] ?? 0);
+                ?>
+                <span class="header-gold">Nombre de pièces: <?= number_format($headerGold) ?>&nbsp;🪙</span>
                 <a class='headerButtons' href="<?= Page::Catalogue->url() ?>">Items</a>
                 <?php if (IS_ADMIN): ?>
                     <a class='headerButtons' href="<?= Page::Admin->url() ?>">Admin</a>
                 <?php endif; ?>
                 <a class='headerButtons' href="<?= Page::Inventaire->url() ?>">Inventaire</a>
                 <a class='headerButtons' href="">Énigma</a>
+                <?php
+                    $headerCartKey = !empty($_SESSION['id'])
+                        ? 'panier_user_' . (int) $_SESSION['id']
+                        : 'panier_guest';
+                    $headerCartCount = isset($_SESSION[$headerCartKey]) && is_array($_SESSION[$headerCartKey])
+                        ? array_sum(array_column($_SESSION[$headerCartKey], 'quantite'))
+                        : 0;
+                ?>
+                <a class='headerButtons cart-btn' href="<?= Page::Panier->url() ?>">Panier
+                    <?php if ($headerCartCount > 0): ?>
+                        <span class="cart-badge" id="cart-badge"><?= $headerCartCount ?></span>
+                    <?php else: ?>
+                        <span class="cart-badge cart-badge-hidden" id="cart-badge">0</span>
+                    <?php endif; ?>
+                </a>
+                <a class='headerButtons' href="<?= Page::Enigme->url() ?>">Énigma</a>
                 <a class='headerButtons' href="<?= Page::Panier->url() ?>">Panier</a>
             <?php endif; ?>
-            <a href="<?= Page::Connexion->url() ?>"><img class="avatar" src="/public/img/avatar.jpg" alt="Avatar"></a>
+            <!-- si on est connecté, en cliquant sur l'avatar on arrive a la page profil -->
+            <?php if (IS_AUTH): ?>
+                <a href="<?= Page::Profil->url() ?>"><img class="avatar" src="<?= AVATAR . $_SESSION['avatar'] ?>" alt="Avatar"></a>
+            <!-- si on n'est pas connecté, en cliquant sur l'avatar on arrive a la page de connexion -->
+            <?php else: ?>
+                <a href="<?= Page::Connexion->url() ?>"><img class="avatar" src="<?= AVATAR . 'avatar_default.jpg' ?>" alt="Avatar"></a>
+            <?php endif; ?>
             <?php if (IS_AUTH): ?>
                 <a href="logout.php" class="logout-btn" title="Se déconnecter">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

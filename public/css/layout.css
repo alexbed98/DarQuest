@@ -57,14 +57,6 @@ body {
     outline-offset: 2px;
 }
 
-.headerCenter {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    align-items: center;
-}
-
 .header-gold {
     background: linear-gradient(135deg, #94A3D9 0%, #7e89b4 100%);
     border: 1px solid #6a75a0;
@@ -91,6 +83,35 @@ main {
     width: 30%;
     padding-right: 15px;
     gap: 10px;
+}
+
+/* ── Cart badge on Panier button ──────────────────────────── */
+.cart-btn {
+    position: relative;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #e04040;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    border: 2px solid #dce3ee;
+    pointer-events: none;
+    transition: transform 0.2s ease;
+}
+
+.cart-badge-hidden {
+    display: none;
 }
 
 .logo {
