@@ -189,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
 <!-- Côté droit de la page -->
 <div class="conteneur">
     <div class="conteneur" style="display: flex; justify-content: center; align-items: center;">
-        <img src="/public/img/items/<?= htmlspecialchars($item['photo']) ?>" 
+        <img src="<?= IMG ?>/items/<?= htmlspecialchars($item['photo']) ?>" 
             alt="image item" 
             style="height: 300px; width: 500px;">
     </div>

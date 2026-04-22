@@ -20,7 +20,7 @@
         <h2 class="admin-panel-title">Creation des items</h2>
         <p class="admin-panel-subtitle">Ajoute un nouvel objet a la boutique.</p>
 
-        <form class="admin-form-grid" method="post" action="/admin.php" enctype="multipart/form-data">
+        <form class="admin-form-grid" method="post" action="<?= Page::Admin->url() ?>" enctype="multipart/form-data">
             <input type="hidden" name="action" value="create_item" />
 
             <!-- Champs communs -->
@@ -138,7 +138,7 @@
 
 <div id="enigmeFormContainer" class="toggleForm admin-panel">
 
-    <form method="post" action="/admin.php" class="admin-panel-card admin-form-quest">
+    <form method="post" action="<?= Page::Admin->url() ?>" class="admin-panel-card admin-form-quest">
         <input type="hidden" name="action" value="create_enigme" />
 
         <h2 class="admin-panel-title">Creation des quetes</h2>

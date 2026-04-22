@@ -235,7 +235,7 @@ if (IS_POST) {
                                 <label for="image" class="form-label"></span>Avatar</label>
 
                                 <div style="margin-bottom: 10px; display: flex;">
-                                    <img src="/upload/<?= $avatar ?>" alt="Avatar actuel" style="max-width: 60px; border-radius: 8px; margin: auto">
+                                    <img src="<?= AVATAR . $avatar ?>" alt="Avatar actuel" style="max-width: 60px; border-radius: 8px; margin: auto">
                                 </div>
 
                                 <input name="image" type="file" class="form-control" 

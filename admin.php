@@ -14,7 +14,7 @@ require_once 'core/Email.php';
 
 // Securite: seul un admin peut acceder a cette page
 if (!IS_ADMIN) {
-    header('Location: /index.php');
+    header('Location: ' . Page::Home->url());
     exit;
 }
 
@@ -80,7 +80,7 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_item') {
     }
 
     if ($ok) {
-        header('Location: /admin.php?success=item');
+        header('Location: ' . Page::Admin->url() . '?success=item');
         exit;
     } elseif ($itemError === null) {
         $itemError = "Erreur lors de la creation de l'item. Verifiez les champs.";
@@ -106,7 +106,7 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_enigme') {
                 EnigneDAL::insertReponse($connexion, $texte, ($i === $bonneRep ? 1 : 0), $newId);
             }
         }
-        header('Location: /admin.php?success=enigme');
+        header('Location: ' . Page::Admin->url() . '?success=enigme');
         exit;
     } else {
         $enigmeError = "Erreur lors de la creation de l'enigme.";
