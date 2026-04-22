@@ -109,7 +109,7 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_enigme') {
         header('Location: ' . Page::Admin->url() . '?success=enigme');
         exit;
     } else {
-        $enigmeError = "Erreur lors de la creation de l'enigme.";
+        $enigmeError = "Erreur lors de la creation de l'enigme. Verifie que la categorie existe dans la table Categories.";
     }
 }
 
