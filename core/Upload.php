@@ -25,6 +25,10 @@ class Upload
         $tempName = $_FILES[$fileKey]['tmp_name'];
         $fileName = basename($_FILES[$fileKey]['name']);
 
+        if (!is_dir($destinationFolder) && !mkdir($destinationFolder, 0775, true) && !is_dir($destinationFolder)) {
+            return false;
+        }
+
         $destinationPath = $destinationFolder . '/' . $fileName;
 
         // éviter écrasement si meme nom de fichier

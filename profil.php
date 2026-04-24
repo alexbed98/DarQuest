@@ -107,7 +107,7 @@ if (IS_POST) {
 
     $newAvatar = Upload::move(
         'image',
-        'C:\wamp64\www\DarQuestMain\upload',
+        UPLOAD,
         $allowedTypes
     );
 
