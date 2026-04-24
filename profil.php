@@ -111,6 +111,12 @@ if (IS_POST) {
         $allowedTypes
     );
 
+    if (!empty($_FILES['image']['name']) && $newAvatar === false) {
+        $messages['image'] = is_writable(UPLOAD)
+            ? 'Le fichier avatar n\'a pas pu etre televerse. Verifiez le format accepte.'
+            : 'Le dossier upload n\'est pas accessible en ecriture sur le serveur.';
+    }
+
     if ($newAvatar !== false && $newAvatar !== null) {
         $avatarFinal = $newAvatar;
     }
@@ -241,7 +247,7 @@ if (IS_POST) {
                                 <input name="image" type="file" class="form-control" 
                                         id="image" aria-describedby="imageHelp" accept=".jpg,.png,.webp,.avif">
 
-                                <div id="imageHelp" class="form-text text-danger"></div>
+                                <div id="imageHelp" class="form-text text-danger"><?= $messages['image'] ?? '' ?></div>
                             </div>
 
                             <div class="mb-3">
