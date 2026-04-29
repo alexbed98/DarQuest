@@ -6,6 +6,7 @@ include_once 'src/initialization.php';
 require_once 'src/AccountDAL.php';
 require_once 'src/EnigmeDAL.php';
 require_once 'src/StatistiqueDAL.php';
+require_once 'src/CategoryDAL.php';
 
 $connexion = Database::getConnexion($dbConfig);
 $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0;
@@ -29,9 +30,7 @@ if (EnigneDAL::countAllEnigme($connexion)) { //Verifie s'il y a des enigmes (Ret
     $errorMessage = "Désoler, il n'y a pas de quête pour le moment";
 }
 
-
 if (IS_POST) {
-
 
     $bonOuPas = $_POST['answer'] ?? null; // => 1 si la reponse choisi est bon, sinon 0
     $difficulte = $_POST['difficulte'] ?? null;// => return la difficulte
@@ -44,7 +43,7 @@ if (IS_POST) {
             $message = AccountDAL::takeDamage($connexion, $_SESSION['email'], $idEnigme);//'Mauvaise réponse';
         }
 }
-$peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0;
+$peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0; //Update son acces au jeu
 ?>
 
 <div style="flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
@@ -79,14 +78,12 @@ $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0;
                 <?php endforeach; ?>
                 <button type="submit" style="width: 30%; margin:20px;">Valider la réponse</button>
 
-
             <?php else: ?>
 
                 <?php if (EnigneDAL::countAllEnigme(Database::getConnexion($dbConfig))): ?>
                     <!-- S'il n'y a pas de quete, n'affiche pas le button pour une nouvelle quete -->
                     <button type="submit" style="width: 30%; margin:20px;">Nouvelle quête</button>
                 <?php endif ?>
-
 
             <?php endif ?>
 
