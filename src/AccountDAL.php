@@ -78,6 +78,40 @@ class AccountDAL
 
     }
     //-------------------------------------------------------------------------------
+    //Select l'jp' d'un joueur selon son email
+    //-------------------------------------------------------------------------------
+    public static function selectHp(PDO $connexion, string $email): false|string
+    {
+
+        $sql = "SELECT pointVie from joueurs where courriel=:email";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue('email', $email, PDO::PARAM_STR);
+
+        $statement->execute();
+
+        return $statement->fetchColumn();
+
+    }
+    //-------------------------------------------------------------------------------
+    //Select l'jp' d'un joueur selon son email
+    //-------------------------------------------------------------------------------
+    public static function selectEstMage(PDO $connexion, string $email): bool
+    {
+
+        $sql = "SELECT EstMage from joueurs where courriel=:email";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue('email', $email, PDO::PARAM_STR);
+
+        $statement->execute();
+
+        return $statement->fetchColumn() == 1 ? true : false;
+
+    }
+    //-------------------------------------------------------------------------------
     //Select le nombre d'or d'un joueur selon son email
     //-------------------------------------------------------------------------------
     public static function selectGold(PDO $connexion, string $email): false|string
@@ -99,10 +133,13 @@ class AccountDAL
     //l'email correspondant
     //Il retourn une phrase pour indiquer au joueur ce qu'il a gagné
     //-------------------------------------------------------------------------------
-    public static function addReward(PDO $connexion, string $email, string $difficulte): string
+    public static function addReward(PDO $connexion, string $email, string $id): string
     {
         $sql = null;
         $piece = '';
+        $enigme = EnigneDAL::selectById($connexion, $id);
+        $difficulte = $enigme['difficulte'];
+
         switch ($difficulte) {
             case 'F':
                 $sql = "UPDATE Joueurs SET bronze = bronze + 100 WHERE courriel=:email";
@@ -127,6 +164,9 @@ class AccountDAL
             $statement->bindValue('email', $email, PDO::PARAM_STR);
 
             $statement->execute();
+
+            StatistiqueDAL::updateStatistique($connexion, $email, $id, 1); //Modifie ses statistiques
+            self::becomeMage($connexion, $email);//Verifie s'il peut devenir mage
         }
         return 'Vous avez gagné 100 pièces ' . $piece . "!";
     }
@@ -134,10 +174,13 @@ class AccountDAL
     //Enleve l'hp du joueur avec l'email correspondant selon la difficulter 
     //Il retourn une phrase pour indiquer au joueur ce qu'il a perdu
     //-------------------------------------------------------------------------------
-    public static function takeDamage(PDO $connexion, string $email, string $difficulte): string
+    public static function takeDamage(PDO $connexion, string $email, string $id): string
     {
         $sql = null;
         $hp = '';
+        $enigme = EnigneDAL::selectById($connexion, $id);
+        $difficulte = $enigme['difficulte'];
+
         switch ($difficulte) {
             case 'F':
                 $sql = "UPDATE Joueurs SET pointVie = pointVie - 3 WHERE courriel=:email";
@@ -162,10 +205,38 @@ class AccountDAL
             $statement->bindValue('email', $email, PDO::PARAM_STR);
 
             $statement->execute();
+
+            if (AccountDAL::selectHp($connexion, $email) < 0) {//Pour eviter que le joueur a un hp negatif et influence futur fonction liee a l'hp
+                $sql = "UPDATE Joueurs SET pointVie = 0 WHERE courriel=:email";
+                $statement = $connexion->prepare($sql);
+
+                $statement->bindValue('email', $email, PDO::PARAM_STR);
+
+                $statement->execute();
+            }
+
+            StatistiqueDAL::updateStatistique($connexion, $email, $id, 0);
         }
         return 'Vous avez perdu  ' . $hp . 'HP!';
     }
+    //-------------------------------------------------------------------------------
+    //Procedure qui change la class du joueur a mage s'il ne l'etait pas avant et
+    //qu'il a au moin 3 enigmes de magies qu'il a reussi
+    //-------------------------------------------------------------------------------
+    public static function becomeMage(PDO $connexion, string $email): void
+    {
+        $sql = null;
+        if (!self::selectEstMage($connexion, $email) && StatistiqueDAL::selectAllSuccesfulMagicQuestions($connexion, $email) >= 3) {
 
+            $sql = "UPDATE Joueurs SET estMage = 1 WHERE courriel=:email";
+
+            $statement = $connexion->prepare($sql);
+
+            $statement->bindValue('email', $email, PDO::PARAM_STR);
+
+            $statement->execute();
+        }
+    }
     public static function courrielExistant(PDO $connexion, string $email): bool
     {
         $sql = "SELECT COUNT(*) FROM Joueurs WHERE courriel = :email";

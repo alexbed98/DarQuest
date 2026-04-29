@@ -10,7 +10,7 @@ class EnigmeDAL
     public static function selectRandomEnigme(PDO $connexion): array | false
     {
 
-        $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee 
+        $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee
                 FROM Enigmes;";
 
         $statement = $connexion->prepare($sql);
@@ -21,8 +21,6 @@ class EnigmeDAL
             return false;
         }
         $randIndex = array_rand($randomEnigme);
-
-        //self::$currentDif = $randomEnigme[$randIndex]['difficulte'];
 
         return $randomEnigme[$randIndex];
     }
@@ -43,6 +41,23 @@ class EnigmeDAL
         $statement->execute();
 
         return $statement->fetchAll();
+    }
+    //-------------------------------------------------------------------------------
+    //Selectionne une enigme selon son id
+    //-------------------------------------------------------------------------------
+    public static function selectById(PDO $connexion, $enigmeId): array | false
+    {
+
+        $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee
+                FROM Enigmes
+                WHERE idEnigme = :enigmeId;";
+
+
+        $statement = $connexion->prepare($sql);
+        $statement->bindValue(':enigmeId', $enigmeId, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->fetch();
     }
     //-------------------------------------------------------------------------------
     //Compte tout les enigmes
