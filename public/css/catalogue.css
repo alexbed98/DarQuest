@@ -106,6 +106,21 @@
     box-shadow: 0 4px 8px rgba(78, 93, 143, 0.28);
 }
 
+.item-add-btn:disabled {
+    background-color: #d0d9eb;
+    border-color: #a8b0c8;
+    color: #9a9fa9;
+    cursor: not-allowed;
+    opacity: 0.65;
+    transform: none;
+}
+
+.item-add-btn:disabled:hover {
+    box-shadow: none;
+    background-color: #d0d9eb;
+    transform: none;
+}
+
 /* ── Item image / background ──────────────────────────────── */
 .background {
     border: 2px solid #7e89b4;

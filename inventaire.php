@@ -61,6 +61,18 @@ if (IS_POST && isset($_POST['vendre_id'])) {
     exit;
 }
 
+// Consommer une potion (PRG)
+if (IS_POST && isset($_POST['consommer_potion_id'])) {
+    $idItem = filter_input(INPUT_POST, 'consommer_potion_id', FILTER_VALIDATE_INT);
+
+    if ($idItem && InventaireDAL::consommerPotion($connexion, $idJoueur, $idItem)) {
+        $_SESSION['potion_message'] = 'Potion consommée !';
+    }
+
+    header('Location: ' . Page::Inventaire->url());
+    exit;
+}
+
 // Lire les paramètres de tri et filtre depuis GET
 $triActif     = in_array($_GET['tri'] ?? '', ['prix_asc', 'prix_desc', 'type']) ? $_GET['tri'] : 'nom';
 $filtresActifs = array_intersect((array) ($_GET['filtre'] ?? []), ['A', 'R', 'P', 'S']);

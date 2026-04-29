@@ -96,10 +96,11 @@ switch ($item['typeItem']) {
 
     
     <div>
+        <?php $outOfStock = (int) ($item['quantiteStock'] ?? 0) <= 0; ?>
         <form method="POST" style="display: flex; margin-top: 1em;">
             <input type="hidden" name="add_item_id" value="<?= $item['idItem'] ?>">
-            <input type="number" name="update_qty" class="panier-qty-input auto-submit-input" value="1" min="1" style="margin-right: 0.2em;">
-            <button type="submit" class="boutonAjouter">Ajouter au panier</button>
+            <input type="number" name="update_qty" class="panier-qty-input auto-submit-input" value="<?= $outOfStock ? 0 : 1 ?>" min="1" max="<?= (int) $item['quantiteStock'] ?>" style="margin-right: 0.2em;" <?= $outOfStock ? 'disabled' : '' ?>>
+            <button type="submit" class="boutonAjouter" <?= $outOfStock ? 'disabled' : '' ?>>Ajouter au panier</button>
             <div class="flexRow">
                 <p style="margin-left: 0.8em;"><strong>Total: </strong></p>
                 <p id="prixTotal"></p>

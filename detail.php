@@ -23,6 +23,12 @@ if (IS_POST && isset($_POST['add_item_id'])) {
         $item = ItemDAL::selectById($connexion, $itemId);
 
         if ($item !== false) {
+            if ((int) ($item['quantiteStock'] ?? 0) <= 0) {
+                $_SESSION['cart_notice'] = 'Item en rupture de stock.';
+                header('Location: ' . $_SERVER['REQUEST_URI']);
+                exit;
+            }
+
             if (!empty($_SESSION['id'])) {
                 $cartSessionKey = 'panier_user_' . (int) $_SESSION['id'];
             } elseif (!empty($_SESSION['email'])) {

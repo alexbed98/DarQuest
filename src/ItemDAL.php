@@ -13,7 +13,7 @@ class ItemDAL
     public static function select(PDO $connexion): array
     {
 
-        $where = ' WHERE estDisponible = true && quantiteStock > 0 ';
+        $where = ' WHERE estDisponible = true ';
 
         if (count(self::$filtre) > 0) {
             $where .= " && (typeItem =  '" . self::$filtre[0] . "' ";

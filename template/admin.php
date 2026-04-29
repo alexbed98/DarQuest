@@ -216,6 +216,42 @@
             <button class="mainButton btn-refuser">Refuser</button>
         </div>
     </div>
+
+    <div>
+        <div class="demande-text">
+            <p><strong>Joueur:</strong>Luna</p>
+            <p><strong>Demande:</strong> J'ai perdu mon equipement apres une quete, peux-tu m'aider?</p>
+        </div>
+
+        <div class="demande-actions">
+            <button class="mainButton btn-accepter">Accepter</button>
+            <button class="mainButton btn-refuser">Refuser</button>
+        </div>
+    </div>
+
+    <div>
+        <div class="demande-text">
+            <p><strong>Joueur:</strong> Rook</p>
+            <p><strong>Demande:</strong> Je n'ai pas recu ma recompense de quete d'hier.</p>
+        </div>
+
+        <div class="demande-actions">
+            <button class="mainButton btn-accepter">Accepter</button>
+            <button class="mainButton btn-refuser">Refuser</button>
+        </div>
+    </div>
+
+    <div>
+        <div class="demande-text">
+            <p><strong>Joueur:</strong> Mira</p>
+            <p><strong>Demande:</strong> Je suis bloquee dans la quete des ruines, indice svp.</p>
+        </div>
+
+        <div class="demande-actions">
+            <button class="mainButton btn-accepter">Accepter</button>
+            <button class="mainButton btn-refuser">Refuser</button>
+        </div>
+    </div>
 </div>
 
 

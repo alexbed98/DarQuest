@@ -51,35 +51,87 @@
 
 
 #demandesJoueurs {
-    max-width: 100%;
+    max-width: 860px;
+    margin: 14px auto 0;
 }
 
 #demandesJoueurs > div {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+    gap: 14px;
+    padding: 14px;
+    border: 2px solid #7e89b4;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #edf0f8 0%, #e2e8f4 100%);
+    box-shadow: 0 8px 20px rgba(78, 93, 143, 0.12);
 }
 
 .demande-text {
     display: flex;
-    gap: 15px;
+    align-items: center;
+    gap: 18px;
     flex: 1;
+    color: #3f496a;
+}
+
+.demande-text p {
+    margin: 0;
+}
+
+.demande-text p:last-child {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
 }
 
 .demande-actions {
     display: flex;
     gap: 10px;
+    flex-shrink: 0;
 }
 
 .btn-accepter {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #62a56f;
+    color: #ffffff;
+    border-color: #4d8a59;
 }
 
 .btn-refuser {
-    background-color: #e74c3c;
-    color: white;
+    background-color: #cb6e65;
+    color: #ffffff;
+    border-color: #ab5a53;
+}
+
+.btn-accepter:hover,
+.btn-accepter:focus-visible {
+    background-color: #79b985;
+}
+
+.btn-refuser:hover,
+.btn-refuser:focus-visible {
+    background-color: #d9837b;
+}
+
+@media (max-width: 768px) {
+    #demandesJoueurs > div {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .demande-text {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .demande-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .demande-actions .mainButton {
+        width: 100%;
+    }
 }

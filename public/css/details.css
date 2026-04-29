@@ -32,6 +32,14 @@
     transition: background-color 0.2s ease, opacity 0.2s ease;
 }
 
+.boutonAjouter:disabled {
+    background-color: #f3d7d7;
+    border-color: #c97f7f;
+    color: #8f2e2e;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
 .espacementGauche{
     margin-left: 5em;
 }

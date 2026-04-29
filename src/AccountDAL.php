@@ -94,6 +94,21 @@ class AccountDAL
         return $statement->fetchColumn();
 
     }
+
+    public static function selectPointVie(PDO $connexion, string $email): false|string
+    {
+
+        $sql = "SELECT pointVie from Joueurs where courriel=:email";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue('email', $email, PDO::PARAM_STR);
+
+        $statement->execute();
+
+        return $statement->fetchColumn();
+
+    }
     //-------------------------------------------------------------------------------
     //Ajouter 100 pièces de bronze/argent/or selon la difficulter au joueur avec
     //l'email correspondant

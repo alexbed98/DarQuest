@@ -27,9 +27,10 @@ class InventaireDAL
             $where .= " AND i.typeItem IN ($placeholders)";
         }
 
-        $sql = "SELECT i.idItem, i.nom, i.prix, i.photo, i.typeItem, inv.quantiteInventaire
+        $sql = "SELECT i.idItem, i.nom, i.prix, i.photo, i.typeItem, inv.quantiteInventaire, p.effet AS effetPotion
             FROM Inventaires inv
             JOIN Items i ON i.idItem = inv.idItem
+            LEFT JOIN Potions p ON p.idItem = i.idItem
                 $where
                 ORDER BY $order";
 
@@ -175,5 +176,135 @@ class InventaireDAL
         }
 
         return true;
+    }
+
+    /**
+     * Consomme 1 potion de vie (effet contenant "vie") et rend des points de vie au joueur.
+     */
+    public static function consommerPotionVie(PDO $pdo, int $idJoueur, int $idItem, int $gainPv = 10): bool
+    {
+        $check = $pdo->prepare(
+            "SELECT inv.quantiteInventaire, i.typeItem, p.effet
+             FROM Inventaires inv
+             JOIN Items i ON i.idItem = inv.idItem
+             LEFT JOIN Potions p ON p.idItem = i.idItem
+             WHERE inv.idJoueur = :idJoueur AND inv.idItem = :idItem"
+        );
+        $check->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+        $check->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+        $check->execute();
+        $row = $check->fetch();
+
+        if ($row === false || (int) ($row['quantiteInventaire'] ?? 0) < 1) {
+            return false;
+        }
+
+        $isPotionVie = (($row['typeItem'] ?? '') === 'P')
+            && stripos((string) ($row['effet'] ?? ''), 'vie') !== false;
+
+        if (!$isPotionVie) {
+            return false;
+        }
+
+        $pdo->beginTransaction();
+        try {
+            if ((int) $row['quantiteInventaire'] === 1) {
+                $del = $pdo->prepare(
+                    "DELETE FROM Inventaires WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                );
+                $del->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $del->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $del->execute();
+            } else {
+                $updInv = $pdo->prepare(
+                    "UPDATE Inventaires
+                     SET quantiteInventaire = quantiteInventaire - 1
+                     WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                );
+                $updInv->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $updInv->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $updInv->execute();
+            }
+
+            $updPv = $pdo->prepare(
+                "UPDATE Joueurs SET pointVie = pointVie + :gainPv WHERE idJoueur = :idJoueur"
+            );
+            $updPv->bindValue(':gainPv', $gainPv, PDO::PARAM_INT);
+            $updPv->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+            $updPv->execute();
+
+            $pdo->commit();
+            return true;
+        } catch (\Exception $e) {
+            $pdo->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Consomme 1 potion et applique l'effet approprié:
+     * - Si c'est une potion de "vie", ajoute +10 PV
+     * - Sinon, retire simplement la potion
+     */
+    public static function consommerPotion(PDO $pdo, int $idJoueur, int $idItem): bool
+    {
+        $check = $pdo->prepare(
+            "SELECT inv.quantiteInventaire, i.typeItem, p.effet AS effetPotion
+             FROM Inventaires inv
+             JOIN Items i ON i.idItem = inv.idItem
+             LEFT JOIN Potions p ON p.idItem = i.idItem
+             WHERE inv.idJoueur = :idJoueur AND inv.idItem = :idItem"
+        );
+        $check->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+        $check->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+        $check->execute();
+        $row = $check->fetch();
+
+        if ($row === false || (int) ($row['quantiteInventaire'] ?? 0) < 1) {
+            return false;
+        }
+
+        $isPotion = (($row['typeItem'] ?? '') === 'P');
+
+        if (!$isPotion) {
+            return false;
+        }
+
+        $isPotionVie = stripos((string) ($row['effetPotion'] ?? ''), 'vie') !== false;
+
+        $pdo->beginTransaction();
+        try {
+            if ((int) $row['quantiteInventaire'] === 1) {
+                $del = $pdo->prepare(
+                    "DELETE FROM Inventaires WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                );
+                $del->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $del->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $del->execute();
+            } else {
+                $updInv = $pdo->prepare(
+                    "UPDATE Inventaires
+                     SET quantiteInventaire = quantiteInventaire - 1
+                     WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                );
+                $updInv->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $updInv->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $updInv->execute();
+            }
+
+            if ($isPotionVie) {
+                $updPv = $pdo->prepare(
+                    "UPDATE Joueurs SET pointVie = pointVie + 10 WHERE idJoueur = :idJoueur"
+                );
+                $updPv->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $updPv->execute();
+            }
+
+            $pdo->commit();
+            return true;
+        } catch (\Exception $e) {
+            $pdo->rollBack();
+            return false;
+        }
     }
 }

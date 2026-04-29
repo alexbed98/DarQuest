@@ -1,3 +1,12 @@
+<?php $potionMessage = $_SESSION['potion_message'] ?? ''; ?>
+<?php unset($_SESSION['potion_message']); ?>
+
+<?php if (!empty($potionMessage)): ?>
+    <div class="inventaire-notification inventaire-notification-success" role="status" aria-live="polite">
+        <?= htmlspecialchars($potionMessage) ?>
+    </div>
+<?php endif; ?>
+
 <div class="catalogue">
 
     <!-- Panneau latéral (filtre/tri) -->
@@ -79,6 +88,18 @@
                 <div class="inventaire-info">
                     <span class="inventaire-nom"><?= htmlspecialchars($item['nom']) ?></span>
                     <span class="inventaire-prix"><?= number_format((float) $item['prix']) ?>&nbsp;🥇</span>
+
+                    <?php
+                        $isPotion = ($item['typeItem'] ?? '') === 'P';
+                    ?>
+
+                    <?php if ($isPotion): ?>
+                        <form method="post" action="<?= Page::Inventaire->url() ?>" class="inventaire-consommer-form">
+                            <input type="hidden" name="consommer_potion_id" value="<?= (int) $item['idItem'] ?>">
+                            <button type="submit" class="inventaire-consommer-btn">Consommer</button>
+                        </form>
+                    <?php endif; ?>
+
                     <form method="post" action="<?= Page::Inventaire->url() ?>" class="inventaire-vendre-form">
                         <input type="hidden" name="vendre_id" value="<?= (int) $item['idItem'] ?>">
                         <input
