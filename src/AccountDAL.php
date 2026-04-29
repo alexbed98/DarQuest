@@ -44,10 +44,10 @@ class AccountDAL
         return $statement->execute();
     }
 
-    public static function insertOne(PDO $connexion, string $username, string $prenom, string $nom, string $courriel, string $motDePasse, int $estMage = 0, int $estAdmin = 0): bool
+    public static function insertOne(PDO $connexion, string $username, string $prenom, string $nom, string $courriel, string $motDePasse, string $activation_guid, string $reset_guid = "", int $estMage = 0, int $estAdmin = 0): bool
     {
 
-        $sql = "insert into Joueurs (alias, prenom, nom, estMage, courriel, motDePasse, estAdmin) values(:username, :prenom, :nom, :estMage, :courriel, :motDePasse, :estAdmin)";
+        $sql = "insert into Joueurs (alias, prenom, nom, estMage, courriel, motDePasse, activation_guid, reset_guid, estAdmin) values(:username, :prenom, :nom, :estMage, :courriel, :motDePasse, :activation_guid, :reset_guid, :estAdmin)";
 
         $statement = $connexion->prepare($sql);
 
@@ -56,6 +56,8 @@ class AccountDAL
         $statement->bindValue('nom', $nom, PDO::PARAM_STR);
         $statement->bindValue('courriel', $courriel, PDO::PARAM_STR);
         $statement->bindValue('motDePasse', $motDePasse, PDO::PARAM_STR);
+        $statement->bindValue('activation_guid', $activation_guid, PDO::PARAM_STR);
+        $statement->bindValue('reset_guid', $reset_guid, PDO::PARAM_STR);
         $statement->bindValue('estMage', $estMage, PDO::PARAM_INT);
         $statement->bindValue('estAdmin', $estAdmin, PDO::PARAM_INT);
 
