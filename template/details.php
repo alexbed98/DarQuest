@@ -10,7 +10,7 @@ $connexion = Database::getConnexion($dbConfig);
 $id = isset($_GET['idItem']) ? intval($_GET['idItem']) : 0;
 
 
-$stmt = $connexion->prepare("SELECT * FROM items WHERE idItem = ?");
+$stmt = $connexion->prepare("SELECT * FROM Items WHERE idItem = ?");
 $stmt->execute([$id]);
 
 $item = $stmt->fetch();
@@ -25,116 +25,36 @@ $details = null;
 switch ($item['typeItem']) {
 
     case 'A':
-        $stmt2 = $connexion->prepare("SELECT * FROM armes WHERE idItem = ?");
+        $stmt2 = $connexion->prepare("SELECT * FROM Armes WHERE idItem = ?");
         $stmt2->execute([$id]);
         $details = $stmt2->fetch(PDO::FETCH_ASSOC);
         break;
 
     case 'R':
-        $stmt2 = $connexion->prepare("SELECT * FROM armures WHERE idItem = ?");
+        $stmt2 = $connexion->prepare("SELECT * FROM Armures WHERE idItem = ?");
         $stmt2->execute([$id]);
         $details = $stmt2->fetch(PDO::FETCH_ASSOC);
         break;
 
     case 'P':
-        $stmt2 = $connexion->prepare("SELECT * FROM potions WHERE idItem = ?");
+        $stmt2 = $connexion->prepare("SELECT * FROM Potions WHERE idItem = ?");
         $stmt2->execute([$id]);
         $details = $stmt2->fetch(PDO::FETCH_ASSOC);
         break;
 
     case 'S':
-        $stmt2 = $connexion->prepare("SELECT * FROM sorts WHERE idItem = ?");
+        $stmt2 = $connexion->prepare("SELECT * FROM Sorts WHERE idItem = ?");
         $stmt2->execute([$id]);
         $details = $stmt2->fetch(PDO::FETCH_ASSOC);
         break;
 }
-
-
-/*
-Code ajouter panier
-*/
-
-function getCartSessionKey(): string
-{
-    if (!empty($_SESSION['id'])) {
-        return 'panier_user_' . (int) $_SESSION['id'];
-    }
-
-    // Fallback si l'id n'est pas encore disponible en session.
-    if (!empty($_SESSION['email'])) {
-        return 'panier_user_' . md5(strtolower((string) $_SESSION['email']));
-    }
-
-    return 'panier_guest';
-}
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
-
-    $itemId = filter_input(INPUT_POST, 'add_item_id', FILTER_VALIDATE_INT);
-    $qty = filter_input(INPUT_POST, 'update_qty', FILTER_VALIDATE_INT);
-    $qty = ($qty && $qty > 0) ? $qty : 1;
-    
-    if ($itemId) {
-
-        $item = ItemDAL::selectById($connexion, $itemId);
-
-        if ($item !== false) {
-
-            $cartSessionKey = getCartSessionKey();
-
-            if (!isset($_SESSION[$cartSessionKey])) {
-                $_SESSION[$cartSessionKey] = [];
-            }
-
-            $found = false;
-
-            foreach ($_SESSION[$cartSessionKey] as &$cartItem) {
-                if ($cartItem['id'] == $item['idItem']) {
-                    $cartItem['quantite'] += $qty;
-                    $_SESSION['cart_notice'] = 'Quantité mise à jour.';
-                    $found = true;
-                    break;
-                }
-            }
-            unset($cartItem);
-
-            
-
-            if (!$found) {
-
-                $photo = (string) $item['photo'];
-                $image = ($photo !== '' && $photo[0] === '/')
-                    ? $photo
-                    : '/public/img/items/' . ltrim($photo, '/');
-
-                $_SESSION[$cartSessionKey][] = [
-                    'id' => (int) $item['idItem'],
-                    'nom' => (string) $item['nom'],
-                    'image' => $image,
-                    'prix' => (float) $item['prix'],
-                    'quantite' => $qty,
-                ];
-
-                $_SESSION['cart_notice'] = 'Item ajouté au panier.';
-            }
-
-            if (!empty($_SESSION['id'])) {
-                CartDAL::saveCart($connexion, (int) $_SESSION['id'], $_SESSION[$cartSessionKey]);
-            }
-        }
-    }
-
-    header('Location: ' . $_SERVER['REQUEST_URI']);
-    exit;
-}
-
 
 
 ?>
 
 <div class="mainContainer">
 <!-- Côté gauche de la page -->
-<div class="conteneur">
+<div class="conteneur, espacementGauche">
     <h2><?= htmlspecialchars($item['nom']) ?></h2>
 
     <?php if ($item['typeItem'] == 'A'): ?>
@@ -191,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
 <!-- Côté droit de la page -->
 <div class="conteneur">
     <div class="conteneur" style="display: flex; justify-content: center; align-items: center;">
-        <img src="/public/img/items/<?= htmlspecialchars($item['photo']) ?>" 
+        <img src="<?= IMG ?>/items/<?= htmlspecialchars($item['photo']) ?>" 
             alt="image item" 
             style="height: 300px; width: 500px;">
     </div>

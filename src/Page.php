@@ -8,7 +8,9 @@ enum Page
     case Panier;
     case Inventaire;
     case CreationCompte;
+    case Profil;
     case Enigme;
+    case Admin;
 
 
     public function text(): string {
@@ -22,6 +24,8 @@ enum Page
             Page::Panier => 'Panier',
             Page::Inventaire => 'Inventaire',
             Page::CreationCompte => 'Création de compte',
+            Page::Admin => 'Administration',
+            Page::Profil => 'Profil',
             Page::Enigme => 'Enigme',
         };
 
@@ -29,16 +33,20 @@ enum Page
 
     public function url(): string {
 
+        $base = defined('URL_ROOT') ? URL_ROOT : '/';
+
         return match($this) {
             
-            Page::Home => '/',
-            Page::Catalogue => '/catalogue',
-            Page::Details => '/detail',
-            Page::Connexion => '/login',
-            Page::Panier => '/panier',
-            Page::Inventaire => '/inventaire',
-            Page::CreationCompte => '/signup',
-            Page::Enigme => '/enigme',
+            Page::Home => $base . 'index.php',
+            Page::Catalogue => $base . 'catalogue.php',
+            Page::Details => $base . 'detail.php',
+            Page::Connexion => $base . 'login.php',
+            Page::Panier => $base . 'panier.php',
+            Page::Inventaire => $base . 'inventaire.php',
+            Page::CreationCompte => $base . 'signup.php',
+            Page::Admin => $base . 'admin.php',
+            Page::Profil => $base . 'profil.php',
+            Page::Enigme => $base . 'enigme.php',
         };
 
     }

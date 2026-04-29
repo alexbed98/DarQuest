@@ -18,13 +18,14 @@ const VENDOR = ROOT . '/vendor';
 
 //=======================================================
 
-// url publique
-const URL_ROOT = '/';
+// url publique (compatible root and subfolder deployments)
+$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/'));
+$baseUrl = rtrim($scriptDir, '/');
+define('URL_ROOT', ($baseUrl === '' ? '/' : $baseUrl . '/'));
 
-// On pourrait faire des constantes pour d'autres url
 const IMG = URL_ROOT . 'public/img';
 const CSS = URL_ROOT . 'public/css';
-const PRODUCT_IMG = URL_ROOT . 'upload';
+const AVATAR = URL_ROOT . 'upload/';
 
 //=======================================================
 
@@ -36,10 +37,10 @@ define('IS_ADMIN', IS_AUTH && !empty($_SESSION['role']) && $_SESSION['role'] ===
 //=======================================================
 
 $dbConfig = [
-    "dbHost" => "127.0.0.1",
-    "dbName" => "darquest",
-    "dbUser" => "root",
-    "dbPass" => "",
+    "dbHost" => "158.69.48.109",
+    "dbName" => "dbdarquest12",
+    "dbUser" => "equipe12",
+    "dbPass" => "9s6uak23",
     "dbParams" => [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_CASE => PDO::CASE_NATURAL,

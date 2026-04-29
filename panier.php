@@ -13,6 +13,50 @@ require_once 'core/Email.php';
 
 $connexion = Database::getConnexion($dbConfig);
 
+// Retirer/modifier un item du panier (doit etre traite avant tout output HTML)
+if (IS_POST && !isset($_POST['passer_commande'])) {
+    if (!empty($_SESSION['id'])) {
+        $cartSessionKey = 'panier_user_' . (int) $_SESSION['id'];
+    } elseif (!empty($_SESSION['email'])) {
+        $cartSessionKey = 'panier_user_' . md5(strtolower((string) $_SESSION['email']));
+    } else {
+        $cartSessionKey = 'panier_guest';
+    }
+
+    if (!isset($_SESSION[$cartSessionKey]) || !is_array($_SESSION[$cartSessionKey])) {
+        $_SESSION[$cartSessionKey] = [];
+    }
+
+    $panier = &$_SESSION[$cartSessionKey];
+
+    if (isset($_POST['remove_id'])) {
+        $removeId = (int) $_POST['remove_id'];
+        $panier = array_values(array_filter(
+            $panier,
+            fn($item) => (int) ($item['id'] ?? 0) !== $removeId
+        ));
+    }
+
+    if (isset($_POST['update_id'], $_POST['update_qty'])) {
+        $updateId = (int) $_POST['update_id'];
+        $qty = max(1, (int) $_POST['update_qty']);
+        foreach ($panier as &$item) {
+            if ((int) ($item['id'] ?? 0) === $updateId) {
+                $item['quantite'] = $qty;
+                break;
+            }
+        }
+        unset($item);
+    }
+
+    if (!empty($_SESSION['id'])) {
+        CartDAL::saveCart($connexion, (int) $_SESSION['id'], $panier);
+    }
+
+    header('Location: ' . Page::Panier->url());
+    exit;
+}
+
 // Traiter la commande
 if (IS_POST && isset($_POST['passer_commande']) && !empty($_SESSION['id'])) {
     $idJoueur = (int) $_SESSION['id'];

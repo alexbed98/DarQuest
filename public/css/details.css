@@ -12,7 +12,6 @@
     flex-direction: row;
 }
 
-
 #nbPiece{
     display: flex;
     flex-direction: row;
@@ -31,4 +30,8 @@
     font-size: 16px;
     cursor: pointer;
     transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.espacementGauche{
+    margin-left: 5em;
 }

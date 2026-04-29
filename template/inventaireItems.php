@@ -3,8 +3,29 @@
     <!-- Panneau latéral (filtre/tri) -->
     <div class="options">
         <div class="inventaire-gold">
-            <span><?= number_format($gold) ?>&nbsp;🪙</span>
+            <span title="Or"><?= number_format($gold) ?>&nbsp;🥇</span>
+            <span title="Argent"><?= number_format($argent) ?>&nbsp;🥈</span>
+            <span title="Bronze"><?= number_format($bronze) ?>&nbsp;🥉</span>
         </div>
+
+        <!-- Conversion bronze → argent -->
+        <form method="post" action="">
+            <button type="submit" name="convertir" value="bronze_to_argent"
+                class="headerButtons inventaire-convertir-btn"
+                <?= $bronze < 10 ? 'disabled title="Il faut au moins 10 bronze"' : 'title="10 bronze = 1 argent"' ?>>
+                🥉→🥈 Convertir
+            </button>
+        </form>
+
+        <!-- Conversion argent → or -->
+        <form method="post" action="">
+            <button type="submit" name="convertir" value="argent_to_gold"
+                class="headerButtons inventaire-convertir-btn"
+                <?= $argent < 10 ? 'disabled title="Il faut au moins 10 argent"' : 'title="10 argent = 1 or"' ?>>
+                🥈→🥇 Convertir
+            </button>
+        </form>
+
         <form method="get" action="" id="inventaire-filters-form">
             <div class="inventaire-filters-placeholder" style="opacity:1;">
                 <p class="inventaire-soon">Trier par :</p>
@@ -49,7 +70,7 @@
             $photo = (string) $item['photo'];
             $image = ($photo !== '' && $photo[0] === '/')
                 ? $photo
-                : '/public/img/items/' . ltrim($photo, '/');
+                : IMG . '/items/' . ltrim($photo, '/');
         ?>
             <div class="item inventaire-item">
                 <div class="inventaire-img-wrapper">
@@ -57,7 +78,7 @@
                 </div>
                 <div class="inventaire-info">
                     <span class="inventaire-nom"><?= htmlspecialchars($item['nom']) ?></span>
-                    <span class="inventaire-prix"><?= number_format((float) $item['prix']) ?>&nbsp;🪙</span>
+                    <span class="inventaire-prix"><?= number_format((float) $item['prix']) ?>&nbsp;🥇</span>
                     <form method="post" action="<?= Page::Inventaire->url() ?>" class="inventaire-vendre-form">
                         <input type="hidden" name="vendre_id" value="<?= (int) $item['idItem'] ?>">
                         <input
