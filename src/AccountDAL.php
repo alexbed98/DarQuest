@@ -5,7 +5,7 @@ class AccountDAL
     public static function selectByEmail(PDO $connexion, string $email): false|array
     {
 
-        $sql = "SELECT idJoueur, alias, prenom, nom, motDePasse, gold, argent, bronze, estAdmin, estMage, avatar from Joueurs where courriel=:email";
+        $sql = "SELECT idJoueur, alias, prenom, nom, motDePasse, gold, argent, bronze, estAdmin, estMage, avatar, activation_guid, reset_guid from Joueurs where courriel=:email";
 
         $statement = $connexion->prepare($sql);
 
@@ -16,6 +16,36 @@ class AccountDAL
         // fetch retourne 'false' si aucune donnée
         return $statement->fetch();
 
+    }
+
+    public static function selectByGuid(PDO $connexion, string $activation_guid): false|array
+    {
+
+        $sql = "SELECT idJoueur from Joueurs where activation_guid=:activation_guid";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue('activation_guid', $activation_guid, PDO::PARAM_STR);
+
+        $statement->execute();
+
+        // fetch retourne 'false' si aucune donnée
+        return $statement->fetch();
+
+    }
+
+    public static function removeActivationGuid(PDO $connexion, int $idJoueur ): bool 
+    {
+
+        $sql = "UPDATE Joueurs 
+            SET activation_guid = null
+            WHERE idJoueur = :idJoueur";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);      
+
+        return $statement->execute();
     }
 
     public static function updateJoueur(PDO $connexion, int $idJoueur, string $username, string $prenom, string $nom, 
