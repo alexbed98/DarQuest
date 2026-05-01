@@ -73,6 +73,11 @@
     box-shadow: 0 6px 16px rgba(78, 93, 143, 0.22);
 }
 
+.inventaire-detail-link {
+    text-decoration: none;
+    color: inherit;
+}
+
 .inventaire-img-wrapper {
     border: 2px solid #7e89b4;
     border-radius: 10px;
@@ -149,6 +154,28 @@
 .inventaire-consommer-btn:hover {
     background: #cde0af;
     border-color: #577533;
+}
+
+.inventaire-lancer-form {
+    display: flex;
+}
+
+.inventaire-lancer-btn {
+    width: 100%;
+    padding: 5px 10px;
+    border: 1px solid #6b5a8f;
+    border-radius: 6px;
+    background: #d9cce8;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #3a2d4f;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.inventaire-lancer-btn:hover {
+    background: #cbb8dd;
+    border-color: #5a4975;
 }
 
 .inventaire-qty-input {
