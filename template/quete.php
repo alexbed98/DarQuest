@@ -15,9 +15,9 @@ $reponses = [];
 $message = '';
 $errorMessage = '';
 
-if (EnigneDAL::countAllEnigme($connexion)) { //Verifie s'il y a des enigmes (Return true s'il y en a)
-    $enigme = EnigneDAL::selectRandomEnigme($connexion);
-    $reponses = $enigme != null ? EnigneDAL::selectAllAnswers($connexion, $enigme['idEnigme']) : [];
+if (EnigmeDAL::countAllEnigme($connexion)) { //Verifie s'il y a des enigmes (Return true s'il y en a)
+    $enigme = EnigmeDAL::selectRandomEnigme($connexion);
+    $reponses = $enigme != null ? EnigmeDAL::selectAllAnswers($connexion, $enigme['idEnigme']) : [];
 
     if (!$reponses) //S'il l'egnime n'a pas de reponses, affiche un message d'erreur
         $errorMessage = "Cette quête manque ses réponses";
@@ -80,7 +80,7 @@ $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0; //Update 
 
             <?php else: ?>
 
-                <?php if (EnigneDAL::countAllEnigme(Database::getConnexion($dbConfig))): ?>
+                <?php if (EnigmeDAL::countAllEnigme(Database::getConnexion($dbConfig))): ?>
                     <!-- S'il n'y a pas de quete, n'affiche pas le button pour une nouvelle quete -->
                     <button type="submit" style="width: 30%; margin:20px;">Nouvelle quête</button>
                 <?php endif ?>

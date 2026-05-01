@@ -97,13 +97,13 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_enigme') {
     $bonneRep    = (int) ($_POST['bonneReponse'] ?? 0);
     $reponses    = $_POST['reponses'] ?? [];
 
-    $newId = EnigneDAL::insertEnigme($connexion, $enonce, $idCategorie, $difficulte, $estPigee);
+    $newId = EnigmeDAL::insertEnigme($connexion, $enonce, $idCategorie, $difficulte, $estPigee);
 
     if ($newId !== false) {
         foreach ($reponses as $i => $texte) {
             $texte = trim($texte);
             if ($texte !== '') {
-                EnigneDAL::insertReponse($connexion, $texte, ($i === $bonneRep ? 1 : 0), $newId);
+                EnigmeDAL::insertReponse($connexion, $texte, ($i === $bonneRep ? 1 : 0), $newId);
             }
         }
         header('Location: ' . Page::Admin->url() . '?success=enigme');

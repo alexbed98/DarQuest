@@ -2,18 +2,27 @@
 
 class EnigmeDAL
 {
-    public static $currentDif = '';
+    public static string $difficulte = 'F';
     //-------------------------------------------------------------------------------
     //Selectionne tout les enigmes et choisisez un aleatoirement
     //(return false s'il n'y a pas d'enigme choisi)
     //-------------------------------------------------------------------------------
-    public static function selectRandomEnigme(PDO $connexion): array | false
+    public static function selectRandomEnigme(PDO $connexion): array|false
     {
+        $where = '';
+        if (self::$difficulte != '') {
+            $where = ' WHERE difficulte = :difficulte';
+        }
 
         $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee
-                FROM Enigmes;";
+                FROM Enigmes
+                $where;";
 
         $statement = $connexion->prepare($sql);
+
+        if (self::$difficulte != '')
+            $statement->bindValue(':difficulte', self::$difficulte, PDO::PARAM_INT);
+
         $statement->execute();
 
         $randomEnigme = $statement->fetchAll();
@@ -28,7 +37,7 @@ class EnigmeDAL
     //Selectionne tout les reponses selon l'id de l'enigme
     //(return false s'il n'y a pas de reponses pour l'enigme)
     //-------------------------------------------------------------------------------
-    public static function selectAllAnswers(PDO $connexion, $enigmeId): array | false
+    public static function selectAllAnswers(PDO $connexion, $enigmeId): array|false
     {
 
         $sql = "SELECT idReponse, estBonneReponse, reponse, idEnigme 
@@ -45,7 +54,7 @@ class EnigmeDAL
     //-------------------------------------------------------------------------------
     //Selectionne une enigme selon son id
     //-------------------------------------------------------------------------------
-    public static function selectById(PDO $connexion, $enigmeId): array | false
+    public static function selectById(PDO $connexion, $enigmeId): array|false
     {
 
         $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee
@@ -63,7 +72,7 @@ class EnigmeDAL
     //Compte tout les enigmes
     //(return false s'il n'y a pas d'enigmes)
     //-------------------------------------------------------------------------------
-    public static function countAllEnigme(PDO $connexion): false | string
+    public static function countAllEnigme(PDO $connexion): false|string
     {
 
         $sql = "SELECT COUNT(*) 
@@ -140,9 +149,4 @@ class EnigmeDAL
         return $statement->execute();
     }
 
-}
-
-// Backward compatibility with existing calls using the old typo'ed class name.
-class EnigneDAL extends EnigmeDAL
-{
 }
