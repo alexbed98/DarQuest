@@ -52,6 +52,36 @@ class ItemDAL
         return $statement->fetch();
     }
 
+    //-------------------------------------------------------------------------------
+    //Selectionne tous les items avec leur statut de publication (pour l'admin)
+    //-------------------------------------------------------------------------------
+    public static function selectPourPublication(PDO $connexion): array
+    {
+        $sql = "SELECT idItem, nom, typeItem, quantiteStock, prix, estDisponible
+                FROM Items
+                ORDER BY nom ASC";
+
+        $statement = $connexion->prepare($sql);
+        $statement->execute();
+
+        return $statement->fetchAll();
+    }
+
+    //-------------------------------------------------------------------------------
+    //Change le statut de publication d'un item (sans suppression BD)
+    //-------------------------------------------------------------------------------
+    public static function setDisponibilite(PDO $connexion, int $idItem, bool $estDisponible): bool
+    {
+        $sql = "UPDATE Items SET estDisponible = :estDisponible WHERE idItem = :idItem";
+
+        $statement = $connexion->prepare($sql);
+        $statement->bindValue(':estDisponible', $estDisponible ? 1 : 0, PDO::PARAM_INT);
+        $statement->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->rowCount() > 0;
+    }
+
     //----------------------------------------------------------------------------------------------------------------------
     //Change ce qui doit s'afficher sur la liste d'items selon le typeItem
     //(Verifie si le filtre n'est pas déjà appliqué, sinon il l'enleve) <= (Pour eviter les erreurs causé par les doublons)

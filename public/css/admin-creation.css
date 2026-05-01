@@ -204,6 +204,77 @@
     color: #b71c1c;
 }
 
+.admin-empty-state {
+    margin: 6px 0 0;
+    color: #5a6580;
+    font-style: italic;
+}
+
+.admin-retire-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.admin-retire-row {
+    border: 1px solid #9da9cf;
+    border-radius: 10px;
+    background-color: #f7f9ff;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-retire-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-retire-name {
+    font-weight: 700;
+    color: #35426a;
+    margin-right: 4px;
+}
+
+.admin-retire-badge {
+    border: 1px solid #9da9cf;
+    border-radius: 999px;
+    padding: 3px 8px;
+    font-size: 0.84rem;
+    color: #4b567b;
+    background: #eef2fc;
+}
+
+.admin-retire-form {
+    margin: 0;
+}
+
+.admin-retire-btn {
+    background: #cf4f45;
+    border-color: #a83b34;
+    color: #ffffff;
+}
+
+.admin-retire-btn:hover,
+.admin-retire-btn:focus-visible {
+    background: #b84037;
+}
+
+.admin-republier-btn {
+    background: #4a9a53;
+    border-color: #3b7c42;
+    color: #ffffff;
+}
+
+.admin-republier-btn:hover,
+.admin-republier-btn:focus-visible {
+    background: #3f8647;
+}
+
 @media (max-width: 768px) {
 
     .admin-panel-card {
@@ -228,6 +299,15 @@
     }
 
     .admin-actions .mainButton {
+        width: 100%;
+    }
+
+    .admin-retire-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-retire-form .mainButton {
         width: 100%;
     }
 }
