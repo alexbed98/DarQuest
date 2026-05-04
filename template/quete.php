@@ -71,11 +71,11 @@ if (empty($_SESSION['email'])) {
         <form method="POST" action="">
             <?php if ($nbDemandes < 3): ?>
                 <button type="submit" name="demande_argent" value="1" class="enigme-help-btn">
-                    Demander de l'aide
+                    Demander des pièces
                 </button>
             <?php else: ?>
                 <button type="button" class="enigme-help-btn" disabled>
-                    Limite d'aide atteinte
+                    Limite de demande de pièces atteinte
                 </button>
             <?php endif; ?>
         </form>
