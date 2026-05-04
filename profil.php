@@ -107,9 +107,15 @@ if (IS_POST) {
 
     $newAvatar = Upload::move(
         'image',
-        'C:\wamp64\www\DarQuestMain\upload',
+        UPLOAD,
         $allowedTypes
     );
+
+    if (!empty($_FILES['image']['name']) && $newAvatar === false) {
+        $messages['image'] = is_writable(UPLOAD)
+            ? 'Le fichier avatar n\'a pas pu etre televerse. Verifiez le format accepte.'
+            : 'Le dossier upload n\'est pas accessible en ecriture sur le serveur.';
+    }
 
     if ($newAvatar !== false && $newAvatar !== null) {
         $avatarFinal = $newAvatar;
@@ -235,13 +241,13 @@ if (IS_POST) {
                                 <label for="image" class="form-label"></span>Avatar</label>
 
                                 <div style="margin-bottom: 10px; display: flex;">
-                                    <img src="/upload/<?= $avatar ?>" alt="Avatar actuel" style="max-width: 60px; border-radius: 8px; margin: auto">
+                                    <img src="<?= AVATAR . $avatar ?>" alt="Avatar actuel" style="max-width: 60px; border-radius: 8px; margin: auto">
                                 </div>
 
                                 <input name="image" type="file" class="form-control" 
                                         id="image" aria-describedby="imageHelp" accept=".jpg,.png,.webp,.avif">
 
-                                <div id="imageHelp" class="form-text text-danger"></div>
+                                <div id="imageHelp" class="form-text text-danger"><?= $messages['image'] ?? '' ?></div>
                             </div>
 
                             <div class="mb-3">

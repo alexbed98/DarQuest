@@ -10,7 +10,7 @@ class EnigmeDAL
     public static function selectRandomEnigme(PDO $connexion): array | false
     {
 
-        $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee 
+        $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee
                 FROM Enigmes;";
 
         $statement = $connexion->prepare($sql);
@@ -21,8 +21,6 @@ class EnigmeDAL
             return false;
         }
         $randIndex = array_rand($randomEnigme);
-
-        //self::$currentDif = $randomEnigme[$randIndex]['difficulte'];
 
         return $randomEnigme[$randIndex];
     }
@@ -43,6 +41,23 @@ class EnigmeDAL
         $statement->execute();
 
         return $statement->fetchAll();
+    }
+    //-------------------------------------------------------------------------------
+    //Selectionne une enigme selon son id
+    //-------------------------------------------------------------------------------
+    public static function selectById(PDO $connexion, $enigmeId): array | false
+    {
+
+        $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee
+                FROM Enigmes
+                WHERE idEnigme = :enigmeId;";
+
+
+        $statement = $connexion->prepare($sql);
+        $statement->bindValue(':enigmeId', $enigmeId, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->fetch();
     }
     //-------------------------------------------------------------------------------
     //Compte tout les enigmes
@@ -68,6 +83,20 @@ class EnigmeDAL
     //-------------------------------------------------------------------------------
     public static function insertEnigme(PDO $connexion, string $enonce, ?string $idCategorie, string $difficulte, int $estPigee): int|false
     {
+        $idCategorie = $idCategorie !== null ? strtoupper(trim($idCategorie)) : null;
+        if ($idCategorie === '') {
+            $idCategorie = null;
+        }
+
+        // Evite la violation FK: la categorie doit exister si elle est fournie.
+        if ($idCategorie !== null) {
+            $catStmt = $connexion->prepare("SELECT COUNT(*) FROM Categories WHERE idCategorie = :idCategorie");
+            $catStmt->bindValue(':idCategorie', $idCategorie, PDO::PARAM_STR);
+            if (!$catStmt->execute() || (int) $catStmt->fetchColumn() === 0) {
+                return false;
+            }
+        }
+
         // idEnigme is not auto-generated in this schema, compute the next id manually.
         $idStmt = $connexion->prepare("SELECT COALESCE(MAX(idEnigme), 0) + 1 FROM Enigmes");
         if (!$idStmt->execute()) {
@@ -85,8 +114,12 @@ class EnigmeDAL
         $statement->bindValue(':difficulte', $difficulte, PDO::PARAM_STR);
         $statement->bindValue(':estPigee', $estPigee, PDO::PARAM_INT);
 
-        if ($statement->execute()) {
-            return $nextId;
+        try {
+            if ($statement->execute()) {
+                return $nextId;
+            }
+        } catch (PDOException $e) {
+            return false;
         }
         return false;
     }

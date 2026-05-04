@@ -33,18 +33,20 @@ enum Page
 
     public function url(): string {
 
+        $base = defined('URL_ROOT') ? URL_ROOT : '/';
+
         return match($this) {
             
-            Page::Home => '/',
-            Page::Catalogue => '/catalogue',
-            Page::Details => '/detail',
-            Page::Connexion => '/login',
-            Page::Panier => '/panier',
-            Page::Inventaire => '/inventaire',
-            Page::CreationCompte => '/signup',
-            Page::Admin => '/admin.php',
-            Page::Profil => '/profil',
-            Page::Enigme => '/enigme',
+            Page::Home => $base . 'index.php',
+            Page::Catalogue => $base . 'catalogue.php',
+            Page::Details => $base . 'detail.php',
+            Page::Connexion => $base . 'login.php',
+            Page::Panier => $base . 'panier.php',
+            Page::Inventaire => $base . 'inventaire.php',
+            Page::CreationCompte => $base . 'signup.php',
+            Page::Admin => $base . 'admin.php',
+            Page::Profil => $base . 'profil.php',
+            Page::Enigme => $base . 'enigme.php',
         };
 
     }

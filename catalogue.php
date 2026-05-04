@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
                 $photo = (string) $item['photo'];
                 $image = ($photo !== '' && $photo[0] === '/')
                     ? $photo
-                    : '/public/img/items/' . ltrim($photo, '/');
+                    : IMG . '/items/' . ltrim($photo, '/');
 
                 $_SESSION[$cartSessionKey][] = [
                     'id' => (int) $item['idItem'],

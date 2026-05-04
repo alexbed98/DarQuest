@@ -14,7 +14,7 @@ require_once 'core/Email.php';
 
 // Securite: seul un admin peut acceder a cette page
 if (!IS_ADMIN) {
-    header('Location: /index.php');
+    header('Location: ' . Page::Home->url());
     exit;
 }
 
@@ -22,8 +22,11 @@ $connexion = Database::getConnexion($dbConfig);
 
 $itemSuccess = isset($_GET['success']) && $_GET['success'] === 'item';
 $enigmeSuccess = isset($_GET['success']) && $_GET['success'] === 'enigme';
+$itemPublicationSuccess = isset($_GET['success']) && $_GET['success'] === 'item_publication';
 $itemError = null;
 $enigmeError = null;
+$itemPublicationError = null;
+$activeTab = $_GET['tab'] ?? '';
 
 // ─── Creation d'un item ──────────────────────────────────────────────────────
 if (IS_POST && ($_POST['action'] ?? '') === 'create_item') {
@@ -80,10 +83,29 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_item') {
     }
 
     if ($ok) {
-        header('Location: /admin.php?success=item');
+        header('Location: ' . Page::Admin->url() . '?success=item');
         exit;
     } elseif ($itemError === null) {
         $itemError = "Erreur lors de la creation de l'item. Verifiez les champs.";
+    }
+}
+
+// ─── Gestion de publication d'un item (retirer / republier) ──────────────────────
+if (IS_POST && in_array(($_POST['action'] ?? ''), ['retirer_item', 'republier_item'], true)) {
+
+    $action = (string) ($_POST['action'] ?? '');
+    $idItem = filter_input(INPUT_POST, 'idItem', FILTER_VALIDATE_INT);
+    $estDisponible = $action === 'republier_item';
+
+    if ($idItem) {
+        if (ItemDAL::setDisponibilite($connexion, $idItem, $estDisponible)) {
+            header('Location: ' . Page::Admin->url() . '?success=item_publication&tab=itemRetraitContainer');
+            exit;
+        }
+
+        $itemPublicationError = "Aucune modification effectuee (item introuvable ou statut deja applique).";
+    } else {
+        $itemPublicationError = "Identifiant d'item invalide.";
     }
 }
 
@@ -106,12 +128,14 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_enigme') {
                 EnigneDAL::insertReponse($connexion, $texte, ($i === $bonneRep ? 1 : 0), $newId);
             }
         }
-        header('Location: /admin.php?success=enigme');
+        header('Location: ' . Page::Admin->url() . '?success=enigme');
         exit;
     } else {
-        $enigmeError = "Erreur lors de la creation de l'enigme.";
+        $enigmeError = "Erreur lors de la creation de l'enigme. Verifie que la categorie existe dans la table Categories.";
     }
 }
+
+$itemsPublication = ItemDAL::selectPourPublication($connexion);
 
 // identification de la page active
 const ACTIVE_PAGE = Page::Admin;

@@ -1,3 +1,30 @@
+<?php $potionMessage = $_SESSION['potion_message'] ?? ''; ?>
+<?php unset($_SESSION['potion_message']); ?>
+
+<?php $sortMessage = $_SESSION['sort_message'] ?? ''; ?>
+<?php unset($_SESSION['sort_message']); ?>
+
+<?php $venteMessage = $_SESSION['vente_message'] ?? ''; ?>
+<?php unset($_SESSION['vente_message']); ?>
+
+<?php if (!empty($potionMessage)): ?>
+    <div class="inventaire-notification inventaire-notification-success" role="status" aria-live="polite">
+        <?= htmlspecialchars($potionMessage) ?>
+    </div>
+<?php endif; ?>
+
+<?php if (!empty($sortMessage)): ?>
+    <div class="inventaire-notification inventaire-notification-success" role="status" aria-live="polite">
+        <?= htmlspecialchars($sortMessage) ?>
+    </div>
+<?php endif; ?>
+
+<?php if (!empty($venteMessage)): ?>
+    <div class="inventaire-notification inventaire-notification-success" role="status" aria-live="polite">
+        <?= htmlspecialchars($venteMessage) ?>
+    </div>
+<?php endif; ?>
+
 <div class="catalogue">
 
     <!-- Panneau latéral (filtre/tri) -->
@@ -70,15 +97,40 @@
             $photo = (string) $item['photo'];
             $image = ($photo !== '' && $photo[0] === '/')
                 ? $photo
-                : '/public/img/items/' . ltrim($photo, '/');
+                : IMG . '/items/' . ltrim($photo, '/');
+            $detailUrl = Page::Details->url() . '?idItem=' . (int) $item['idItem'];
         ?>
             <div class="item inventaire-item">
-                <div class="inventaire-img-wrapper">
-                    <img src="<?= htmlspecialchars($image) ?>" alt="<?= htmlspecialchars($item['nom']) ?>">
-                </div>
+                <a href="<?= htmlspecialchars($detailUrl) ?>" class="inventaire-detail-link" title="Voir les details de <?= htmlspecialchars($item['nom']) ?>">
+                    <div class="inventaire-img-wrapper">
+                        <img src="<?= htmlspecialchars($image) ?>" alt="<?= htmlspecialchars($item['nom']) ?>">
+                    </div>
+                </a>
                 <div class="inventaire-info">
-                    <span class="inventaire-nom"><?= htmlspecialchars($item['nom']) ?></span>
+                    <a href="<?= htmlspecialchars($detailUrl) ?>" class="inventaire-detail-link inventaire-nom" title="Voir les details de <?= htmlspecialchars($item['nom']) ?>">
+                        <?= htmlspecialchars($item['nom']) ?>
+                    </a>
                     <span class="inventaire-prix"><?= number_format((float) $item['prix']) ?>&nbsp;🥇</span>
+
+                    <?php
+                        $isPotion = ($item['typeItem'] ?? '') === 'P';
+                        $isSort = ($item['typeItem'] ?? '') === 'S';
+                    ?>
+
+                    <?php if ($isPotion): ?>
+                        <form method="post" action="<?= Page::Inventaire->url() ?>" class="inventaire-consommer-form">
+                            <input type="hidden" name="consommer_potion_id" value="<?= (int) $item['idItem'] ?>">
+                            <button type="submit" class="inventaire-consommer-btn">Consommer</button>
+                        </form>
+                    <?php endif; ?>
+
+                    <?php if ($isSort): ?>
+                        <form method="post" action="<?= Page::Inventaire->url() ?>" class="inventaire-lancer-form">
+                            <input type="hidden" name="lancer_sort_id" value="<?= (int) $item['idItem'] ?>">
+                            <button type="submit" class="inventaire-lancer-btn">Lancer</button>
+                        </form>
+                    <?php endif; ?>
+
                     <form method="post" action="<?= Page::Inventaire->url() ?>" class="inventaire-vendre-form">
                         <input type="hidden" name="vendre_id" value="<?= (int) $item['idItem'] ?>">
                         <input

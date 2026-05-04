@@ -71,8 +71,8 @@ $items = ItemDAL::select($connexion);
 
             <div class="item">
                 <a href="detail.php?idItem=<?= $item['idItem'] ?>">
-                    <div class="background" style="background-image: url('/public/img/backgrounds/background06');">
-                        <img class="image-item" src=/public/img/items/<?= $item['photo'] ?> alt="Image de l'article">
+                    <div class="background" style="background-image: url('<?= IMG ?>/backgrounds/background06');">
+                        <img class="image-item" src="<?= IMG ?>/items/<?= $item['photo'] ?>" alt="Image de l'article">
                     </div>
                 </a>
 
@@ -86,7 +86,7 @@ $items = ItemDAL::select($connexion);
                         <!-- Ce formulaire envoie l'id de l'item à catalogue.php pour l'ajout panier utilisateur. -->
                         <form method="post" action="" style="margin: 0;">
                             <input type="hidden" name="add_item_id" value="<?= (int) $item['idItem'] ?>">
-                            <button type="submit" class="item-add-btn">Ajouter</button>
+                            <button type="submit" class="item-add-btn" <?= (int) $item['quantiteStock'] === 0 ? 'disabled' : '' ?>>Ajouter</button>
                         </form>
                     </div>
                 </div>
