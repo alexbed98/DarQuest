@@ -10,6 +10,7 @@ $reponses = [];
 $message = '';
 $errorMessage = '';
 
+
 if (EnigneDAL::countAllEnigme(Database::getConnexion($dbConfig))) { //Verifie s'il y a des enigmes
     $enigme = EnigneDAL::selectRandomEnigme(Database::getConnexion($dbConfig));
     $reponses = $enigme != null ? EnigneDAL::selectAllAnswers(Database::getConnexion($dbConfig), $enigme['idEnigme']) : [];
@@ -26,8 +27,31 @@ if (EnigneDAL::countAllEnigme(Database::getConnexion($dbConfig))) { //Verifie s'
 shuffle($reponses);
 
 
+$connexion = Database::getConnexion($dbConfig);
+$joueur = AccountDAL::selectByEmail($connexion, $_SESSION['email']);
+$idJoueur = $joueur['idJoueur'];
+$nbDemandes = EnigneDAL::countDemandesByJoueur($connexion, $idJoueur);
+
 if (IS_POST) {
 
+    // ===== DEMANDE D'ARGENT =====
+    if (isset($_POST['demande_argent'])) {
+
+        $connexion = Database::getConnexion($dbConfig);
+        $idJoueur = $joueur['idJoueur'];
+
+        // Compter les demandes existantes
+        $nbDemandes = EnigneDAL::countDemandesByJoueur($connexion, $idJoueur);
+
+        if ($nbDemandes < 3) {
+            EnigneDAL::insertDemande($connexion, $idJoueur);
+            $message = "Demande envoyée à l'admin.";
+        } else {
+            $errorMessage = "Vous avez atteint la limite de 3 demandes.";
+        }
+    }
+
+    // ===== RÉPONSE À L'ÉNIGME =====
     $bonOuPas = $_POST['answer'] ?? null;
     $difficulte = $_POST['difficulte'] ?? null;
     if ($bonOuPas != null && $difficulte != null)
@@ -41,7 +65,15 @@ if (IS_POST) {
 ?>
 
 <div style="flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
-    <input type="button" value="Demander pour de l'argent" onclick="alert('Demander pour de l\'argent')">
+    <form method="POST" action="">
+    <?php if ($nbDemandes < 3): ?>
+        <button type="submit" name="demande_argent" value="1">
+            Demander de l'argent
+        </button>
+    <?php else: ?>
+        <button disabled>Limite de demande d'argent atteinte</button>
+    <?php endif; ?>
+</form>
     <h1>Enigma</h1>
     <div>
         Nombre de pièces d'or : <span

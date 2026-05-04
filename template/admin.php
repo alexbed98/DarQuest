@@ -1,3 +1,34 @@
+<?php
+    $connexion = Database::getConnexion($dbConfig);
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+
+        $action = $_POST['action'];
+
+        if ($action === 'accepter_demande') {
+
+            $idDemande = (int)$_POST['idDemande'];
+
+            EnigneDAL::accepterDemande($connexion, $idDemande);
+
+            header("Location: admin.php");
+            exit;
+        }
+
+        if ($action === 'refuser_demande') {
+
+            $idDemande = (int)$_POST['idDemande'];
+
+            EnigneDAL::refuserDemande($connexion, $idDemande);
+
+            header("Location: admin.php");
+            exit;
+        }
+    }
+
+    $demandes = EnigneDAL::selectDemandesEnAttente($connexion);
+?>
+
 <div class="admin-toolbar">
     <button class="mainButton admin-tab-btn" onclick="toggleForm('demandesJoueurs', this)">Demandes des joueurs</button>
     <button class="mainButton admin-tab-btn" onclick="toggleForm('itemFormContainer', this)">Creation des items</button>
@@ -205,17 +236,36 @@
 
 
 <div id="demandesJoueurs" class="toggleForm" style="display:none;">
-    <div>
-        <div class="demande-text">
-            <p><strong>Joueur:</strong> Sam</p>
-            <p><strong>Demande:</strong> Donne moi de l'argent! Je suis pauvre</p>
-        </div>
+    <?php if (!empty($demandes)): ?>
+        <?php foreach ($demandes as $demande): ?>
+            <div class="demande-card">
+                <div class="demande-text">
+                    <p><strong>Joueur:</strong> <?= htmlspecialchars($demande['alias']) ?></p>
+                    <p><strong>Demande:</strong> Demande d'argent</p>
+                </div>
+                <div class="demande-actions">
 
-        <div class="demande-actions">
-            <button class="mainButton btn-accepter">Accepter</button>
-            <button class="mainButton btn-refuser">Refuser</button>
-        </div>
-    </div>
+                    <!-- ACCEPTER -->
+                    <form method="post" action="/admin.php" style="display:inline;">
+                        <input type="hidden" name="action" value="accepter_demande">
+                        <input type="hidden" name="idDemande" value="<?= $demande['idDemande'] ?>">
+                        <button class="mainButton btn-accepter">Accepter</button>
+                    </form>
+
+                    <!-- REFUSER -->
+                    <form method="post" action="/admin.php" style="display:inline;">
+                        <input type="hidden" name="action" value="refuser_demande">
+                        <input type="hidden" name="idDemande" value="<?= $demande['idDemande'] ?>">
+                        <button class="mainButton btn-refuser">Refuser</button>
+                    </form>
+                </div>
+            </div>  
+        <?php endforeach; ?>
+
+    <?php else: ?>
+        <p>Aucune demande pour le moment.</p>
+    <?php endif; ?>
+
 </div>
 
 
