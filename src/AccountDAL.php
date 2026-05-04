@@ -264,6 +264,17 @@ class AccountDAL
 
         return $statement->fetchColumn() > 0;
     }
+
+    public static function addGoldById(PDO $connexion, int $idJoueur, int $amount): bool
+    {
+        $sql = "UPDATE Joueurs SET gold = gold + :amount WHERE idJoueur = :idJoueur";
+
+        $stmt = $connexion->prepare($sql);
+        $stmt->bindValue(':amount', $amount, PDO::PARAM_INT);
+        $stmt->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+
+        return $stmt->execute();
+    }
 }
 
 

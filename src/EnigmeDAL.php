@@ -140,6 +140,73 @@ class EnigmeDAL
         return $statement->execute();
     }
 
+
+    public static function countDemandesByJoueur($connexion, $idJoueur) {
+        $sql = "SELECT COUNT(*) as total FROM Demandes WHERE idJoueur = ?";
+        $stmt = $connexion->prepare($sql);
+        $stmt->execute([$idJoueur]);
+        $result = $stmt->fetch();
+        return $result['total'];
+    }
+
+    public static function insertDemande($connexion, $idJoueur) {
+        $sql = "INSERT INTO Demandes (idJoueur, accepter) VALUES (?, 0)";
+        $stmt = $connexion->prepare($sql);
+        $stmt->execute([$idJoueur]);
+    }
+
+    public static function accepterDemande(PDO $connexion, int $idDemande) {
+
+        $sql = "SELECT idJoueur FROM Demandes WHERE idDemande = ?";
+        $stmt = $connexion->prepare($sql);
+        $stmt->execute([$idDemande]);
+        $demande = $stmt->fetch();
+
+        if (!$demande) return;
+
+        $idJoueur = $demande['idJoueur'];
+
+        $sql = "SELECT COUNT(*) FROM Demandes WHERE accepter = 1";
+        $count = $connexion->query($sql)->fetchColumn();
+
+        if ($count == 0) {
+            $connexion->prepare("UPDATE Joueurs SET gold = gold + 100 WHERE idJoueur = ?")
+                    ->execute([$idJoueur]);
+
+        } elseif ($count == 1) {
+            $connexion->prepare("UPDATE Joueurs SET argent = argent + 100 WHERE idJoueur = ?")
+                    ->execute([$idJoueur]);
+
+        } else {
+            $connexion->prepare("UPDATE Joueurs SET bronze = bronze + 100 WHERE idJoueur = ?")
+                    ->execute([$idJoueur]);
+        }
+        
+        $connexion->prepare("UPDATE Demandes SET accepter = 1 WHERE idDemande = ?")
+                ->execute([$idDemande]);
+    }
+
+    public static function selectDemandesEnAttente(PDO $connexion) {
+        $sql = "
+            SELECT d.idDemande, j.alias, j.idJoueur
+            FROM Demandes d
+            LEFT JOIN Joueurs j ON j.idJoueur = d.idJoueur
+            WHERE d.accepter = 0
+            ORDER BY d.idDemande DESC
+        ";
+
+        $stmt = $connexion->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+
+    public static function refuserDemande(PDO $connexion, int $idDemande) {
+        $sql = "UPDATE Demandes SET accepter = -1 WHERE idDemande = ?";
+        $connexion->prepare($sql)->execute([$idDemande]);
+    }
+
 }
 
 // Backward compatibility with existing calls using the old typo'ed class name.

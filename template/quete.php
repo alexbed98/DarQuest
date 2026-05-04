@@ -15,6 +15,10 @@ $reponses = [];
 $message = '';
 $errorMessage = '';
 
+
+if (EnigneDAL::countAllEnigme(Database::getConnexion($dbConfig))) { //Verifie s'il y a des enigmes
+    $enigme = EnigneDAL::selectRandomEnigme(Database::getConnexion($dbConfig));
+    $reponses = $enigme != null ? EnigneDAL::selectAllAnswers(Database::getConnexion($dbConfig), $enigme['idEnigme']) : [];
 if (EnigneDAL::countAllEnigme($connexion)) { //Verifie s'il y a des enigmes (Return true s'il y en a)
     $enigme = EnigneDAL::selectRandomEnigme($connexion);
     $reponses = $enigme != null ? EnigneDAL::selectAllAnswers($connexion, $enigme['idEnigme']) : [];
@@ -30,6 +34,37 @@ if (EnigneDAL::countAllEnigme($connexion)) { //Verifie s'il y a des enigmes (Ret
     $errorMessage = "Désoler, il n'y a pas de quête pour le moment";
 }
 
+shuffle($reponses);
+
+
+$connexion = Database::getConnexion($dbConfig);
+$joueur = AccountDAL::selectByEmail($connexion, $_SESSION['email']);
+$idJoueur = $joueur['idJoueur'];
+$nbDemandes = EnigneDAL::countDemandesByJoueur($connexion, $idJoueur);
+
+if (IS_POST) {
+
+    // ===== DEMANDE D'ARGENT =====
+    if (isset($_POST['demande_argent'])) {
+
+        $connexion = Database::getConnexion($dbConfig);
+        $idJoueur = $joueur['idJoueur'];
+
+        // Compter les demandes existantes
+        $nbDemandes = EnigneDAL::countDemandesByJoueur($connexion, $idJoueur);
+
+        if ($nbDemandes < 3) {
+            EnigneDAL::insertDemande($connexion, $idJoueur);
+            $nbDemandes = EnigneDAL::countDemandesByJoueur($connexion, $idJoueur);
+            $message = "Demande envoyée à l'admin.";
+        } else {
+            $errorMessage = "Vous avez atteint la limite de 3 demandes.";
+        }
+    }
+
+    // ===== RÉPONSE À L'ÉNIGME =====
+    $bonOuPas = $_POST['answer'] ?? null;
+    $difficulte = $_POST['difficulte'] ?? null;
 if (IS_POST) {
 
     $bonOuPas = $_POST['answer'] ?? null; // => 1 si la reponse choisi est bon, sinon 0
@@ -50,6 +85,20 @@ if (IS_POST) {
 $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0; //Update son acces au jeu
 ?>
 
+<div style="flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+    <form method="POST" action="">
+    <?php if ($nbDemandes < 3): ?>
+        <button type="submit" name="demande_argent" value="1">
+            Demander de l'argent
+        </button>
+    <?php else: ?>
+        <button disabled>Limite de demande d'argent atteinte</button>
+    <?php endif; ?>
+</form>
+    <h1>Enigma</h1>
+    <div>
+        Nombre de pièces d'or : <span
+            id="gold"><?= number_format(AccountDAL::selectGold($connexion, $_SESSION['email'])) . '&nbsp;🥇'; ?></span>
 <section class="enigme-page">
     <div class="enigme-header">
         <button type="button" class="enigme-help-btn" onclick="alert('Demander pour de l\'argent')">
