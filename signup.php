@@ -91,7 +91,7 @@ if (IS_POST) {
                 $message = <<<HTML
                 <h1>Merci d'avoir créé un compte.</h1>
                 <h2>Bienvenue sur DarQuest!</h2>
-                <p><a style="text-decoration: underline; color: blue;" href="http://darquest.ca/login.php?guid=" . $guid>Validez votre courriel pour accéder a votre compte</a></p>
+                <p><a style="text-decoration: underline; color: blue;" href="http://darquest.ca/validate.php?guid=$guid">Validez votre courriel pour accéder a votre compte</a></p>
                 HTML;
 
                 Email::readConfig(SRC . '/gmail.ini');

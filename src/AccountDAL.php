@@ -18,7 +18,7 @@ class AccountDAL
 
     }
 
-    public static function selectByGuid(PDO $connexion, string $activation_guid): false|array
+    public static function selectByGuid(PDO $connexion, string $activation_guid): false|int
     {
 
         $sql = "SELECT idJoueur from Joueurs where activation_guid=:activation_guid";
@@ -30,7 +30,7 @@ class AccountDAL
         $statement->execute();
 
         // fetch retourne 'false' si aucune donnée
-        return $statement->fetch();
+        return $statement->fetchColumn();
 
     }
 
@@ -74,7 +74,7 @@ class AccountDAL
         return $statement->execute();
     }
 
-    public static function insertOne(PDO $connexion, string $username, string $prenom, string $nom, string $courriel, string $motDePasse, string $activation_guid, string $reset_guid = "", int $estMage = 0, int $estAdmin = 0): bool
+    public static function insertOne(PDO $connexion, string $username, string $prenom, string $nom, string $courriel, string $motDePasse, string $activation_guid, string $reset_guid = null, int $estMage = 0, int $estAdmin = 0): bool
     {
 
         $sql = "insert into Joueurs (alias, prenom, nom, estMage, courriel, motDePasse, activation_guid, reset_guid, estAdmin) values(:username, :prenom, :nom, :estMage, :courriel, :motDePasse, :activation_guid, :reset_guid, :estAdmin)";

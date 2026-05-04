@@ -62,29 +62,23 @@ if (IS_POST) {
         $connexion = Database::getConnexion($dbConfig);
         $user = AccountDAL::selectByEmail($connexion, $email);
 
-        var_dump($user);
-        exit;
-
         if ($user !== false && password_verify($password, $user['motDePasse'])) {
 
-            // regeneration de la session id pour eviter certaines erreurs
-            session_regenerate_id();
-
-            // Ajout en session de email, id et role
-            $_SESSION['email'] = $email;
-            $_SESSION['id'] = $user['idJoueur'];
-            $_SESSION['role'] = $user['estAdmin'];
-            $_SESSION['avatar'] = $user['avatar'];
-            $_SESSION['activation_guid'] = $user['activation_guid'];
-
-            var_dump($user);
-
-            if ($user['activation_guid'] != null) {
+            if (!empty($user['activation_guid'])) {
                 $messages['global'] = 'Le courriel n\'a pas été validé';
             } else {
+                // regeneration de la session id pour eviter certaines erreurs
+                session_regenerate_id();
+
+                // Ajout en session de email, id et role
+                $_SESSION['email'] = $email;
+                $_SESSION['id'] = $user['idJoueur'];
+                $_SESSION['role'] = $user['estAdmin'];
+                $_SESSION['avatar'] = $user['avatar'];
                 // Redirige à l'accueil
                 $messages = [];
                 header('Location:' . Page::Home->url());
+                exit;
             }
 
         } else {
@@ -160,6 +154,8 @@ if (!empty($_SESSION['new-account'])) {
 
                 <div style="text-align: center" class="py-3"><a href="<?= Page::CreationCompte->url() ?>">Je n'ai pas de
                         compte</a></div>
+
+                <div style="text-align: center" class="py-3"><a href="<?= Page::Email->url() ?>">J'ai oublié mon mot de passe</a></div>
             </div>
             <!--Formulaire authenfification-Authentication form-->
 
