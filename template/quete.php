@@ -45,6 +45,7 @@ if (IS_POST) {
 
         if ($nbDemandes < 3) {
             EnigneDAL::insertDemande($connexion, $idJoueur);
+            $nbDemandes = EnigneDAL::countDemandesByJoueur($connexion, $idJoueur);
             $message = "Demande envoyée à l'admin.";
         } else {
             $errorMessage = "Vous avez atteint la limite de 3 demandes.";
