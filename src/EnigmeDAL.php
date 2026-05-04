@@ -236,6 +236,3 @@ class EnigmeDAL
 }
 
 // Backward compatibility with existing calls using the old typo'ed class name.
-class EnigneDAL extends EnigmeDAL
-{
-}
