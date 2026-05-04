@@ -3,6 +3,23 @@
 class EnigmeDAL
 {
     public static $currentDif = '';
+
+    //-------------------------------------------------------------------------------
+    // Cree la table de demandes si elle n'existe pas.
+    //-------------------------------------------------------------------------------
+    private static function ensureDemandesTable(PDO $connexion): void
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS Demandes (
+                    idDemande INT AUTO_INCREMENT PRIMARY KEY,
+                    idJoueur INT NOT NULL,
+                    accepter TINYINT NOT NULL DEFAULT 0,
+                    dateDemande DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_demandes_joueur (idJoueur),
+                    INDEX idx_demandes_statut (accepter)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+        $connexion->exec($sql);
+    }
     //-------------------------------------------------------------------------------
     //Selectionne tout les enigmes et choisisez un aleatoirement
     //(return false s'il n'y a pas d'enigme choisi)
@@ -142,6 +159,8 @@ class EnigmeDAL
 
 
     public static function countDemandesByJoueur($connexion, $idJoueur) {
+        self::ensureDemandesTable($connexion);
+
         $sql = "SELECT COUNT(*) as total FROM Demandes WHERE idJoueur = ?";
         $stmt = $connexion->prepare($sql);
         $stmt->execute([$idJoueur]);
@@ -150,12 +169,15 @@ class EnigmeDAL
     }
 
     public static function insertDemande($connexion, $idJoueur) {
+        self::ensureDemandesTable($connexion);
+
         $sql = "INSERT INTO Demandes (idJoueur, accepter) VALUES (?, 0)";
         $stmt = $connexion->prepare($sql);
         $stmt->execute([$idJoueur]);
     }
 
     public static function accepterDemande(PDO $connexion, int $idDemande) {
+        self::ensureDemandesTable($connexion);
 
         $sql = "SELECT idJoueur FROM Demandes WHERE idDemande = ?";
         $stmt = $connexion->prepare($sql);
@@ -187,6 +209,8 @@ class EnigmeDAL
     }
 
     public static function selectDemandesEnAttente(PDO $connexion) {
+        self::ensureDemandesTable($connexion);
+
         $sql = "
             SELECT d.idDemande, j.alias, j.idJoueur
             FROM Demandes d
@@ -203,6 +227,8 @@ class EnigmeDAL
 
 
     public static function refuserDemande(PDO $connexion, int $idDemande) {
+        self::ensureDemandesTable($connexion);
+
         $sql = "UPDATE Demandes SET accepter = -1 WHERE idDemande = ?";
         $connexion->prepare($sql)->execute([$idDemande]);
     }
