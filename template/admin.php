@@ -1,6 +1,7 @@
 <div class="admin-toolbar">
     <button class="mainButton admin-tab-btn" onclick="toggleForm('demandesJoueurs', this)">Demandes des joueurs</button>
     <button class="mainButton admin-tab-btn" onclick="toggleForm('itemFormContainer', this)">Creation des items</button>
+    <button class="mainButton admin-tab-btn" onclick="toggleForm('itemRetraitContainer', this)">Retrait du catalogue</button>
     <button class="mainButton admin-tab-btn" onclick="toggleForm('enigmeFormContainer', this)">Creation des quetes</button>
 </div>
 
@@ -13,6 +14,11 @@
     <div class="admin-alert admin-alert-success">Enigme creee avec succes !</div>
 <?php elseif (!empty($enigmeError)): ?>
     <div class="admin-alert admin-alert-error"><?= htmlspecialchars($enigmeError) ?></div>
+<?php endif; ?>
+<?php if ($itemPublicationSuccess ?? false): ?>
+    <div class="admin-alert admin-alert-success">Statut de publication de l'item mis a jour !</div>
+<?php elseif (!empty($itemPublicationError)): ?>
+    <div class="admin-alert admin-alert-error"><?= htmlspecialchars($itemPublicationError) ?></div>
 <?php endif; ?>
 
 <div id="itemFormContainer" class="toggleForm admin-panel">
@@ -136,6 +142,41 @@
 </div>
 
 
+<div id="itemRetraitContainer" class="toggleForm admin-panel">
+    <div class="admin-panel-card">
+        <h2 class="admin-panel-title">Publication du catalogue</h2>
+        <p class="admin-panel-subtitle">Retires ou republies un item sans le supprimer de la base de donnees.</p>
+
+        <?php if (empty($itemsPublication ?? [])): ?>
+            <p class="admin-empty-state">Aucun item trouve.</p>
+        <?php else: ?>
+            <div class="admin-retire-list">
+                <?php foreach ($itemsPublication as $item): ?>
+                    <?php $isDisponible = (int) ($item['estDisponible'] ?? 0) === 1; ?>
+                    <div class="admin-retire-row">
+                        <div class="admin-retire-meta">
+                            <span class="admin-retire-name"><?= htmlspecialchars($item['nom']) ?></span>
+                            <span class="admin-retire-badge">Type <?= htmlspecialchars($item['typeItem']) ?></span>
+                            <span class="admin-retire-badge">Stock <?= (int) $item['quantiteStock'] ?></span>
+                            <span class="admin-retire-badge"><?= (int) $item['prix'] ?> or</span>
+                            <span class="admin-retire-badge"><?= $isDisponible ? 'Publie' : 'Retire' ?></span>
+                        </div>
+
+                        <form method="post" action="<?= Page::Admin->url() ?>" class="admin-retire-form">
+                            <input type="hidden" name="action" value="<?= $isDisponible ? 'retirer_item' : 'republier_item' ?>" />
+                            <input type="hidden" name="idItem" value="<?= (int) $item['idItem'] ?>" />
+                            <button type="submit" class="mainButton <?= $isDisponible ? 'admin-retire-btn' : 'admin-republier-btn' ?>">
+                                <?= $isDisponible ? 'Retirer du catalogue' : 'Republier' ?>
+                            </button>
+                        </form>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+
 <div id="enigmeFormContainer" class="toggleForm admin-panel">
 
     <form method="post" action="<?= Page::Admin->url() ?>" class="admin-panel-card admin-form-quest">
@@ -216,6 +257,42 @@
             <button class="mainButton btn-refuser">Refuser</button>
         </div>
     </div>
+
+    <div>
+        <div class="demande-text">
+            <p><strong>Joueur:</strong>Luna</p>
+            <p><strong>Demande:</strong> J'ai perdu mon equipement apres une quete, peux-tu m'aider?</p>
+        </div>
+
+        <div class="demande-actions">
+            <button class="mainButton btn-accepter">Accepter</button>
+            <button class="mainButton btn-refuser">Refuser</button>
+        </div>
+    </div>
+
+    <div>
+        <div class="demande-text">
+            <p><strong>Joueur:</strong> Rook</p>
+            <p><strong>Demande:</strong> Je n'ai pas recu ma recompense de quete d'hier.</p>
+        </div>
+
+        <div class="demande-actions">
+            <button class="mainButton btn-accepter">Accepter</button>
+            <button class="mainButton btn-refuser">Refuser</button>
+        </div>
+    </div>
+
+    <div>
+        <div class="demande-text">
+            <p><strong>Joueur:</strong> Mira</p>
+            <p><strong>Demande:</strong> Je suis bloquee dans la quete des ruines, indice svp.</p>
+        </div>
+
+        <div class="demande-actions">
+            <button class="mainButton btn-accepter">Accepter</button>
+            <button class="mainButton btn-refuser">Refuser</button>
+        </div>
+    </div>
 </div>
 
 
@@ -258,4 +335,28 @@
             document.getElementById(map[type]).style.display = 'block';
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var activeTab = '<?= htmlspecialchars((string) ($activeTab ?? ''), ENT_QUOTES) ?>';
+
+        if (!activeTab) {
+            return;
+        }
+
+        var panel = document.getElementById(activeTab);
+        if (!panel) {
+            return;
+        }
+
+        var tabButtons = document.querySelectorAll('.admin-tab-btn');
+        var targetButton = null;
+
+        tabButtons.forEach(function(btn) {
+            if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes("'" + activeTab + "'")) {
+                targetButton = btn;
+            }
+        });
+
+        toggleForm(activeTab, targetButton);
+    });
 </script>

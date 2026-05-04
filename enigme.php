@@ -13,8 +13,8 @@ $connexion = Database::getConnexion($dbConfig);
 
 const ACTIVE_PAGE = Page::Enigme;
 
-$cssAdd = ['/public/css/catalogue.css',
-           '/public/css/layout.css'];
+$cssAdd = ['/public/css/layout.css',
+           '/public/css/enigme.css'];
 
 ?>
 <!DOCTYPE html>
