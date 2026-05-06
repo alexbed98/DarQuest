@@ -21,13 +21,7 @@ $idJoueur = $_SESSION['reset_id_joueur'] ?? '';
 
 $connexion = Database::getConnexion($dbConfig);
 
-if(isset($_SESSION['email'])) {
-    $username = AccountDAL::selectAlias($connexion, $_SESSION['email']);
-    echo "Bienvenue, " . $username . "!";
-}
-else {
-    echo "Tu n'es pas connecté.";
-}
+
 
 // identification de la page active
 const ACTIVE_PAGE = Page::ResetMDP;
