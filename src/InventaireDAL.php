@@ -53,6 +53,29 @@ class InventaireDAL
      */
     public static function commander(PDO $pdo, int $idJoueur, array $panier): bool
     {
+        $mageStmt = $pdo->prepare("SELECT estMage FROM Joueurs WHERE idJoueur = :id");
+        $mageStmt->bindValue(':id', $idJoueur, PDO::PARAM_INT);
+        $mageStmt->execute();
+        $mageRow = $mageStmt->fetch();
+        $isMagePlayer = $mageRow !== false && (int) ($mageRow['estMage'] ?? 0) === 1;
+
+        // Protection serveur: un non-mage ne peut pas commander d'item de type Sort.
+        foreach ($panier as $panierItem) {
+            $itemId = (int) ($panierItem['id'] ?? 0);
+            if ($itemId <= 0) {
+                continue;
+            }
+
+            $typeStmt = $pdo->prepare("SELECT typeItem FROM Items WHERE idItem = :idItem");
+            $typeStmt->bindValue(':idItem', $itemId, PDO::PARAM_INT);
+            $typeStmt->execute();
+            $typeItem = (string) ($typeStmt->fetchColumn() ?: '');
+
+            if ($typeItem === 'S' && !$isMagePlayer) {
+                return false;
+            }
+        }
+
         // Calculer le total
         $total = 0;
         foreach ($panier as $item) {

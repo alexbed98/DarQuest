@@ -73,6 +73,8 @@ $total = 0;
 		?>
 		<?php if ($commandeNotice === 'success'): ?>
 			<p class="panier-notice panier-notice-success">Commande passée ! Les items ont été ajoutés à votre inventaire.</p>
+		<?php elseif ($commandeNotice === 'mage_required'): ?>
+			<p class="panier-notice panier-notice-error">Seuls les joueurs mages peuvent acheter des sorts.</p>
 		<?php elseif ($commandeNotice === 'error'): ?>
 			<p class="panier-notice panier-notice-error">Or insuffisant pour passer la commande.</p>
 		<?php endif; ?>

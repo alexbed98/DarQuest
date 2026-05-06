@@ -263,12 +263,24 @@
         <div class="admin-form-grid two-cols">
             <div class="admin-field">
                 <label for="enigmeCategorie">Categorie</label>
-                <input id="enigmeCategorie" type="text" name="nomCategorie" maxlength="45" />
+                <select id="enigmeCategorie" name="idCategorie">
+                    <option value="">-- Choisir une categorie --</option>
+                    <?php foreach (($categories ?? []) as $categorie): ?>
+                        <option value="<?= htmlspecialchars((string) $categorie['idCategorie']) ?>">
+                            <?= htmlspecialchars((string) $categorie['nomCategorie']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <div class="admin-field">
                 <label for="enigmeDifficulte">Difficulte</label>
-                <input id="enigmeDifficulte" type="text" name="difficulte" maxlength="1" required />
+                <select id="enigmeDifficulte" name="difficulte" required>
+                    <option value="">-- Choisir une difficulte --</option>
+                    <option value="F">F - Facile</option>
+                    <option value="M">M - Moyen</option>
+                    <option value="D">D - Difficile</option>
+                </select>
             </div>
         </div>
 

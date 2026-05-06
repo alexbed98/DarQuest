@@ -9,14 +9,17 @@ require_once 'core/Database.php';
 require_once 'src/AccountDAL.php';
 require_once 'core/Email.php';
 
-if (IS_AUTH) header('Location: '. Page::Home->url());
+if (IS_AUTH)
+    header('Location: ' . Page::Home->url());
 
 // identification de la page active
 const ACTIVE_PAGE = Page::Connexion;
 
-$cssAdd = ['/public/css/catalogue.css',
-           '/public/css/layout.css',
-           '/public/css/form.css'];
+$cssAdd = [
+    '/public/css/catalogue.css',
+    '/public/css/layout.css',
+    '/public/css/form.css'
+];
 
 $email = '';
 $password = '';
@@ -34,8 +37,6 @@ if (IS_POST) {
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
 
     $email = $_POST['email'] ?? '';
-    
-    $email = $_POST['email'] ?? '';
 
     if (empty($email)) {
         $messages['email'] = 'Le courriel est obligatoire.';
@@ -48,11 +49,9 @@ if (IS_POST) {
 
     // si vide
     if (empty($password)) {
-
         $messages['password'] = 'Le mot de passe est obligatoire.';
-
     }
-    
+
     // si au moins 1 message d'erreur
     if (count($messages) > 0) {
 
@@ -63,19 +62,24 @@ if (IS_POST) {
         $connexion = Database::getConnexion($dbConfig);
         $user = AccountDAL::selectByEmail($connexion, $email);
 
-        if($user !== false && password_verify($password, $user['motDePasse'])) {
-            
-            // regeneration de la session id pour eviter certaines erreurs
-            session_regenerate_id();
+        if ($user !== false && password_verify($password, $user['motDePasse'])) {
 
-            // Ajout en session de email, id et role
-            $_SESSION['email'] = $email;
-            $_SESSION['id'] = $user['idJoueur'];
-            $_SESSION['role'] = $user['estAdmin'];
-            $_SESSION['avatar'] = $user['avatar'];
+            if (!empty($user['activation_guid'])) {
+                $messages['global'] = 'Le courriel n\'a pas été validé';
+            } else {
+                // regeneration de la session id pour eviter certaines erreurs
+                session_regenerate_id();
 
-            // Redirige à l'accueil
-            header('Location:' . Page::Home->url());
+                // Ajout en session de email, id et role
+                $_SESSION['email'] = $email;
+                $_SESSION['id'] = $user['idJoueur'];
+                $_SESSION['role'] = $user['estAdmin'];
+                $_SESSION['avatar'] = $user['avatar'];
+                // Redirige à l'accueil
+                $messages = [];
+                header('Location:' . Page::Home->url());
+                exit;
+            }
 
         } else {
 
@@ -104,39 +108,41 @@ if (!empty($_SESSION['new-account'])) {
 <!--Bloc entête document-Head block-->
 
 <body>
-    
+
     <!--Contenant principal pour largeur du contenu-Main container-->
     <div class="container">
 
         <!--Bloc entête-Header block-->
         <?php include_once TEMPLATE . '/header.php'; ?>
         <!--Bloc entête-Header block-->
-        
+
         <main>
 
             <?php if ($showNewAccountMessage): ?>
-            <div class="py=3 text-success text-center fs-4">
-                <p>Merci d'avoir créé un compte DarQuest</p>
-                <p>Vous devez valider votre courriel pour vous connecter.</p>
-            </div>
+                <div class="py=3 text-success text-center fs-4">
+                    <p>Merci d'avoir créé un compte DarQuest</p>
+                    <p>Vous devez valider votre courriel pour vous connecter.</p>
+                </div>
             <?php endif; ?>
 
             <div class="fs-4 text-center my-5">Connectez-vous</div>
 
             <!--Formulaire authenfification-Authentication form-->
-            <div class="col-md-4 mx-auto">                         
+            <div class="col-md-4 mx-auto">
 
                 <form class="form-style" method="post" novalidate>
 
                     <div class="mb-3">
                         <label for="email" class="form-label">Courriel</label>
-                        <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" value="<?= htmlspecialchars($email) ?>" autofocus>
+                        <input name="email" type="email" class="form-control" id="email" aria-describedby="emailHelp"
+                            value="<?= htmlspecialchars($email) ?>" autofocus>
                         <div id="emailHelp" class="form-text text-danger"><?= $messages['email'] ?? '' ?></div>
                     </div>
 
                     <div class="mb-3">
                         <label for="password" class="form-label">Mot de passe</label>
-                        <input name="password" type="password" class="form-control" id="password" aria-describedby="passwordHelp">
+                        <input name="password" type="password" class="form-control" id="password"
+                            aria-describedby="passwordHelp">
                         <div id="passwordHelp" class="form-text text-danger"><?= $messages['password'] ?? '' ?></div>
                     </div>
 
@@ -146,19 +152,22 @@ if (!empty($_SESSION['new-account'])) {
 
                 <div id="global-message" class="my-5 <?= $globalMessageColor ?>"><?= $messages['global'] ?? '' ?></div>
 
-                <div style="text-align: center" class="py-3"><a href="<?= Page::CreationCompte->url() ?>">Je n'ai pas de compte</a></div>
+                <div style="text-align: center" class="py-3"><a href="<?= Page::CreationCompte->url() ?>">Je n'ai pas de
+                        compte</a></div>
+
+                <div style="text-align: center" class="py-3"><a href="<?= Page::Email->url() ?>">J'ai oublié mon mot de passe</a></div>
             </div>
             <!--Formulaire authenfification-Authentication form-->
 
         </main>
-        
+
         <!--Bloc pied de page-Footer block-->
         <?php include_once TEMPLATE . '/footer.php'; ?>
         <!--Bloc pied de page-Footer block-->
-        
+
     </div>
     <!--Contenant principal-->
-   
-</body>
-</html>
 
+</body>
+
+</html>
