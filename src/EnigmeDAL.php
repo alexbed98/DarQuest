@@ -2,7 +2,15 @@
 
 class EnigmeDAL
 {
-    public static string $difficulte = 'F';
+    public static string $filtleDifficulte = "";
+    public static function setFiltre(string $difChar): void
+    {
+        if ($difChar == 'None')
+            self::$filtleDifficulte = '';
+        else
+            self::$filtleDifficulte = $difChar;
+
+    }
     //-------------------------------------------------------------------------------
     //Selectionne tout les enigmes et choisisez un aleatoirement
     //(return false s'il n'y a pas d'enigme choisi)
@@ -10,7 +18,7 @@ class EnigmeDAL
     public static function selectRandomEnigme(PDO $connexion): array|false
     {
         $where = '';
-        if (self::$difficulte != '') {
+        if (self::$filtleDifficulte != '' && self::$filtleDifficulte != 'None') {
             $where = ' WHERE difficulte = :difficulte';
         }
 
@@ -20,8 +28,8 @@ class EnigmeDAL
 
         $statement = $connexion->prepare($sql);
 
-        if (self::$difficulte != '')
-            $statement->bindValue(':difficulte', self::$difficulte, PDO::PARAM_INT);
+        if (self::$filtleDifficulte != '')
+            $statement->bindValue(':difficulte', self::$filtleDifficulte, PDO::PARAM_STR);
 
         $statement->execute();
 

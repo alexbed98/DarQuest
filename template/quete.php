@@ -10,10 +10,16 @@ require_once 'src/CategoryDAL.php';
 
 $connexion = Database::getConnexion($dbConfig);
 $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0;
+$filtre = '';
 $enigme = [];
 $reponses = [];
 $message = '';
 $errorMessage = '';
+
+if (isset($_GET['filtreDifficulte'])) {
+    $filtre = $_GET['filtreDifficulte'];
+    EnigmeDAL::setFiltre($filtre);
+}
 
 if (EnigmeDAL::countAllEnigme($connexion)) { //Verifie s'il y a des enigmes (Return true s'il y en a)
     $enigme = EnigmeDAL::selectRandomEnigme($connexion);
@@ -42,12 +48,32 @@ if (IS_POST) {
         } else {
             $message = AccountDAL::takeDamage($connexion, $_SESSION['email'], $idEnigme);//'Mauvaise réponse';
         }
+
 }
+
 $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0; //Update son acces au jeu
 ?>
 
+<script>
+    function DifficultyFiltreChange() {
+        document.getElementById('changeDifficultyFiltre').submit();
+    }
+
+</script>
+
 <div style="flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
-    <input type="button" value="Demander pour de l'argent" onclick="alert('Demander pour de l\'argent')">
+    <form id="changeDifficultyFiltre" style="display: flex;flex-direction:column" method="GET" action="">
+        <input type="button" value="Demander pour de l'argent" onclick="alert('Demander pour de l\'argent')">
+        <label for="filtreDifficulte">Préférence de difficulté</label>
+        <select id="filtreDifficulte" name="filtreDifficulte" onchange="DifficultyFiltreChange()">
+            <option value="None" <?php echo EnigmeDAL::$filtleDifficulte == "" ? 'Selected' : '' ?>>Aucune Preference
+            </option>
+            <!-- HardCoder -->
+            <option value="F" <?php echo $filtre == "F" ? 'Selected' : '' ?>>Facile</option>
+            <option value="M" <?php echo $filtre == "M" ? 'Selected' : '' ?>>Moyen</option>
+            <option value="D" <?php echo $filtre == "D" ? 'Selected' : '' ?>>Difficile</option>
+        </select>
+    </form>
     <h1>Enigma</h1>
     <div>
         Nombre de pièces d'or : <span
