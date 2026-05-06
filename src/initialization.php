@@ -46,11 +46,26 @@ function generateGUID() {
 
 // pour version en ligne 
 
+ $dbConfig = [
+     "dbHost" => "158.69.48.109",
+     "dbName" => "dbdarquest12",
+     "dbUser" => "equipe12",
+     "dbPass" => "9s6uak23",
+     "dbParams" => [
+         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+         PDO::ATTR_CASE => PDO::CASE_NATURAL,
+         PDO::ATTR_ORACLE_NULLS => PDO::NULL_EMPTY_STRING,
+         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+     ],
+ ];
+
+// pour version en local
+
 // $dbConfig = [
-//     "dbHost" => "158.69.48.109",
-//     "dbName" => "dbdarquest12",
-//     "dbUser" => "equipe12",
-//     "dbPass" => "9s6uak23",
+//     "dbHost" => "127.0.0.1",
+//     "dbName" => "darquest",
+//     "dbUser" => "root",
+//     "dbPass" => "",
 //     "dbParams" => [
 //         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
 //         PDO::ATTR_CASE => PDO::CASE_NATURAL,
@@ -58,21 +73,6 @@ function generateGUID() {
 //         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 //     ],
 // ];
-
-// pour version en local
-
-$dbConfig = [
-    "dbHost" => "127.0.0.1",
-    "dbName" => "darquest",
-    "dbUser" => "root",
-    "dbPass" => "",
-    "dbParams" => [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_CASE => PDO::CASE_NATURAL,
-        PDO::ATTR_ORACLE_NULLS => PDO::NULL_EMPTY_STRING,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-    ],
-];
 
 //==========================================
 
