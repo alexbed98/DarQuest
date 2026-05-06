@@ -15,6 +15,7 @@ const TEMPLATE = ROOT . '/template';
 const SRC = ROOT . '/src';
 const UPLOAD = ROOT . '/upload';
 const VENDOR = ROOT . '/vendor';
+const IMG_ITEMS = ROOT . '/public/img/items';
 
 //=======================================================
 
@@ -33,6 +34,13 @@ const AVATAR = URL_ROOT . 'upload/';
 define('IS_POST', $_SERVER['REQUEST_METHOD'] === 'POST');
 define('IS_AUTH', isset($_SESSION['email']) || isset($_SESSION['id']));
 define('IS_ADMIN', IS_AUTH && !empty($_SESSION['role']) && $_SESSION['role'] === 1);
+
+//=======================================================
+
+// genere un long string random utilise pour la validation de compte
+function generateGUID() {
+    return bin2hex(random_bytes(16));
+}
 
 //=======================================================
 

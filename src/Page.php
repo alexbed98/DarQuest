@@ -11,6 +11,9 @@ enum Page
     case Profil;
     case Enigme;
     case Admin;
+    case Email;
+    case ResetMDP;
+
 
 
     public function text(): string {
@@ -27,6 +30,8 @@ enum Page
             Page::Admin => 'Administration',
             Page::Profil => 'Profil',
             Page::Enigme => 'Enigme',
+            Page::Email => '',
+            Page::ResetMDP => ''
         };
 
     }
@@ -47,6 +52,8 @@ enum Page
             Page::Admin => $base . 'admin.php',
             Page::Profil => $base . 'profil.php',
             Page::Enigme => $base . 'enigme.php',
+            Page::Email => $base . 'email.php',
+            Page::ResetMDP => $base . 'mdp.php'
         };
 
     }

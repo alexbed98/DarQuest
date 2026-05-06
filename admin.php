@@ -40,7 +40,7 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_item') {
     // Upload photo
     $photo = 'default.png';
     if (!empty($_FILES['photoFile']['name'])) {
-        $dest = ROOT . '/public/img/items';
+        $dest = IMG_ITEMS;
         if (Upload::move('photoFile', $dest, ['image/jpeg', 'image/png', 'image/webp', 'image/gif'], 5 * 1024 * 1024)) {
             $photo = basename($_FILES['photoFile']['name']);
         }

@@ -5,7 +5,7 @@ class AccountDAL
     public static function selectByEmail(PDO $connexion, string $email): false|array
     {
 
-        $sql = "SELECT idJoueur, alias, prenom, nom, motDePasse, gold, argent, bronze, estAdmin, estMage, avatar from Joueurs where courriel=:email";
+        $sql = "SELECT idJoueur, alias, prenom, nom, motDePasse, gold, argent, bronze, estAdmin, estMage, avatar, activation_guid, reset_guid from Joueurs where courriel=:email";
 
         $statement = $connexion->prepare($sql);
 
@@ -16,6 +16,94 @@ class AccountDAL
         // fetch retourne 'false' si aucune donnée
         return $statement->fetch();
 
+    }
+
+    public static function selectByGuid(PDO $connexion, string $activation_guid): false|int
+    {
+
+        $sql = "SELECT idJoueur from Joueurs where activation_guid=:activation_guid";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue('activation_guid', $activation_guid, PDO::PARAM_STR);
+
+        $statement->execute();
+
+        return $statement->fetchColumn();
+
+    }
+
+    public static function selectByResetGuid(PDO $connexion, string $reset_guid): false|int
+    {
+
+        $sql = "SELECT idJoueur from Joueurs where reset_guid=:reset_guid";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue('reset_guid', $reset_guid, PDO::PARAM_STR);
+
+        $statement->execute();
+
+        return $statement->fetchColumn();
+
+    }
+
+    public static function removeActivationGuid(PDO $connexion, int $idJoueur ): bool 
+    {
+
+        $sql = "UPDATE Joueurs 
+            SET activation_guid = null
+            WHERE idJoueur = :idJoueur";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);      
+
+        return $statement->execute();
+    }
+
+    public static function removeResetGuid(PDO $connexion, int $idJoueur ): bool 
+    {
+
+        $sql = "UPDATE Joueurs 
+            SET reset_guid = null
+            WHERE idJoueur = :idJoueur";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+
+        return $statement->execute();
+    }
+
+    public static function addResetGuid(PDO $connexion, string $email, string $reset_guid ): bool 
+    {
+
+        $sql = "UPDATE Joueurs 
+            SET reset_guid = :reset_guid
+            WHERE courriel = :email";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue(':email', $email, PDO::PARAM_STR);
+        $statement->bindValue(':reset_guid', $reset_guid, PDO::PARAM_STR);       
+
+        return $statement->execute();
+    }
+
+    public static function updatePassword(PDO $connexion, int $idJoueur, string $newPassword ): bool 
+    {
+
+        $sql = "UPDATE Joueurs 
+            SET motDePasse = :newPassword
+            WHERE idJoueur = :idJoueur";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+        $statement->bindValue(':newPassword', $newPassword, PDO::PARAM_STR);      
+
+        return $statement->execute();
     }
 
     public static function updateJoueur(PDO $connexion, int $idJoueur, string $username, string $prenom, string $nom, 
@@ -44,10 +132,10 @@ class AccountDAL
         return $statement->execute();
     }
 
-    public static function insertOne(PDO $connexion, string $username, string $prenom, string $nom, string $courriel, string $motDePasse, int $estMage = 0, int $estAdmin = 0): bool
+    public static function insertOne(PDO $connexion, string $username, string $prenom, string $nom, string $courriel, string $motDePasse, string $activation_guid, string $reset_guid = null, int $estMage = 0, int $estAdmin = 0): bool
     {
 
-        $sql = "insert into Joueurs (alias, prenom, nom, estMage, courriel, motDePasse, estAdmin) values(:username, :prenom, :nom, :estMage, :courriel, :motDePasse, :estAdmin)";
+        $sql = "insert into Joueurs (alias, prenom, nom, estMage, courriel, motDePasse, activation_guid, reset_guid, estAdmin) values(:username, :prenom, :nom, :estMage, :courriel, :motDePasse, :activation_guid, :reset_guid, :estAdmin)";
 
         $statement = $connexion->prepare($sql);
 
@@ -56,6 +144,8 @@ class AccountDAL
         $statement->bindValue('nom', $nom, PDO::PARAM_STR);
         $statement->bindValue('courriel', $courriel, PDO::PARAM_STR);
         $statement->bindValue('motDePasse', $motDePasse, PDO::PARAM_STR);
+        $statement->bindValue('activation_guid', $activation_guid, PDO::PARAM_STR);
+        $statement->bindValue('reset_guid', $reset_guid, PDO::PARAM_STR);
         $statement->bindValue('estMage', $estMage, PDO::PARAM_INT);
         $statement->bindValue('estAdmin', $estAdmin, PDO::PARAM_INT);
 
