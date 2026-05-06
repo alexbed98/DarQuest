@@ -52,7 +52,7 @@ if (empty($_SESSION['email'])) {
     $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0;
 
     if (EnigmeDAL::countAllEnigme($connexion)) {
-        $enigme = EnigmeDAL::selectRandomEnigme($connexion);
+        $enigme = EnigmeDAL::selectRandomEnigmeNonReussie($connexion, $idJoueur);
         $reponses = $enigme ? EnigmeDAL::selectAllAnswers($connexion, $enigme['idEnigme']) : [];
 
         if (!$reponses) {
