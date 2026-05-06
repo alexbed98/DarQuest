@@ -173,7 +173,7 @@ class AccountDAL
     public static function selectHp(PDO $connexion, string $email): false|string
     {
 
-        $sql = "SELECT pointVie from joueurs where courriel=:email";
+        $sql = "SELECT pointVie from Joueurs where courriel=:email";
 
         $statement = $connexion->prepare($sql);
 
