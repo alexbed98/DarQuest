@@ -41,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
         header('Location: login.php');
         exit;
     }
-
     $account = AccountDAL::selectByEmail($connexion, $email);
 
     if ($account === false) {
