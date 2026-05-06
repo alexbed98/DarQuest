@@ -62,6 +62,101 @@ $ratingNotice = $_SESSION['rating_notice'] ?? null;
 unset($_SESSION['rating_notice']);
 
 
+// Truc pour les commentaires
+
+$stmtComments = $connexion->prepare("
+    SELECT j.nom, e.leCommentaire, e.idJoueur
+    FROM Evaluations e
+    JOIN Joueurs j ON j.idJoueur = e.idJoueur
+    WHERE e.idItem = ?
+    AND e.leCommentaire IS NOT NULL
+    AND e.leCommentaire != ''
+");
+$stmtComments->execute([$id]);
+
+$comments = $stmtComments->fetchAll(PDO::FETCH_ASSOC);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_item_id'])) {
+    if (!empty($_SESSION['id'])) {
+
+        $idItem = (int) $_POST['comment_item_id'];
+        $idJoueur = (int) $_SESSION['id'];
+        $commentaire = trim($_POST['comment_text']);
+
+        if (!empty($commentaire)) {
+
+            $stmtInsert = $connexion->prepare("
+                INSERT INTO Evaluations (idJoueur, idItem, nbEtoiles, leCommentaire)
+                VALUES (?, ?, 0, ?)
+                ON DUPLICATE KEY UPDATE leCommentaire = VALUES(leCommentaire)
+            ");
+
+            $stmtInsert->execute([$idJoueur, $idItem, $commentaire]);
+
+            header("Location: detail.php?idItem=" . $idItem);
+            exit;
+        }
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_item_id'])) {
+    if (!empty($_SESSION['id'])) {
+
+        $idItem = (int) $_POST['edit_item_id'];
+        $idJoueur = (int) $_SESSION['id'];
+        $commentaire = trim($_POST['edit_comment_text']);
+
+        if (!empty($commentaire)) {
+
+            $stmtUpdate = $connexion->prepare("
+                UPDATE Evaluations
+                SET leCommentaire = ?
+                WHERE idJoueur = ? AND idItem = ?
+            ");
+
+            $stmtUpdate->execute([$commentaire, $idJoueur, $idItem]);
+
+            header("Location: detail.php?idItem=" . $idItem);
+            exit;
+        }
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_item_id'])) {
+    if (!empty($_SESSION['id'])) {
+
+        $idItem = (int) $_POST['delete_item_id'];
+        $idJoueur = (int) $_SESSION['id'];
+
+        $stmtDelete = $connexion->prepare("
+            DELETE FROM Evaluations
+            WHERE idJoueur = ? AND idItem = ?
+        ");
+
+        $stmtDelete->execute([$idJoueur, $idItem]);
+
+        header("Location: detail.php?idItem=" . $idItem);
+        exit;
+    }
+}
+
+$userHasCommented = false;
+
+if (!empty($_SESSION['id'])) {
+
+    $stmtCheck = $connexion->prepare("
+        SELECT 1
+        FROM Evaluations
+        WHERE idJoueur = ? AND idItem = ?
+        LIMIT 1
+    ");
+
+    $stmtCheck->execute([(int)$_SESSION['id'], $id]);
+    $userHasCommented = (bool) $stmtCheck->fetchColumn();
+}
+// fin des trucs pour les commentaires
+
+
 ?>
 
 <div class="mainContainer">
@@ -168,6 +263,88 @@ unset($_SESSION['rating_notice']);
 </div>
 
 
+<div class="conteneur comments-section">
+    <h3>Commentaires</h3>
+
+    <?php if (empty($comments)): ?>
+        <p>Aucun commentaire pour cet item.</p>
+    <?php else: ?>
+        <?php foreach ($comments as $comment): ?>
+            <div class="comment-card">
+
+    <div class="comment-header">
+        <strong><?= htmlspecialchars($comment['nom']) ?></strong>
+
+        <?php if (!empty($_SESSION['id']) && $_SESSION['id'] == $comment['idJoueur']): ?>
+            <div class="comment-actions">
+                <button class="edit-btn">🪶</button>
+
+                <form method="POST" class="delete-form" onsubmit="return confirm('Supprimer ce commentaire ?');">
+                    <input type="hidden" name="delete_item_id" value="<?= (int)$item['idItem'] ?>">
+                    <button type="submit" class="delete-btn">🗑️</button>
+                </form>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- Texte -->
+    <p class="comment-text">
+        <?= htmlspecialchars($comment['leCommentaire']) ?>
+    </p>
+
+    <!-- Formulaire caché -->
+    <?php if (!empty($_SESSION['id']) && $_SESSION['id'] == $comment['idJoueur']): ?>
+        <form method="POST" class="edit-form" style="display:none;">
+            <input type="hidden" name="edit_item_id" value="<?= (int)$item['idItem'] ?>">
+
+            <textarea name="edit_comment_text" class="edit-textarea"><?= htmlspecialchars($comment['leCommentaire']) ?></textarea>
+
+            <div class="edit-actions">
+                <button type="submit" class="save-btn">Enregistrer</button>
+                <button type="button" class="cancel-edit">Annuler</button>
+            </div>
+        </form>
+    <?php endif; ?>
+
+</div>
+        <?php endforeach; ?>
+    <?php endif; ?>
+</div>
+
+<?php if (!empty($_SESSION['id'])): ?>
+    <div class="add-comment-section">
+        <button 
+            id="toggleCommentForm" 
+            class="item-add-btn"
+            <?= $userHasCommented ? 'disabled' : '' ?>
+        >
+            Ajouter un commentaire
+        </button>
+
+        <?php if ($userHasCommented): ?>
+            <p class="comment-limit-text">Tu as déjà commenté cet item.</p>
+        <?php endif; ?>
+
+        <form method="POST" id="commentForm" class="comment-form" style="display: none;">
+            <input type="hidden" name="comment_item_id" value="<?= (int)$item['idItem'] ?>">
+
+            <textarea 
+                name="comment_text" 
+                maxlength="255"
+                required
+                placeholder="Écris ton commentaire..."
+                class="comment-textarea"
+                id="commentText">
+            </textarea>
+
+            <button type="submit" class="item-add-btn">
+                Envoyer
+            </button>
+        </form>
+    </div>
+<?php endif; ?>
+
+
 <script>
     const prixUnitaire = parseInt(document.querySelector('#prixItem').textContent);
     const inputQty = document.querySelector('.panier-qty-input');
@@ -217,6 +394,49 @@ unset($_SESSION['rating_notice']);
                 setFilledStars(parseInt(input.value, 10));
                 ratingInlineForm.submit();
             });
+        });
+    }
+
+
+    const toggleBtn = document.querySelector('#toggleCommentForm');
+    const commentForm = document.querySelector('#commentForm');
+
+    if (toggleBtn && commentForm) {
+        toggleBtn.addEventListener('click', () => {
+            commentForm.style.display =
+                commentForm.style.display === 'none' ? 'block' : 'none';
+        });
+    }
+
+    const editButtons = document.querySelectorAll('.edit-btn');
+        editButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            const card = btn.closest('.comment-card');
+            const text = card.querySelector('.comment-text');
+            const form = card.querySelector('.edit-form');
+
+            text.style.display = 'none';
+            form.style.display = 'block';
+        });
+    });
+
+    document.querySelectorAll('.cancel-edit').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const card = btn.closest('.comment-card');
+        card.querySelector('.edit-form').style.display = 'none';
+        card.querySelector('.comment-text').style.display = 'block';
+    });
+});
+
+    const btn = document.querySelector('#toggleCommentForm');
+    const textarea = document.querySelector('#commentText');
+
+    if (btn && textarea) {
+        btn.addEventListener('click', () => {
+            setTimeout(() => {
+                textarea.focus();
+                textarea.value = "";
+            }, 50);
         });
     }
 </script>
