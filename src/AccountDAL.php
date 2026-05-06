@@ -190,7 +190,7 @@ class AccountDAL
     public static function selectEstMage(PDO $connexion, string $email): bool
     {
 
-        $sql = "SELECT EstMage from joueurs where courriel=:email";
+        $sql = "SELECT EstMage from Joueurs where courriel=:email";
 
         $statement = $connexion->prepare($sql);
 
