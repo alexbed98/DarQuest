@@ -6,6 +6,8 @@ require_once 'src/Page.php';
 require_once 'core/Validation.php';
 require_once 'core/Database.php';
 require_once 'src/AccountDAL.php';
+require_once 'src/CategoryDAL.php';
+require_once 'src/StatistiqueDAL.php';
 require_once 'core/Email.php';
 require_once 'core/Upload.php';
 
@@ -40,6 +42,14 @@ $bronze = $user['bronze'];
 $estMage = $user['estMage'];
 $avatar = $user['avatar'];
 $ancienEmail = $email;
+
+$totalQuestions = StatistiqueDAL::countAnsweredQuestions($connexion, $email);
+$successfulQuestions = StatistiqueDAL::countSuccessfulQuestions($connexion, $email);
+$successfulMagicQuestions = (int) (StatistiqueDAL::selectAllSuccesfulMagicQuestions($connexion, $email) ?: 0);
+$remainingMagicQuestions = max(0, 3 - $successfulMagicQuestions);
+$successRate = $totalQuestions > 0
+    ? round(($successfulQuestions / $totalQuestions) * 100)
+    : 0;
 
 // pour les messages d'erreurs
 $messages = [];
@@ -260,10 +270,10 @@ if (IS_POST) {
                             <div class="mb-3">
                                 <label class="form-label">Statistiques</label>
                                 <span class="form-control profil-stats">
-                                    <Text class="stats-text">Statut: <?= $estMage == 1 ? "Mage" : "Apprenti" ?></Text>
-                                    <Text class="stats-text">Questions sur la magie restante(s): 1 (hardcoded)</Text>
-                                    <Text class="stats-text">Questions réussites: 145 (hardcoded)</Text> 
-                                    <Text class="stats-text">Taux de réussite: 78% (hardcoded)</Text>
+                                    <span class="stats-text">Statut: <?= $estMage == 1 ? "Mage" : "Apprenti" ?></span>
+                                    <span class="stats-text">Questions sur la magie restante(s): <?= $remainingMagicQuestions ?></span>
+                                    <span class="stats-text">Questions reussites: <?= $successfulQuestions ?></span>
+                                    <span class="stats-text">Taux de reussite: <?= $successRate ?>%</span>
                                 </span>
                             </div>
 

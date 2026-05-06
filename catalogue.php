@@ -114,13 +114,6 @@ $cartNotice = $_SESSION['cart_notice'] ?? '';
 // Message flash: on le consomme une seule fois apres redirection.
 unset($_SESSION['cart_notice']);
 
-if (isset($_SESSION['email'])) {
-    $username = AccountDAL::selectAlias($connexion, $_SESSION['email']);
-    echo "Bienvenue, " . $username . "!";
-} else {
-    echo "Tu n'es pas connecté.";
-}
-
 // identification de la page active
 const ACTIVE_PAGE = Page::Catalogue;
 

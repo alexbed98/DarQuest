@@ -10,10 +10,12 @@
             <?php if (IS_AUTH): ?>
                 <?php
                     $headerCon = $connexion ?? Database::getConnexion($dbConfig);
-                    $goldStmt = $headerCon->prepare("SELECT gold FROM Joueurs WHERE idJoueur = :id");
+                    $goldStmt = $headerCon->prepare("SELECT gold, alias FROM Joueurs WHERE idJoueur = :id");
                     $goldStmt->bindValue(':id', (int) $_SESSION['id'], PDO::PARAM_INT);
                     $goldStmt->execute();
-                    $headerGold = (int) ($goldStmt->fetch()['gold'] ?? 0);
+                    $headerRow = $goldStmt->fetch();
+                    $headerGold = (int) ($headerRow['gold'] ?? 0);
+                    $headerAlias = htmlspecialchars($headerRow['alias'] ?? 'Joueur');
                 ?>
                 <span class="header-gold">Nombre de pièces: <?= number_format($headerGold) ?>&nbsp;🥇</span>
                 <a class='headerButtons' href="<?= Page::Catalogue->url() ?>">Items</a>
@@ -37,15 +39,8 @@
                     <?php endif; ?>
                 </a>
                 <a class='headerButtons' href="<?= Page::Enigme->url() ?>">Énigma</a>
-            <?php endif; ?>
-            <!-- si on est connecté, en cliquant sur l'avatar on arrive a la page profil -->
-            <?php if (IS_AUTH): ?>
+                <span class="header-status connected" title="Connecté"><?= $headerAlias ?></span>
                 <a href="<?= Page::Profil->url() ?>"><img class="avatar" src="<?= AVATAR . $_SESSION['avatar'] ?>" alt="Avatar"></a>
-            <!-- si on n'est pas connecté, en cliquant sur l'avatar on arrive a la page de connexion -->
-            <?php else: ?>
-                <a href="<?= Page::Connexion->url() ?>"><img class="avatar" src="<?= AVATAR . 'avatar_default.jpg' ?>" alt="Avatar"></a>
-            <?php endif; ?>
-            <?php if (IS_AUTH): ?>
                 <a href="logout.php" class="logout-btn" title="Se déconnecter">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -53,6 +48,9 @@
                         <line x1="21" y1="12" x2="9" y2="12"></line>
                     </svg>
                 </a>
+            <?php else: ?>
+                <span class="header-status disconnected" title="Non connecté">Visiteur</span>
+                <a href="<?= Page::Connexion->url() ?>"><img class="avatar" src="<?= AVATAR . 'avatar_default.jpg' ?>" alt="Avatar"></a>
             <?php endif; ?>
         </div>
 

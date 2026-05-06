@@ -21,7 +21,7 @@ enum Page
         return match($this) {
             
             Page::Home => 'Accueil',
-            Page::Catalogue => 'Catalogue',
+            Page::Catalogue => 'Accueil',
             Page::Details => 'Détails',
             Page::Connexion => 'Connexion',
             Page::Panier => 'Panier',

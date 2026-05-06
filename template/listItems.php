@@ -86,7 +86,7 @@ $items = ItemDAL::select($connexion);
                         <!-- Ce formulaire envoie l'id de l'item à catalogue.php pour l'ajout panier utilisateur. -->
                         <form method="post" action="" style="margin: 0;">
                             <input type="hidden" name="add_item_id" value="<?= (int) $item['idItem'] ?>">
-                            <button type="submit" class="item-add-btn">Ajouter</button>
+                            <button type="submit" class="item-add-btn" <?= (int) $item['quantiteStock'] === 0 ? 'disabled' : '' ?>>Ajouter</button>
                         </form>
                     </div>
                 </div>
