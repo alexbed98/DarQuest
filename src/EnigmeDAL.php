@@ -2,29 +2,6 @@
 
 class EnigmeDAL
 {
-<<<<<<< Choix-Quete
-    public static string $filtleDifficulte = "";
-    public static string $filtleCategorie = "";
-    //-------------------------------------------------------------------------------
-    //Set le filtre de difficulter (permet de hardcoder en cas)
-    //-------------------------------------------------------------------------------
-    public static function setFiltreDifficulte(string $difChar): void
-    {
-        if ($difChar == 'None')
-            self::$filtleDifficulte = '';
-        else
-            self::$filtleDifficulte = $difChar;
-    }
-    //-------------------------------------------------------------------------------
-    //Set le filtre de Categorie (permet de hardcoder en cas)
-    //-------------------------------------------------------------------------------
-    public static function setFiltreCategorie(string $CatChar): void
-    {
-        if ($CatChar == 'None')
-            self::$filtleDifficulte = '';
-        else
-            self::$filtleCategorie = $CatChar;
-=======
     public static $currentDif = '';
 
     //-------------------------------------------------------------------------------
@@ -42,7 +19,6 @@ class EnigmeDAL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
         $connexion->exec($sql);
->>>>>>> main
     }
     //-------------------------------------------------------------------------------
     //Selectionne tout les enigmes et choisisez un aleatoirement
@@ -63,11 +39,7 @@ class EnigmeDAL
 
         $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee
                 FROM Enigmes
-<<<<<<< Choix-Quete
-                $where;";
-=======
                 WHERE estDisponible = 1;";
->>>>>>> main
 
         $statement = $connexion->prepare($sql);
 
@@ -204,9 +176,6 @@ class EnigmeDAL
         return $statement->execute();
     }
 
-<<<<<<< Choix-Quete
-}
-=======
 
     //-------------------------------------------------------------------------------
     // Selectionne toutes les enigmes avec leur statut de disponibilite (pour l'admin)
@@ -354,4 +323,3 @@ class EnigmeDAL
 class EnigneDAL extends EnigmeDAL
 {
 }
->>>>>>> main
