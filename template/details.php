@@ -79,12 +79,28 @@ $comments = $stmtComments->fetchAll(PDO::FETCH_ASSOC);
 $cartNotice = $_SESSION['cart_notice'] ?? null;
 unset($_SESSION['cart_notice']);
 
+$commentNotice = $_SESSION['comment_notice'] ?? null;
+unset($_SESSION['comment_notice']);
+
+$userOwnsItem = false;
+if (!empty($_SESSION['id'])) {
+    $stmtOwnsItem = $connexion->prepare("SELECT 1 FROM Inventaires WHERE idJoueur = ? AND idItem = ? LIMIT 1");
+    $stmtOwnsItem->execute([(int) $_SESSION['id'], $id]);
+    $userOwnsItem = (bool) $stmtOwnsItem->fetchColumn();
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_item_id'])) {
     if (!empty($_SESSION['id'])) {
 
         $idItem = (int) $_POST['comment_item_id'];
         $idJoueur = (int) $_SESSION['id'];
         $commentaire = trim($_POST['comment_text']);
+
+        if (!$userOwnsItem) {
+            $_SESSION['comment_notice'] = 'Vous devez posseder cet item pour laisser un commentaire.';
+            header("Location: detail.php?idItem=" . $idItem);
+            exit;
+        }
 
         if (!empty($commentaire)) {
 
@@ -109,6 +125,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_item_id'])) {
         $idJoueur = (int) $_SESSION['id'];
         $commentaire = trim($_POST['edit_comment_text']);
 
+        if (!$userOwnsItem) {
+            $_SESSION['comment_notice'] = 'Modification impossible: vous ne possedez pas cet item.';
+            header("Location: detail.php?idItem=" . $idItem);
+            exit;
+        }
+
         if (!empty($commentaire)) {
 
             $stmtUpdate = $connexion->prepare("
@@ -130,6 +152,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_item_id'])) {
 
         $idItem = (int) $_POST['delete_item_id'];
         $idJoueur = (int) $_SESSION['id'];
+
+        if (!$userOwnsItem) {
+            $_SESSION['comment_notice'] = 'Suppression impossible: vous ne possedez pas cet item.';
+            header("Location: detail.php?idItem=" . $idItem);
+            exit;
+        }
 
         $stmtDelete = $connexion->prepare("
             DELETE FROM Evaluations
@@ -279,6 +307,10 @@ if (!empty($_SESSION['id'])) {
 <div class="conteneur comments-section">
     <h3>Commentaires</h3>
 
+    <?php if ($commentNotice): ?>
+        <p class="details-cart-notice"><?= htmlspecialchars($commentNotice) ?></p>
+    <?php endif; ?>
+
     <?php if (empty($comments)): ?>
         <p>Aucun commentaire pour cet item.</p>
     <?php else: ?>
@@ -329,13 +361,15 @@ if (!empty($_SESSION['id'])) {
         <button 
             id="toggleCommentForm" 
             class="item-add-btn"
-            <?= $userHasCommented ? 'disabled' : '' ?>
+            <?= ($userHasCommented || !$userOwnsItem) ? 'disabled' : '' ?>
         >
             Ajouter un commentaire
         </button>
 
         <?php if ($userHasCommented): ?>
             <p class="comment-limit-text">Tu as déjà commenté cet item.</p>
+        <?php elseif (!$userOwnsItem): ?>
+            <p class="comment-limit-text">Vous devez acheter cet item avant de commenter.</p>
         <?php endif; ?>
 
         <form method="POST" id="commentForm" class="comment-form" style="display: none;">
