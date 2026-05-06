@@ -1,21 +1,25 @@
 <?php
 
+session_start();
+
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
 require_once 'core/Database.php';
 require_once 'src/AccountDAL.php';
 
-$guid = $_GET['guid'] ?? null;
+$reset_guid = $_GET['reset_guid'] ?? null;
 
-if ($guid) {
+if ($reset_guid) {
     $connexion = Database::getConnexion($dbConfig);
-    $idJoueur = AccountDAL::selectByGuid($connexion, $guid);
+    $idJoueur = AccountDAL::selectByResetGuid($connexion, $reset_guid);
 
     if ($idJoueur != false) {
-        if (AccountDAL::removeActivationGuid($connexion, $idJoueur)){
-            header('Location: ' . Page::Connexion->url());
-            exit;
-        }
+        $_SESSION['reset_id_joueur'] = $idJoueur;
+        $_SESSION['reset_autorise'] = true;
+
+        header('Location: ' . Page::ResetMDP->url());
+        exit;
     }
 }
+
 

@@ -1,5 +1,7 @@
 <?php
 
+session_start();
+
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
 require_once 'core/Database.php';

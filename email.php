@@ -11,27 +11,28 @@ require_once 'core/Email.php';
 
 $connexion = Database::getConnexion($dbConfig);
 
-if(isset($_SESSION['email'])) {
+if (isset($_SESSION['email'])) {
     $username = AccountDAL::selectAlias($connexion, $_SESSION['email']);
     echo "Bienvenue, " . $username . "!";
-}
-else {
+} else {
     echo "Tu n'es pas connecté.";
 }
 
 // identification de la page active
 const ACTIVE_PAGE = Page::Email;
 
-$cssAdd = ['/public/css/catalogue.css',
-           '/public/css/layout.css',
-           '/public/css/form.css'];
+$cssAdd = [
+    '/public/css/catalogue.css',
+    '/public/css/layout.css',
+    '/public/css/form.css'
+];
 
 $email = '';
 $messages = [];
 
 $globalMessageColor = 'text-danger';
-           
-if (IS_POST){
+
+if (IS_POST) {
     $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
 
     $email = $_POST['email'] ?? '';
@@ -48,20 +49,30 @@ if (IS_POST){
 
     } else {
 
-        $subject = 'Rénitialisation du mot de passe.';
+        if (AccountDAL::courrielExistant($connexion, $email)) {
 
-                $message = <<<HTML
+            $reset_guid = generateGUID();
+
+            AccountDAL::addResetGuid($connexion, $email, $reset_guid);
+
+            $subject = 'Rénitialisation du mot de passe.';
+
+            $message = <<<HTML
                 <h1>Rénitialisation du mot de passe</h1>
-                <p><a style="text-decoration: underline; color: blue;" href="http://darquest.ca/validateReset.php?guid=$guid">Cliquer ici pour rénitialiser votre mot de passe</a></p>
+                <p><a style="text-decoration: underline; color: blue;" href="http://darquest.ca/validateReset.php?reset_guid=$reset_guid">
+                    Cliquer ici pour rénitialiser votre mot de passe</a>
+                </p>
                 HTML;
 
-                Email::readConfig(SRC . '/gmail.ini');
+            Email::readConfig(SRC . '/gmail.ini');
 
-                if (Email::send($email, $subject, $message)) {
+            if (Email::send($email, $subject, $message)) {
 
-                    header('Location: ' . Page::Connexion->url());
+                header('Location: ' . Page::Connexion->url());
+                exit;
+            }
 
-                }
+        }
 
     }
 }
@@ -77,14 +88,14 @@ if (IS_POST){
 <!--Bloc entête document-Head block-->
 
 <body>
-    
+
     <!--Contenant principal pour largeur du contenu-Main container-->
     <div class="container">
 
         <!--Bloc entête-Header block-->
         <?php include_once TEMPLATE . '/header.php'; ?>
         <!--Bloc entête-Header block-->
-        
+
         <main>
 
             <!--Bloc ?-->
@@ -109,21 +120,22 @@ if (IS_POST){
 
                 <div id="global-message" class="my-5 <?= $globalMessageColor ?>"><?= $messages['global'] ?? '' ?></div>
 
-                <div style="text-align: center" class="py-3"><a href="<?= Page::Connexion->url() ?>">Revenir à la page de connexion</a>
+                <div style="text-align: center" class="py-3"><a href="<?= Page::Connexion->url() ?>">Revenir à la page
+                        de connexion</a>
                 </div>
 
             </div>
             <!--Bloc ?-->
 
         </main>
-        
+
         <!--Bloc pied de page-Footer block-->
         <?php include_once TEMPLATE . '/footer.php'; ?>
         <!--Bloc pied de page-Footer block-->
-        
+
     </div>
     <!--Contenant principal-->
-   
-</body>
-</html>
 
+</body>
+
+</html>

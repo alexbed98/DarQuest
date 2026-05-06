@@ -29,7 +29,21 @@ class AccountDAL
 
         $statement->execute();
 
-        // fetch retourne 'false' si aucune donnée
+        return $statement->fetchColumn();
+
+    }
+
+    public static function selectByResetGuid(PDO $connexion, string $reset_guid): false|int
+    {
+
+        $sql = "SELECT idJoueur from Joueurs where reset_guid=:reset_guid";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue('reset_guid', $reset_guid, PDO::PARAM_STR);
+
+        $statement->execute();
+
         return $statement->fetchColumn();
 
     }
@@ -44,6 +58,50 @@ class AccountDAL
         $statement = $connexion->prepare($sql);
 
         $statement->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);      
+
+        return $statement->execute();
+    }
+
+    public static function removeResetGuid(PDO $connexion, int $idJoueur ): bool 
+    {
+
+        $sql = "UPDATE Joueurs 
+            SET reset_guid = null
+            WHERE idJoueur = :idJoueur";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+
+        return $statement->execute();
+    }
+
+    public static function addResetGuid(PDO $connexion, string $email, string $reset_guid ): bool 
+    {
+
+        $sql = "UPDATE Joueurs 
+            SET reset_guid = :reset_guid
+            WHERE courriel = :email";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue(':email', $email, PDO::PARAM_STR);
+        $statement->bindValue(':reset_guid', $reset_guid, PDO::PARAM_STR);       
+
+        return $statement->execute();
+    }
+
+    public static function updatePassword(PDO $connexion, int $idJoueur, string $newPassword ): bool 
+    {
+
+        $sql = "UPDATE Joueurs 
+            SET motDePasse = :newPassword
+            WHERE idJoueur = :idJoueur";
+
+        $statement = $connexion->prepare($sql);
+
+        $statement->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+        $statement->bindValue(':newPassword', $newPassword, PDO::PARAM_STR);      
 
         return $statement->execute();
     }
