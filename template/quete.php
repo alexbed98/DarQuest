@@ -1,6 +1,5 @@
 <?php
 
-use Dom\Document;
 include_once 'core/Database.php';
 include_once 'src/initialization.php';
 require_once 'src/AccountDAL.php';
@@ -9,15 +8,21 @@ require_once 'src/StatistiqueDAL.php';
 require_once 'src/CategoryDAL.php';
 
 $connexion = Database::getConnexion($dbConfig);
+<<<<<<< Choix-Quete
 $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0;
 $filtreDifficulte = '';
 $filtreCategorie = '';
 $categories = CategoryDAL::select($connexion);
 $enigme = [];
 $reponses = [];
+=======
+>>>>>>> main
 $message = '';
 $errorMessage = '';
+$enigme = [];
+$reponses = [];
 
+<<<<<<< Choix-Quete
 // set le filtre pour la difficulte avec l'url
 if (isset($_GET['filtreDifficulte'])) {
     $filtreDifficulte = $_GET['filtreDifficulte'];
@@ -37,26 +42,60 @@ if (EnigmeDAL::countAllEnigme($connexion)) { //Verifie s'il y a des enigmes (Ret
         $errorMessage = "Cette quête manque ses réponses";
     else
         $errorMessage = "";
-
-    shuffle($reponses);
-
+=======
+if (empty($_SESSION['email'])) {
+    $errorMessage = 'Vous devez etre connecte pour acceder aux quetes.';
+    $peutJouer = false;
+    $playerGold = 0;
+    $playerHealth = 0;
+    $nbDemandes = 0;
 } else {
-    $errorMessage = "Désoler, il n'y a pas de quête pour le moment";
-}
+    $joueur = AccountDAL::selectByEmail($connexion, $_SESSION['email']);
+    $idJoueur = (int) $joueur['idJoueur'];
+    $nbDemandes = (int) EnigmeDAL::countDemandesByJoueur($connexion, $idJoueur);
 
-if (IS_POST) {
-
-    $bonOuPas = $_POST['answer'] ?? null; // => 1 si la reponse choisi est bon, sinon 0
-    $difficulte = $_POST['difficulte'] ?? null;// => return la difficulte
-    $idEnigme = $_POST['idEnigme'] ?? null;// => return l'id de l'enigme
-
-    if ($bonOuPas != null && $difficulte != null)
-        if ($bonOuPas == 1) {
-            $message = AccountDAL::addReward($connexion, $_SESSION['email'], $idEnigme);//'Bonne réponse';
-        } else {
-            $message = AccountDAL::takeDamage($connexion, $_SESSION['email'], $idEnigme);//'Mauvaise réponse';
+    if (IS_POST) {
+        if (isset($_POST['demande_argent'])) {
+            if ($nbDemandes < 3) {
+                EnigmeDAL::insertDemande($connexion, $idJoueur);
+                $nbDemandes = (int) EnigmeDAL::countDemandesByJoueur($connexion, $idJoueur);
+                $message = "Demande envoyee a l'admin.";
+            } else {
+                $errorMessage = "Vous avez atteint la limite de 3 demandes.";
+            }
         }
+>>>>>>> main
+
+        $bonOuPas = filter_input(INPUT_POST, 'answer', FILTER_VALIDATE_INT);
+        $idEnigme = filter_input(INPUT_POST, 'idEnigme', FILTER_VALIDATE_INT);
+
+        if ($bonOuPas !== null && $bonOuPas !== false && $idEnigme) {
+            if ($bonOuPas === 1) {
+                $message = AccountDAL::addReward($connexion, $_SESSION['email'], (string) $idEnigme);
+            } else {
+                $message = AccountDAL::takeDamage($connexion, $_SESSION['email'], (string) $idEnigme);
+            }
+        }
+    }
+
+    $playerGold = (int) (AccountDAL::selectGold($connexion, $_SESSION['email']) ?: 0);
+    $playerHealth = (int) (AccountDAL::selectPointVie($connexion, $_SESSION['email']) ?: 0);
+    $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0;
+
+    if (EnigmeDAL::countAllEnigme($connexion)) {
+        $enigme = EnigmeDAL::selectRandomEnigmeNonReussie($connexion, $idJoueur);
+        $reponses = $enigme ? EnigmeDAL::selectAllAnswers($connexion, $enigme['idEnigme']) : [];
+
+        if (!$reponses) {
+            $errorMessage = "Cette quete manque ses reponses.";
+        } else {
+            shuffle($reponses);
+        }
+    } elseif ($errorMessage === '') {
+        $errorMessage = "Desole, il n'y a pas de quete pour le moment.";
+    }
 }
+<<<<<<< Choix-Quete
 
 $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0; //Update son acces au jeu
 ?>
@@ -113,23 +152,80 @@ $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0; //Update 
                 <?php endforeach; ?>
                 <button type="submit" style="width: 30%; margin:20px;">Valider la réponse</button>
 
-            <?php else: ?>
+=======
+?>
 
+<section class="enigme-page">
+    <div class="enigme-header">
+        <form method="POST" action="">
+            <?php if ($nbDemandes < 3): ?>
+                <button type="submit" name="demande_argent" value="1" class="enigme-help-btn">
+                    Demander des pièces
+                </button>
+>>>>>>> main
+            <?php else: ?>
+                <button type="button" class="enigme-help-btn" disabled>
+                    Limite de demande de pièces atteinte
+                </button>
+            <?php endif; ?>
+        </form>
+
+<<<<<<< Choix-Quete
                 <?php if (EnigmeDAL::countAllEnigme(Database::getConnexion($dbConfig))): ?>
                     <!-- S'il n'y a pas de quete, n'affiche pas le button pour une nouvelle quete -->
                     <button type="submit" style="width: 30%; margin:20px;">Nouvelle quête</button>
                 <?php endif ?>
+=======
+        <h1 class="enigme-title">Quete Enigme</h1>
+>>>>>>> main
 
-            <?php endif ?>
-
-        <?php else: ?><!-- Sinon, affiche un message pour indiquer au joueur qu'il n'a pas assé d'hp pour jouer -->
-            <div style="width: 45%; justify-items: center; border: 1px solid black; margin: 20px; padding: 5px;">
-                <h3>Vous n'avez pas assée hp</h3>
+        <div class="enigme-stats">
+            <div class="enigme-gold">
+                Pieces d'or: <span id="gold"><?= number_format($playerGold) . '&nbsp;🥇'; ?></span>
             </div>
-        <?php endif ?>
-
-        <div><?php echo $message ?></div>
-        <div><?php echo $errorMessage ?></div>
-
+            <div class="enigme-health">
+                Points de vie: <span id="health"><?= number_format($playerHealth) . '&nbsp;❤'; ?></span>
+            </div>
+        </div>
     </div>
-</form>
+
+    <form id="answerEnigme" method="POST" action="" class="enigme-form">
+        <?php if ($peutJouer): ?>
+            <?php if ($enigme): ?>
+                <div class="enigme-question-card">
+                    <h3><?= htmlspecialchars((string) $enigme['enonce']); ?></h3>
+                    <input type="hidden" name="idEnigme" value="<?= htmlspecialchars((string) $enigme['idEnigme']); ?>">
+                </div>
+            <?php endif; ?>
+
+            <?php if ($enigme && $reponses): ?>
+                <div class="enigme-answers">
+                    <?php foreach ($reponses as $index => $reponse): ?>
+                        <label for="reponse<?= $index + 1; ?>" class="enigme-answer-option">
+                            <input
+                                type="radio"
+                                id="reponse<?= $index + 1; ?>"
+                                name="answer"
+                                value="<?= htmlspecialchars((string) $reponse['estBonneReponse']); ?>"
+                                required
+                            >
+                            <span><?= htmlspecialchars((string) $reponse['reponse']); ?></span>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
+
+                <button type="submit" class="enigme-submit-btn">Valider la reponse</button>
+            <?php elseif ($errorMessage !== ''): ?>
+                <div class="enigme-error"><?= htmlspecialchars($errorMessage); ?></div>
+            <?php endif; ?>
+        <?php else: ?>
+            <div class="enigme-error">
+                <?= htmlspecialchars($errorMessage !== '' ? $errorMessage : "Vous n'avez pas assez de points de vie pour jouer."); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($message !== ''): ?>
+            <div class="enigme-message"><?= htmlspecialchars($message); ?></div>
+        <?php endif; ?>
+    </form>
+</section>

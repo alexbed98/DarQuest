@@ -10,6 +10,7 @@ require_once 'core/Upload.php';
 require_once 'src/AccountDAL.php';
 require_once 'src/ItemDAL.php';
 require_once 'src/EnigmeDAL.php';
+require_once 'src/CategoryDAL.php';
 require_once 'core/Email.php';
 
 // Securite: seul un admin peut acceder a cette page
@@ -22,8 +23,11 @@ $connexion = Database::getConnexion($dbConfig);
 
 $itemSuccess = isset($_GET['success']) && $_GET['success'] === 'item';
 $enigmeSuccess = isset($_GET['success']) && $_GET['success'] === 'enigme';
+$itemPublicationSuccess = isset($_GET['success']) && $_GET['success'] === 'item_publication';
 $itemError = null;
 $enigmeError = null;
+$itemPublicationError = null;
+$activeTab = $_GET['tab'] ?? '';
 
 // ─── Creation d'un item ──────────────────────────────────────────────────────
 if (IS_POST && ($_POST['action'] ?? '') === 'create_item') {
@@ -37,7 +41,7 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_item') {
     // Upload photo
     $photo = 'default.png';
     if (!empty($_FILES['photoFile']['name'])) {
-        $dest = ROOT . '/public/img/items';
+        $dest = IMG_ITEMS;
         if (Upload::move('photoFile', $dest, ['image/jpeg', 'image/png', 'image/webp', 'image/gif'], 5 * 1024 * 1024)) {
             $photo = basename($_FILES['photoFile']['name']);
         }
@@ -87,17 +91,46 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_item') {
     }
 }
 
+// ─── Gestion de publication d'un item (retirer / republier) ──────────────────────
+if (IS_POST && in_array(($_POST['action'] ?? ''), ['retirer_item', 'republier_item'], true)) {
+
+    $action = (string) ($_POST['action'] ?? '');
+    $idItem = filter_input(INPUT_POST, 'idItem', FILTER_VALIDATE_INT);
+    $estDisponible = $action === 'republier_item';
+
+    if ($idItem) {
+        if (ItemDAL::setDisponibilite($connexion, $idItem, $estDisponible)) {
+            header('Location: ' . Page::Admin->url() . '?success=item_publication&tab=itemRetraitContainer');
+            exit;
+        }
+
+        $itemPublicationError = "Aucune modification effectuee (item introuvable ou statut deja applique).";
+    } else {
+        $itemPublicationError = "Identifiant d'item invalide.";
+    }
+}
+
 // ─── Creation d'une enigme ───────────────────────────────────────────────────
 if (IS_POST && ($_POST['action'] ?? '') === 'create_enigme') {
 
     $enonce      = trim($_POST['enonce'] ?? '');
     $idCategorie = trim($_POST['idCategorie'] ?? '') ?: null;
-    $difficulte  = trim($_POST['difficulte'] ?? '');
+    $difficulte  = strtoupper(trim($_POST['difficulte'] ?? ''));
     $estPigee    = (int) ($_POST['estPigee'] ?? 0);
     $bonneRep    = (int) ($_POST['bonneReponse'] ?? 0);
     $reponses    = $_POST['reponses'] ?? [];
 
+<<<<<<< Choix-Quete
     $newId = EnigmeDAL::insertEnigme($connexion, $enonce, $idCategorie, $difficulte, $estPigee);
+=======
+    if (!in_array($difficulte, ['F', 'M', 'D'], true)) {
+        $enigmeError = "Difficulte invalide. Utilisez F (Facile), M (Moyen) ou D (Difficile).";
+    }
+
+    $newId = $enigmeError === null
+        ? EnigneDAL::insertEnigme($connexion, $enonce, $idCategorie, $difficulte, $estPigee)
+        : false;
+>>>>>>> main
 
     if ($newId !== false) {
         foreach ($reponses as $i => $texte) {
@@ -112,6 +145,32 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_enigme') {
         $enigmeError = "Erreur lors de la creation de l'enigme. Verifie que la categorie existe dans la table Categories.";
     }
 }
+
+$categories = CategoryDAL::selectAll($connexion);
+$itemsPublication = ItemDAL::selectPourPublication($connexion);
+
+// ─── Gestion de publication d'une enigme (retirer / republier) ───────────────
+if (IS_POST && in_array(($_POST['action'] ?? ''), ['retirer_enigme', 'republier_enigme'], true)) {
+
+    $action = (string) ($_POST['action'] ?? '');
+    $idEnigme = filter_input(INPUT_POST, 'idEnigme', FILTER_VALIDATE_INT);
+    $estDisponible = $action === 'republier_enigme';
+
+    if ($idEnigme) {
+        if (EnigmeDAL::setDisponibilite($connexion, $idEnigme, $estDisponible)) {
+            header('Location: ' . Page::Admin->url() . '?success=enigme_publication&tab=enigmeRetraitContainer');
+            exit;
+        }
+
+        $enigmePublicationError = "Aucune modification effectuee (enigme introuvable ou statut deja applique).";
+    } else {
+        $enigmePublicationError = "Identifiant d'enigme invalide.";
+    }
+}
+
+$enigmesPublication = EnigmeDAL::selectPourPublication($connexion);
+$enigmePublicationSuccess = isset($_GET['success']) && $_GET['success'] === 'enigme_publication';
+$enigmePublicationError = $enigmePublicationError ?? null;
 
 // identification de la page active
 const ACTIVE_PAGE = Page::Admin;

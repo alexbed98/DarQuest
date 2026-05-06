@@ -7,6 +7,7 @@ require_once 'src/Page.php';
 require_once 'core/Validation.php';
 require_once 'core/Database.php';
 require_once 'src/AccountDAL.php';
+require_once 'src/ItemDAL.php';
 require_once 'src/CartDAL.php';
 require_once 'src/InventaireDAL.php';
 require_once 'core/Email.php';
@@ -64,6 +65,31 @@ if (IS_POST && isset($_POST['passer_commande']) && !empty($_SESSION['id'])) {
     $panier   = $_SESSION[$cartKey] ?? [];
 
     if (!empty($panier)) {
+        $user = !empty($_SESSION['email'])
+            ? AccountDAL::selectByEmail($connexion, (string) $_SESSION['email'])
+            : false;
+        $isMagePlayer = $user !== false && (int) ($user['estMage'] ?? 0) === 1;
+
+        $hasSpellInCart = false;
+        foreach ($panier as $panierItem) {
+            $itemId = (int) ($panierItem['id'] ?? 0);
+            if ($itemId <= 0) {
+                continue;
+            }
+
+            $dbItem = ItemDAL::selectById($connexion, $itemId);
+            if ($dbItem !== false && (($dbItem['typeItem'] ?? '') === 'S')) {
+                $hasSpellInCart = true;
+                break;
+            }
+        }
+
+        if ($hasSpellInCart && !$isMagePlayer) {
+            $_SESSION['commande_notice'] = 'mage_required';
+            header('Location: ' . Page::Panier->url());
+            exit;
+        }
+
         $ok = InventaireDAL::commander($connexion, $idJoueur, $panier);
 
         if ($ok) {

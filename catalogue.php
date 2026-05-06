@@ -25,6 +25,12 @@ function getCartSessionKey(): string
 
 $connexion = Database::getConnexion($dbConfig);
 
+$isMagePlayer = false;
+if (!empty($_SESSION['email'])) {
+    $currentUser = AccountDAL::selectByEmail($connexion, (string) $_SESSION['email']);
+    $isMagePlayer = $currentUser !== false && (int) ($currentUser['estMage'] ?? 0) === 1;
+}
+
 // Authentification rapide depuis le formulaire de connexion qui poste vers catalogue.php.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
 
@@ -35,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
         header('Location: login.php');
         exit;
     }
-
     $account = AccountDAL::selectByEmail($connexion, $email);
 
     if ($account === false) {
@@ -57,12 +62,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
 
 // Ajout au panier: stocke/maj l'article dans le panier de l'utilisateur courant.
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_item_id'])) {
+    if (!IS_AUTH) {
+        $_SESSION['cart_notice'] = 'Connectez-vous pour ajouter des items au panier.';
+        header('Location: ' . Page::Catalogue->url());
+        exit;
+    }
+
     $itemId = filter_input(INPUT_POST, 'add_item_id', FILTER_VALIDATE_INT);
 
     if ($itemId !== false && $itemId !== null) {
         $item = ItemDAL::selectById($connexion, $itemId);
 
         if ($item !== false) {
+            $isSpell = (($item['typeItem'] ?? '') === 'S');
+            if ($isSpell && !$isMagePlayer) {
+                $_SESSION['cart_notice'] = 'Seuls les joueurs mages peuvent acheter des sorts.';
+                header('Location: ' . Page::Catalogue->url());
+                exit;
+            }
+
             $cartSessionKey = getCartSessionKey();
 
             if (!isset($_SESSION[$cartSessionKey]) || !is_array($_SESSION[$cartSessionKey])) {
@@ -114,11 +132,8 @@ $cartNotice = $_SESSION['cart_notice'] ?? '';
 // Message flash: on le consomme une seule fois apres redirection.
 unset($_SESSION['cart_notice']);
 
-if (isset($_SESSION['email'])) {
-    $username = AccountDAL::selectAlias($connexion, $_SESSION['email']);
-    echo "Bienvenue, " . $username . "!";
-} else {
-    echo "Tu n'es pas connecté.";
+if (!defined('IS_MAGE_PLAYER')) {
+    define('IS_MAGE_PLAYER', $isMagePlayer);
 }
 
 // identification de la page active

@@ -7,13 +7,50 @@
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
 include_once 'core/Database.php';
+require_once 'src/AccountDAL.php';
 require_once 'src/ItemDAL.php';
 require_once 'src/CartDAL.php';
+require_once 'src/ItemRatingDAL.php';
 
 $connexion = Database::getConnexion($dbConfig);
 
+$isMagePlayer = false;
+if (!empty($_SESSION['email'])) {
+    $currentUser = AccountDAL::selectByEmail($connexion, (string) $_SESSION['email']);
+    $isMagePlayer = $currentUser !== false && (int) ($currentUser['estMage'] ?? 0) === 1;
+}
+
+// Ajouter/mettre a jour la note d'un item (doit etre traite avant tout output HTML)
+if (IS_POST && isset($_POST['rate_item_id'])) {
+    if (empty($_SESSION['id'])) {
+        $_SESSION['rating_notice'] = 'Vous devez etre connecte pour evaluer un item.';
+    } else {
+        $itemId = filter_input(INPUT_POST, 'rate_item_id', FILTER_VALIDATE_INT);
+        $rating = filter_input(INPUT_POST, 'item_rating', FILTER_VALIDATE_INT);
+
+        if ($itemId && $rating && $rating >= 1 && $rating <= 5) {
+            if (ItemRatingDAL::upsertRating($connexion, (int) $itemId, (int) $_SESSION['id'], (int) $rating)) {
+                $_SESSION['rating_notice'] = 'Merci! Votre evaluation a ete enregistree.';
+            } else {
+                $_SESSION['rating_notice'] = 'Impossible d\'enregistrer votre evaluation.';
+            }
+        } else {
+            $_SESSION['rating_notice'] = 'Evaluation invalide. Choisissez entre 1 et 5 etoiles.';
+        }
+    }
+
+    header('Location: ' . $_SERVER['REQUEST_URI']);
+    exit;
+}
+
 // Ajouter un item au panier (doit etre traite avant tout output HTML)
 if (IS_POST && isset($_POST['add_item_id'])) {
+
+    if (!IS_AUTH) {
+        $_SESSION['cart_notice'] = 'Connectez-vous pour ajouter des items au panier.';
+        header('Location: ' . $_SERVER['REQUEST_URI']);
+        exit;
+    }
 
     $itemId = filter_input(INPUT_POST, 'add_item_id', FILTER_VALIDATE_INT);
     $qty = filter_input(INPUT_POST, 'update_qty', FILTER_VALIDATE_INT);
@@ -23,6 +60,19 @@ if (IS_POST && isset($_POST['add_item_id'])) {
         $item = ItemDAL::selectById($connexion, $itemId);
 
         if ($item !== false) {
+            $isSpell = (($item['typeItem'] ?? '') === 'S');
+            if ($isSpell && !$isMagePlayer) {
+                $_SESSION['cart_notice'] = 'Seuls les joueurs mages peuvent acheter des sorts.';
+                header('Location: ' . $_SERVER['REQUEST_URI']);
+                exit;
+            }
+
+            if ((int) ($item['quantiteStock'] ?? 0) <= 0) {
+                $_SESSION['cart_notice'] = 'Item en rupture de stock.';
+                header('Location: ' . $_SERVER['REQUEST_URI']);
+                exit;
+            }
+
             if (!empty($_SESSION['id'])) {
                 $cartSessionKey = 'panier_user_' . (int) $_SESSION['id'];
             } elseif (!empty($_SESSION['email'])) {
@@ -75,6 +125,10 @@ if (IS_POST && isset($_POST['add_item_id'])) {
 
 // identification de la page active
  const ACTIVE_PAGE = Page::Details;
+
+if (!defined('IS_MAGE_PLAYER')) {
+    define('IS_MAGE_PLAYER', $isMagePlayer);
+}
 
 $cssAdd = ['/public/css/catalogue.css',
            '/public/css/layout.css',

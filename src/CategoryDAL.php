@@ -15,6 +15,18 @@ class CategoryDAL
         return $statement->fetchAll();
 
     }
+    // Selectionne toutes les categories pour affichage dans un dropdown.
+    //-------------------------------------------------------------------------------
+    public static function selectAll(PDO $connexion): array
+    {
+        $sql = "SELECT idCategorie, nomCategorie FROM Categories ORDER BY nomCategorie ASC";
+
+        $statement = $connexion->prepare($sql);
+        $statement->execute();
+
+        return $statement->fetchAll();
+    }
+
     //-------------------------------------------------------------------------------
     //Trouve l'id du categorie de magie
     //-------------------------------------------------------------------------------

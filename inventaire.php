@@ -54,7 +54,34 @@ if (IS_POST && isset($_POST['vendre_id'])) {
     $quantite = filter_input(INPUT_POST, 'vendre_qty', FILTER_VALIDATE_INT);
 
     if ($idItem && $quantite && $quantite > 0) {
-        InventaireDAL::vendre($connexion, $idJoueur, $idItem, $quantite);
+        $gainVente = InventaireDAL::vendre($connexion, $idJoueur, $idItem, $quantite);
+        if ($gainVente !== false) {
+            $_SESSION['vente_message'] = 'Vente reussie : +' . number_format((int) $gainVente) . ' or';
+        }
+    }
+
+    header('Location: ' . Page::Inventaire->url());
+    exit;
+}
+
+// Consommer une potion (PRG)
+if (IS_POST && isset($_POST['consommer_potion_id'])) {
+    $idItem = filter_input(INPUT_POST, 'consommer_potion_id', FILTER_VALIDATE_INT);
+
+    if ($idItem && InventaireDAL::consommerPotion($connexion, $idJoueur, $idItem)) {
+        $_SESSION['potion_message'] = 'Potion consommée !';
+    }
+
+    header('Location: ' . Page::Inventaire->url());
+    exit;
+}
+
+// Lancer un sort (PRG)
+if (IS_POST && isset($_POST['lancer_sort_id'])) {
+    $idItem = filter_input(INPUT_POST, 'lancer_sort_id', FILTER_VALIDATE_INT);
+
+    if ($idItem && InventaireDAL::lancerSort($connexion, $idJoueur, $idItem)) {
+        $_SESSION['sort_message'] = 'Sort lancé !';
     }
 
     header('Location: ' . Page::Inventaire->url());

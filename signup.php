@@ -82,14 +82,16 @@ if (IS_POST) {
 
             $motDePasse = password_hash($password, PASSWORD_DEFAULT);
             $courriel = $email;
+            $guid = generateGUID();
 
-            if (AccountDAL::insertOne($connexion, $username, $prenom, $nom, $courriel, $motDePasse)) {
+            if (AccountDAL::insertOne($connexion, $username, $prenom, $nom, $courriel, $motDePasse, $guid)) {
 
                 $subject = 'Création de compte DarQuest.';
 
                 $message = <<<HTML
                 <h1>Merci d'avoir créé un compte.</h1>
                 <h2>Bienvenue sur DarQuest!</h2>
+                <p><a style="text-decoration: underline; color: blue;" href="http://darquest.ca/validate.php?guid=$guid">Validez votre courriel pour accéder a votre compte</a></p>
                 HTML;
 
                 Email::readConfig(SRC . '/gmail.ini');

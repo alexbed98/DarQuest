@@ -2,6 +2,7 @@
 
 class EnigmeDAL
 {
+<<<<<<< Choix-Quete
     public static string $filtleDifficulte = "";
     public static string $filtleCategorie = "";
     //-------------------------------------------------------------------------------
@@ -23,6 +24,25 @@ class EnigmeDAL
             self::$filtleDifficulte = '';
         else
             self::$filtleCategorie = $CatChar;
+=======
+    public static $currentDif = '';
+
+    //-------------------------------------------------------------------------------
+    // Cree la table de demandes si elle n'existe pas.
+    //-------------------------------------------------------------------------------
+    private static function ensureDemandesTable(PDO $connexion): void
+    {
+        $sql = "CREATE TABLE IF NOT EXISTS Demandes (
+                    idDemande INT AUTO_INCREMENT PRIMARY KEY,
+                    idJoueur INT NOT NULL,
+                    accepter TINYINT NOT NULL DEFAULT 0,
+                    dateDemande DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    INDEX idx_demandes_joueur (idJoueur),
+                    INDEX idx_demandes_statut (accepter)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+        $connexion->exec($sql);
+>>>>>>> main
     }
     //-------------------------------------------------------------------------------
     //Selectionne tout les enigmes et choisisez un aleatoirement
@@ -43,7 +63,11 @@ class EnigmeDAL
 
         $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee
                 FROM Enigmes
+<<<<<<< Choix-Quete
                 $where;";
+=======
+                WHERE estDisponible = 1;";
+>>>>>>> main
 
         $statement = $connexion->prepare($sql);
 
@@ -106,7 +130,8 @@ class EnigmeDAL
     {
 
         $sql = "SELECT COUNT(*) 
-                FROM Enigmes;";
+                FROM Enigmes
+                WHERE estDisponible = 1;";
 
         $statement = $connexion->prepare($sql);
         if (!$statement->execute()) {
@@ -179,4 +204,154 @@ class EnigmeDAL
         return $statement->execute();
     }
 
+<<<<<<< Choix-Quete
 }
+=======
+
+    //-------------------------------------------------------------------------------
+    // Selectionne toutes les enigmes avec leur statut de disponibilite (pour l'admin)
+    //-------------------------------------------------------------------------------
+    public static function selectPourPublication(PDO $connexion): array
+    {
+        // Ajoute la colonne si elle n'existe pas encore
+        $connexion->exec("
+            ALTER TABLE Enigmes
+            ADD COLUMN IF NOT EXISTS estDisponible TINYINT(1) NOT NULL DEFAULT 1
+        ");
+
+        $sql = "SELECT idEnigme, enonce, difficulte, estDisponible
+                FROM Enigmes
+                ORDER BY idEnigme ASC";
+
+        $statement = $connexion->prepare($sql);
+        $statement->execute();
+
+        return $statement->fetchAll();
+    }
+
+    //-------------------------------------------------------------------------------
+    // Change le statut de disponibilite d'une enigme (sans suppression BD)
+    //-------------------------------------------------------------------------------
+    public static function setDisponibilite(PDO $connexion, int $idEnigme, bool $estDisponible): bool
+    {
+        // Ajoute la colonne si elle n'existe pas
+        $connexion->exec("
+            ALTER TABLE Enigmes
+            ADD COLUMN IF NOT EXISTS estDisponible TINYINT(1) NOT NULL DEFAULT 1
+        ");
+
+        $sql = "UPDATE Enigmes SET estDisponible = :estDisponible WHERE idEnigme = :idEnigme";
+
+        $statement = $connexion->prepare($sql);
+        $statement->bindValue(':estDisponible', $estDisponible ? 1 : 0, PDO::PARAM_INT);
+        $statement->bindValue(':idEnigme', $idEnigme, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->rowCount() > 0;
+    }
+
+    public static function countDemandesByJoueur($connexion, $idJoueur) {
+        self::ensureDemandesTable($connexion);
+
+        $sql = "SELECT COUNT(*) as total FROM Demandes WHERE idJoueur = ?";
+        $stmt = $connexion->prepare($sql);
+        $stmt->execute([$idJoueur]);
+        $result = $stmt->fetch();
+        return $result['total'];
+    }
+
+    public static function insertDemande($connexion, $idJoueur) {
+        self::ensureDemandesTable($connexion);
+
+        $sql = "INSERT INTO Demandes (idJoueur, accepter) VALUES (?, 0)";
+        $stmt = $connexion->prepare($sql);
+        $stmt->execute([$idJoueur]);
+    }
+
+    public static function accepterDemande(PDO $connexion, int $idDemande) {
+        self::ensureDemandesTable($connexion);
+
+        $sql = "SELECT idJoueur FROM Demandes WHERE idDemande = ?";
+        $stmt = $connexion->prepare($sql);
+        $stmt->execute([$idDemande]);
+        $demande = $stmt->fetch();
+
+        if (!$demande) return;
+
+        $idJoueur = $demande['idJoueur'];
+
+        $sql = "SELECT COUNT(*) FROM Demandes WHERE accepter = 1";
+        $count = $connexion->query($sql)->fetchColumn();
+
+        if ($count == 0) {
+            $connexion->prepare("UPDATE Joueurs SET gold = gold + 100 WHERE idJoueur = ?")
+                    ->execute([$idJoueur]);
+
+        } elseif ($count == 1) {
+            $connexion->prepare("UPDATE Joueurs SET argent = argent + 100 WHERE idJoueur = ?")
+                    ->execute([$idJoueur]);
+
+        } else {
+            $connexion->prepare("UPDATE Joueurs SET bronze = bronze + 100 WHERE idJoueur = ?")
+                    ->execute([$idJoueur]);
+        }
+        
+        $connexion->prepare("UPDATE Demandes SET accepter = 1 WHERE idDemande = ?")
+                ->execute([$idDemande]);
+    }
+
+    public static function selectDemandesEnAttente(PDO $connexion) {
+        self::ensureDemandesTable($connexion);
+
+        $sql = "
+            SELECT d.idDemande, j.alias, j.idJoueur
+            FROM Demandes d
+            LEFT JOIN Joueurs j ON j.idJoueur = d.idJoueur
+            WHERE d.accepter = 0
+            ORDER BY d.idDemande DESC
+        ";
+
+        $stmt = $connexion->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+
+    public static function refuserDemande(PDO $connexion, int $idDemande) {
+        self::ensureDemandesTable($connexion);
+
+        $sql = "UPDATE Demandes SET accepter = -1 WHERE idDemande = ?";
+        $connexion->prepare($sql)->execute([$idDemande]);
+    }
+
+    public static function selectRandomEnigmeNonReussie($connexion, int $idJoueur)
+    {
+        $sql = "
+            SELECT e.*
+            FROM Enigmes e
+            WHERE e.idEnigme NOT IN (
+                SELECT s.idEnigme
+                FROM Statistiques s
+                WHERE s.idJoueur = ?
+                AND s.estReussie = 1
+            )
+            ORDER BY RAND()
+            LIMIT 1
+        ";
+
+        $stmt = $connexion->prepare($sql);
+        $stmt->execute([$idJoueur]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+}
+
+
+
+// Backward compatibility with existing calls using the old typo'ed class name.
+class EnigneDAL extends EnigmeDAL
+{
+}
+>>>>>>> main

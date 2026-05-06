@@ -1,7 +1,40 @@
+<?php
+    $connexion = Database::getConnexion($dbConfig);
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+
+        $action = $_POST['action'];
+
+        if ($action === 'accepter_demande') {
+
+            $idDemande = (int)$_POST['idDemande'];
+
+            EnigneDAL::accepterDemande($connexion, $idDemande);
+
+            header("Location: admin.php");
+            exit;
+        }
+
+        if ($action === 'refuser_demande') {
+
+            $idDemande = (int)$_POST['idDemande'];
+
+            EnigneDAL::refuserDemande($connexion, $idDemande);
+
+            header("Location: admin.php");
+            exit;
+        }
+    }
+
+    $demandes = EnigneDAL::selectDemandesEnAttente($connexion);
+?>
+
 <div class="admin-toolbar">
     <button class="mainButton admin-tab-btn" onclick="toggleForm('demandesJoueurs', this)">Demandes des joueurs</button>
     <button class="mainButton admin-tab-btn" onclick="toggleForm('itemFormContainer', this)">Creation des items</button>
+    <button class="mainButton admin-tab-btn" onclick="toggleForm('itemRetraitContainer', this)">Retrait du catalogue</button>
     <button class="mainButton admin-tab-btn" onclick="toggleForm('enigmeFormContainer', this)">Creation des quetes</button>
+    <button class="mainButton admin-tab-btn" onclick="toggleForm('enigmeRetraitContainer', this)">Retrait des quetes</button>
 </div>
 
 <?php if ($itemSuccess ?? false): ?>
@@ -13,6 +46,16 @@
     <div class="admin-alert admin-alert-success">Enigme creee avec succes !</div>
 <?php elseif (!empty($enigmeError)): ?>
     <div class="admin-alert admin-alert-error"><?= htmlspecialchars($enigmeError) ?></div>
+<?php endif; ?>
+<?php if ($itemPublicationSuccess ?? false): ?>
+    <div class="admin-alert admin-alert-success">Statut de publication de l'item mis a jour !</div>
+<?php elseif (!empty($itemPublicationError)): ?>
+    <div class="admin-alert admin-alert-error"><?= htmlspecialchars($itemPublicationError) ?></div>
+<?php endif; ?>
+<?php if ($enigmePublicationSuccess ?? false): ?>
+    <div class="admin-alert admin-alert-success">Statut de la quete mis a jour !</div>
+<?php elseif (!empty($enigmePublicationError)): ?>
+    <div class="admin-alert admin-alert-error"><?= htmlspecialchars($enigmePublicationError) ?></div>
 <?php endif; ?>
 
 <div id="itemFormContainer" class="toggleForm admin-panel">
@@ -136,6 +179,74 @@
 </div>
 
 
+<div id="itemRetraitContainer" class="toggleForm admin-panel">
+    <div class="admin-panel-card">
+        <h2 class="admin-panel-title">Publication du catalogue</h2>
+        <p class="admin-panel-subtitle">Retires ou republies un item sans le supprimer de la base de donnees.</p>
+
+        <?php if (empty($itemsPublication ?? [])): ?>
+            <p class="admin-empty-state">Aucun item trouve.</p>
+        <?php else: ?>
+            <div class="admin-retire-list">
+                <?php foreach ($itemsPublication as $item): ?>
+                    <?php $isDisponible = (int) ($item['estDisponible'] ?? 0) === 1; ?>
+                    <div class="admin-retire-row">
+                        <div class="admin-retire-meta">
+                            <span class="admin-retire-name"><?= htmlspecialchars($item['nom']) ?></span>
+                            <span class="admin-retire-badge">Type <?= htmlspecialchars($item['typeItem']) ?></span>
+                            <span class="admin-retire-badge">Stock <?= (int) $item['quantiteStock'] ?></span>
+                            <span class="admin-retire-badge"><?= (int) $item['prix'] ?> or</span>
+                            <span class="admin-retire-badge"><?= $isDisponible ? 'Publie' : 'Retire' ?></span>
+                        </div>
+
+                        <form method="post" action="<?= Page::Admin->url() ?>" class="admin-retire-form">
+                            <input type="hidden" name="action" value="<?= $isDisponible ? 'retirer_item' : 'republier_item' ?>" />
+                            <input type="hidden" name="idItem" value="<?= (int) $item['idItem'] ?>" />
+                            <button type="submit" class="mainButton <?= $isDisponible ? 'admin-retire-btn' : 'admin-republier-btn' ?>">
+                                <?= $isDisponible ? 'Retirer du catalogue' : 'Republier' ?>
+                            </button>
+                        </form>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+
+<div id="enigmeRetraitContainer" class="toggleForm admin-panel">
+    <div class="admin-panel-card">
+        <h2 class="admin-panel-title">Publication des quetes</h2>
+        <p class="admin-panel-subtitle">Retire ou republie une quete sans la supprimer de la base de donnees.</p>
+
+        <?php if (empty($enigmesPublication ?? [])): ?>
+            <p class="admin-empty-state">Aucune quete trouvee.</p>
+        <?php else: ?>
+            <div class="admin-retire-list">
+                <?php foreach ($enigmesPublication as $enigme): ?>
+                    <?php $isDisponible = (int) ($enigme['estDisponible'] ?? 1) === 1; ?>
+                    <div class="admin-retire-row">
+                        <div class="admin-retire-meta">
+                            <span class="admin-retire-name"><?= htmlspecialchars($enigme['enonce']) ?></span>
+                            <span class="admin-retire-badge">Difficulte <?= htmlspecialchars((string) $enigme['difficulte']) ?></span>
+                            <span class="admin-retire-badge"><?= $isDisponible ? 'Active' : 'Retiree' ?></span>
+                        </div>
+
+                        <form method="post" action="<?= Page::Admin->url() ?>" class="admin-retire-form">
+                            <input type="hidden" name="action" value="<?= $isDisponible ? 'retirer_enigme' : 'republier_enigme' ?>" />
+                            <input type="hidden" name="idEnigme" value="<?= (int) $enigme['idEnigme'] ?>" />
+                            <button type="submit" class="mainButton <?= $isDisponible ? 'admin-retire-btn' : 'admin-republier-btn' ?>">
+                                <?= $isDisponible ? 'Retirer la quete' : 'Republier' ?>
+                            </button>
+                        </form>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+
 <div id="enigmeFormContainer" class="toggleForm admin-panel">
 
     <form method="post" action="<?= Page::Admin->url() ?>" class="admin-panel-card admin-form-quest">
@@ -152,12 +263,24 @@
         <div class="admin-form-grid two-cols">
             <div class="admin-field">
                 <label for="enigmeCategorie">Categorie</label>
-                <input id="enigmeCategorie" type="text" name="nomCategorie" maxlength="45" />
+                <select id="enigmeCategorie" name="idCategorie">
+                    <option value="">-- Choisir une categorie --</option>
+                    <?php foreach (($categories ?? []) as $categorie): ?>
+                        <option value="<?= htmlspecialchars((string) $categorie['idCategorie']) ?>">
+                            <?= htmlspecialchars((string) $categorie['nomCategorie']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <div class="admin-field">
                 <label for="enigmeDifficulte">Difficulte</label>
-                <input id="enigmeDifficulte" type="text" name="difficulte" maxlength="1" required />
+                <select id="enigmeDifficulte" name="difficulte" required>
+                    <option value="">-- Choisir une difficulte --</option>
+                    <option value="F">F - Facile</option>
+                    <option value="M">M - Moyen</option>
+                    <option value="D">D - Difficile</option>
+                </select>
             </div>
         </div>
 
@@ -205,17 +328,35 @@
 
 
 <div id="demandesJoueurs" class="toggleForm" style="display:none;">
-    <div>
-        <div class="demande-text">
-            <p><strong>Joueur:</strong> Sam</p>
-            <p><strong>Demande:</strong> Donne moi de l'argent! Je suis pauvre</p>
-        </div>
+    <?php if (!empty($demandes)): ?>
+        <?php foreach ($demandes as $demande): ?>
+            <div class="demande-card">
+                <div class="demande-text">
+                    <p><strong>Joueur:</strong> <?= htmlspecialchars($demande['alias']) ?></p>
+                    <p><strong>Demande:</strong> Demande d'argent</p>
+                </div>
+                <div class="demande-actions">
 
-        <div class="demande-actions">
-            <button class="mainButton btn-accepter">Accepter</button>
-            <button class="mainButton btn-refuser">Refuser</button>
-        </div>
-    </div>
+                    <!-- ACCEPTER -->
+                    <form method="post" action="/admin.php" style="display:inline;">
+                        <input type="hidden" name="action" value="accepter_demande">
+                        <input type="hidden" name="idDemande" value="<?= $demande['idDemande'] ?>">
+                        <button class="mainButton btn-accepter">Accepter</button>
+                    </form>
+
+                    <!-- REFUSER -->
+                    <form method="post" action="/admin.php" style="display:inline;">
+                        <input type="hidden" name="action" value="refuser_demande">
+                        <input type="hidden" name="idDemande" value="<?= $demande['idDemande'] ?>">
+                        <button class="mainButton btn-refuser">Refuser</button>
+                    </form>
+                </div>
+            </div>  
+        <?php endforeach; ?>
+
+    <?php else: ?>
+        <p>Aucune demande pour le moment.</p>
+    <?php endif; ?>
 </div>
 
 
@@ -258,4 +399,28 @@
             document.getElementById(map[type]).style.display = 'block';
         }
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var activeTab = '<?= htmlspecialchars((string) ($activeTab ?? ''), ENT_QUOTES) ?>';
+
+        if (!activeTab) {
+            return;
+        }
+
+        var panel = document.getElementById(activeTab);
+        if (!panel) {
+            return;
+        }
+
+        var tabButtons = document.querySelectorAll('.admin-tab-btn');
+        var targetButton = null;
+
+        tabButtons.forEach(function(btn) {
+            if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes("'" + activeTab + "'")) {
+                targetButton = btn;
+            }
+        });
+
+        toggleForm(activeTab, targetButton);
+    });
 </script>

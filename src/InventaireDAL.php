@@ -27,9 +27,11 @@ class InventaireDAL
             $where .= " AND i.typeItem IN ($placeholders)";
         }
 
-        $sql = "SELECT i.idItem, i.nom, i.prix, i.photo, i.typeItem, inv.quantiteInventaire
+        $sql = "SELECT i.idItem, i.nom, i.prix, i.photo, i.typeItem, inv.quantiteInventaire, p.effet AS effetPotion, s.typeSort AS typeSortSpell
             FROM Inventaires inv
             JOIN Items i ON i.idItem = inv.idItem
+            LEFT JOIN Potions p ON p.idItem = i.idItem
+            LEFT JOIN Sorts s ON s.idItem = i.idItem
                 $where
                 ORDER BY $order";
 
@@ -51,6 +53,29 @@ class InventaireDAL
      */
     public static function commander(PDO $pdo, int $idJoueur, array $panier): bool
     {
+        $mageStmt = $pdo->prepare("SELECT estMage FROM Joueurs WHERE idJoueur = :id");
+        $mageStmt->bindValue(':id', $idJoueur, PDO::PARAM_INT);
+        $mageStmt->execute();
+        $mageRow = $mageStmt->fetch();
+        $isMagePlayer = $mageRow !== false && (int) ($mageRow['estMage'] ?? 0) === 1;
+
+        // Protection serveur: un non-mage ne peut pas commander d'item de type Sort.
+        foreach ($panier as $panierItem) {
+            $itemId = (int) ($panierItem['id'] ?? 0);
+            if ($itemId <= 0) {
+                continue;
+            }
+
+            $typeStmt = $pdo->prepare("SELECT typeItem FROM Items WHERE idItem = :idItem");
+            $typeStmt->bindValue(':idItem', $itemId, PDO::PARAM_INT);
+            $typeStmt->execute();
+            $typeItem = (string) ($typeStmt->fetchColumn() ?: '');
+
+            if ($typeItem === 'S' && !$isMagePlayer) {
+                return false;
+            }
+        }
+
         // Calculer le total
         $total = 0;
         foreach ($panier as $item) {
@@ -115,13 +140,21 @@ class InventaireDAL
 
     /**
      * Vend une quantité d'un item : retire de l'inventaire et ajoute de l'or au joueur.
-     * Retourne false si la quantité en inventaire est insuffisante.
+        * Retourne le gain en or, ou false si la vente est impossible.
      */
-    public static function vendre(PDO $pdo, int $idJoueur, int $idItem, int $quantite): bool
+        public static function vendre(PDO $pdo, int $idJoueur, int $idItem, int $quantite): int|false
     {
-        // Vérifier la quantité disponible
+        if ($quantite < 1) {
+            return false;
+        }
+
+        // Vérifier quantité inventaire + récupérer type/prix (et rareté si sort)
         $check = $pdo->prepare(
-            "SELECT quantiteInventaire FROM Inventaires WHERE idJoueur = :idJoueur AND idItem = :idItem"
+            "SELECT inv.quantiteInventaire, i.prix, i.typeItem, s.rarete
+             FROM Inventaires inv
+             JOIN Items i ON i.idItem = inv.idItem
+             LEFT JOIN Sorts s ON s.idItem = i.idItem
+             WHERE inv.idJoueur = :idJoueur AND inv.idItem = :idItem"
         );
         $check->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
         $check->bindValue(':idItem', $idItem, PDO::PARAM_INT);
@@ -132,33 +165,42 @@ class InventaireDAL
             return false;
         }
 
-        $nouvelleQte = (int) $row['quantiteInventaire'] - $quantite;
+        $prixUnitaire = (float) ($row['prix'] ?? 0);
+        $typeItem = (string) ($row['typeItem'] ?? '');
+        $rarete = (int) ($row['rarete'] ?? 0);
 
-        if ($nouvelleQte === 0) {
-            $del = $pdo->prepare(
-                "DELETE FROM Inventaires WHERE idJoueur = :idJoueur AND idItem = :idItem"
-            );
-            $del->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
-            $del->bindValue(':idItem', $idItem, PDO::PARAM_INT);
-            $del->execute();
-        } else {
-            $upd = $pdo->prepare(
-                "UPDATE Inventaires SET quantiteInventaire = :qte WHERE idJoueur = :idJoueur AND idItem = :idItem"
-            );
-            $upd->bindValue(':qte', $nouvelleQte, PDO::PARAM_INT);
-            $upd->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
-            $upd->bindValue(':idItem', $idItem, PDO::PARAM_INT);
-            $upd->execute();
+        $ratioVente = 0.60;
+        if ($typeItem === 'S') {
+            $ratioVente = match ($rarete) {
+                1 => 1.00,
+                2 => 0.95,
+                3 => 0.90,
+                default => 0.60,
+            };
         }
 
-        // Récupérer le prix de l'item, ajouter l'or au joueur et remettre le stock
-        $prix = $pdo->prepare("SELECT prix FROM Items WHERE idItem = :idItem");
-        $prix->bindValue(':idItem', $idItem, PDO::PARAM_INT);
-        $prix->execute();
-        $itemRow = $prix->fetch();
+        $gain = (int) round($prixUnitaire * $ratioVente * $quantite);
+        $nouvelleQte = (int) $row['quantiteInventaire'] - $quantite;
 
-        if ($itemRow !== false) {
-            $gain = (int) $itemRow['prix'] * $quantite;
+        $pdo->beginTransaction();
+        try {
+            if ($nouvelleQte === 0) {
+                $del = $pdo->prepare(
+                    "DELETE FROM Inventaires WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                );
+                $del->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $del->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $del->execute();
+            } else {
+                $upd = $pdo->prepare(
+                    "UPDATE Inventaires SET quantiteInventaire = :qte WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                );
+                $upd->bindValue(':qte', $nouvelleQte, PDO::PARAM_INT);
+                $upd->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $upd->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $upd->execute();
+            }
+
             $addGold = $pdo->prepare(
                 "UPDATE Joueurs SET gold = gold + :gain WHERE idJoueur = :idJoueur"
             );
@@ -166,14 +208,231 @@ class InventaireDAL
             $addGold->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
             $addGold->execute();
 
+            // L'item vendu retourne au stock du magasin
             $restoreStock = $pdo->prepare(
                 "UPDATE Items SET quantiteStock = quantiteStock + :qte WHERE idItem = :idItem"
             );
             $restoreStock->bindValue(':qte', $quantite, PDO::PARAM_INT);
             $restoreStock->bindValue(':idItem', $idItem, PDO::PARAM_INT);
             $restoreStock->execute();
+
+            $pdo->commit();
+            return $gain;
+        } catch (\Exception $e) {
+            $pdo->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Consomme 1 potion de vie (effet contenant "vie") et rend des points de vie au joueur.
+     */
+    public static function consommerPotionVie(PDO $pdo, int $idJoueur, int $idItem, int $gainPv = 10): bool
+    {
+        $check = $pdo->prepare(
+            "SELECT inv.quantiteInventaire, i.typeItem, p.effet
+             FROM Inventaires inv
+             JOIN Items i ON i.idItem = inv.idItem
+             LEFT JOIN Potions p ON p.idItem = i.idItem
+             WHERE inv.idJoueur = :idJoueur AND inv.idItem = :idItem"
+        );
+        $check->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+        $check->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+        $check->execute();
+        $row = $check->fetch();
+
+        if ($row === false || (int) ($row['quantiteInventaire'] ?? 0) < 1) {
+            return false;
         }
 
-        return true;
+        $isPotionVie = (($row['typeItem'] ?? '') === 'P')
+            && stripos((string) ($row['effet'] ?? ''), 'vie') !== false;
+
+        if (!$isPotionVie) {
+            return false;
+        }
+
+        $pdo->beginTransaction();
+        try {
+            if ((int) $row['quantiteInventaire'] === 1) {
+                $del = $pdo->prepare(
+                    "DELETE FROM Inventaires WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                );
+                $del->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $del->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $del->execute();
+            } else {
+                $updInv = $pdo->prepare(
+                    "UPDATE Inventaires
+                     SET quantiteInventaire = quantiteInventaire - 1
+                     WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                );
+                $updInv->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $updInv->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $updInv->execute();
+            }
+
+            $updPv = $pdo->prepare(
+                "UPDATE Joueurs SET pointVie = pointVie + :gainPv WHERE idJoueur = :idJoueur"
+            );
+            $updPv->bindValue(':gainPv', $gainPv, PDO::PARAM_INT);
+            $updPv->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+            $updPv->execute();
+
+            $pdo->commit();
+            return true;
+        } catch (\Exception $e) {
+            $pdo->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Consomme 1 potion et applique l'effet approprié:
+     * - Si c'est une potion de "vie", ajoute +10 PV
+     * - Sinon, retire simplement la potion
+     */
+    public static function consommerPotion(PDO $pdo, int $idJoueur, int $idItem): bool
+    {
+        $check = $pdo->prepare(
+            "SELECT inv.quantiteInventaire, i.typeItem, p.effet AS effetPotion
+             FROM Inventaires inv
+             JOIN Items i ON i.idItem = inv.idItem
+             LEFT JOIN Potions p ON p.idItem = i.idItem
+             WHERE inv.idJoueur = :idJoueur AND inv.idItem = :idItem"
+        );
+        $check->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+        $check->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+        $check->execute();
+        $row = $check->fetch();
+
+        if ($row === false || (int) ($row['quantiteInventaire'] ?? 0) < 1) {
+            return false;
+        }
+
+        $isPotion = (($row['typeItem'] ?? '') === 'P');
+
+        if (!$isPotion) {
+            return false;
+        }
+
+        $isPotionVie = stripos((string) ($row['effetPotion'] ?? ''), 'vie') !== false;
+
+        $pdo->beginTransaction();
+        try {
+            if ((int) $row['quantiteInventaire'] === 1) {
+                $del = $pdo->prepare(
+                    "DELETE FROM Inventaires WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                );
+                $del->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $del->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $del->execute();
+            } else {
+                $updInv = $pdo->prepare(
+                    "UPDATE Inventaires
+                     SET quantiteInventaire = quantiteInventaire - 1
+                     WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                );
+                $updInv->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $updInv->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $updInv->execute();
+            }
+
+            if ($isPotionVie) {
+                $updPv = $pdo->prepare(
+                    "UPDATE Joueurs SET pointVie = pointVie + 10 WHERE idJoueur = :idJoueur"
+                );
+                $updPv->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $updPv->execute();
+            }
+
+            $pdo->commit();
+            return true;
+        } catch (\Exception $e) {
+            $pdo->rollBack();
+            return false;
+        }
+    }
+
+    /**
+     * Lance 1 sort et applique l'effet approprié:
+     * - Si c'est un sort de "vie" (ptVie > 0), ajoute les PV du type de sort
+     * - Sinon, retire simplement le sort
+     */
+    public static function lancerSort(PDO $pdo, int $idJoueur, int $idItem): bool
+    {
+        $check = $pdo->prepare(
+            "SELECT inv.quantiteInventaire, i.typeItem, i.nom, s.typeSort, ts.ptVie
+             FROM Inventaires inv
+             JOIN Items i ON i.idItem = inv.idItem
+             LEFT JOIN Sorts s ON s.idItem = i.idItem
+             LEFT JOIN TypeSorts ts ON LOWER(TRIM(ts.typeSort)) = LOWER(TRIM(s.typeSort))
+             WHERE inv.idJoueur = :idJoueur AND inv.idItem = :idItem"
+        );
+        $check->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+        $check->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+        $check->execute();
+        $row = $check->fetch();
+
+        if ($row === false || (int) ($row['quantiteInventaire'] ?? 0) < 1) {
+            return false;
+        }
+
+        $isSort = (($row['typeItem'] ?? '') === 'S');
+
+        if (!$isSort) {
+            return false;
+        }
+
+        $ptVieSort = (int) ($row['ptVie'] ?? 0);
+        $nomItem = (string) ($row['nom'] ?? '');
+        $typeSort = (string) ($row['typeSort'] ?? '');
+        $typeSortCode = strtoupper(trim($typeSort));
+        $isCodeVitalite = ($typeSortCode === 'V');
+        $isSortVieParNom = stripos($typeSort, 'vie') !== false
+            || stripos($typeSort, 'vital') !== false
+            || stripos($typeSort, 'soin') !== false
+            || stripos($typeSort, 'heal') !== false
+            || stripos($nomItem, 'vie') !== false
+            || stripos($nomItem, 'vital') !== false
+            || stripos($nomItem, 'soin') !== false
+            || stripos($nomItem, 'heal') !== false;
+        $gainPv = $ptVieSort > 0 ? $ptVieSort : (($isSortVieParNom || $isCodeVitalite) ? 10 : 0);
+
+        $pdo->beginTransaction();
+        try {
+            if ((int) $row['quantiteInventaire'] === 1) {
+                $del = $pdo->prepare(
+                    "DELETE FROM Inventaires WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                );
+                $del->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $del->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $del->execute();
+            } else {
+                $updInv = $pdo->prepare(
+                    "UPDATE Inventaires
+                     SET quantiteInventaire = quantiteInventaire - 1
+                     WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                );
+                $updInv->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $updInv->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $updInv->execute();
+            }
+
+            if ($gainPv > 0) {
+                $updPv = $pdo->prepare(
+                    "UPDATE Joueurs SET pointVie = pointVie + :gainPv WHERE idJoueur = :idJoueur"
+                );
+                $updPv->bindValue(':gainPv', $gainPv, PDO::PARAM_INT);
+                $updPv->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $updPv->execute();
+            }
+
+            $pdo->commit();
+            return true;
+        } catch (\Exception $e) {
+            $pdo->rollBack();
+            return false;
+        }
     }
 }
