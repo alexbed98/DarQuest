@@ -76,6 +76,9 @@ $stmtComments->execute([$id]);
 
 $comments = $stmtComments->fetchAll(PDO::FETCH_ASSOC);
 
+$cartNotice = $_SESSION['cart_notice'] ?? null;
+unset($_SESSION['cart_notice']);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_item_id'])) {
     if (!empty($_SESSION['id'])) {
 
@@ -237,16 +240,26 @@ if (!empty($_SESSION['id'])) {
 
     
     <div class="details-buy-zone">
-        <?php $outOfStock = (int) ($item['quantiteStock'] ?? 0) <= 0; ?>
+        <?php
+            $outOfStock = (int) ($item['quantiteStock'] ?? 0) <= 0;
+            $isSpellItem = (($item['typeItem'] ?? '') === 'S');
+            $canBuySpell = !$isSpellItem || (defined('IS_MAGE_PLAYER') && IS_MAGE_PLAYER);
+            $canBuyItem = $outOfStock ? false : $canBuySpell;
+        ?>
         <form method="POST" class="details-buy-form">
             <input type="hidden" name="add_item_id" value="<?= $item['idItem'] ?>">
-            <input type="number" name="update_qty" class="panier-qty-input auto-submit-input details-qty-input" value="<?= $outOfStock ? 0 : 1 ?>" min="1" max="<?= (int) $item['quantiteStock'] ?>" <?= $outOfStock ? 'disabled' : '' ?>>
-            <button type="submit" class="item-add-btn" <?= $outOfStock ? 'disabled' : '' ?>>Ajouter au panier</button>
+            <input type="number" name="update_qty" class="panier-qty-input auto-submit-input details-qty-input" value="<?= $canBuyItem ? 1 : 0 ?>" min="1" max="<?= (int) $item['quantiteStock'] ?>" <?= $canBuyItem ? '' : 'disabled' ?>>
+            <button type="submit" class="item-add-btn" <?= $canBuyItem ? '' : 'disabled' ?> <?= (!$canBuyItem && $isSpellItem) ? 'title="Reserve aux mages"' : '' ?>>Ajouter au panier</button>
             <div class="flexRow details-total-wrap">
                 <p><strong>Total: </strong></p>
                 <p id="prixTotal" class="details-value"></p>
             </div>
         </form>
+        <?php if ($cartNotice): ?>
+            <p class="details-cart-notice"><?= htmlspecialchars($cartNotice) ?></p>
+        <?php elseif ($isSpellItem && !$canBuySpell): ?>
+            <p class="details-cart-notice">Seuls les joueurs mages peuvent acheter des sorts.</p>
+        <?php endif; ?>
     </div>
 
 </div>

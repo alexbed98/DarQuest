@@ -10,6 +10,7 @@ require_once 'core/Upload.php';
 require_once 'src/AccountDAL.php';
 require_once 'src/ItemDAL.php';
 require_once 'src/EnigmeDAL.php';
+require_once 'src/CategoryDAL.php';
 require_once 'core/Email.php';
 
 // Securite: seul un admin peut acceder a cette page
@@ -114,12 +115,18 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_enigme') {
 
     $enonce      = trim($_POST['enonce'] ?? '');
     $idCategorie = trim($_POST['idCategorie'] ?? '') ?: null;
-    $difficulte  = trim($_POST['difficulte'] ?? '');
+    $difficulte  = strtoupper(trim($_POST['difficulte'] ?? ''));
     $estPigee    = (int) ($_POST['estPigee'] ?? 0);
     $bonneRep    = (int) ($_POST['bonneReponse'] ?? 0);
     $reponses    = $_POST['reponses'] ?? [];
 
-    $newId = EnigneDAL::insertEnigme($connexion, $enonce, $idCategorie, $difficulte, $estPigee);
+    if (!in_array($difficulte, ['F', 'M', 'D'], true)) {
+        $enigmeError = "Difficulte invalide. Utilisez F (Facile), M (Moyen) ou D (Difficile).";
+    }
+
+    $newId = $enigmeError === null
+        ? EnigneDAL::insertEnigme($connexion, $enonce, $idCategorie, $difficulte, $estPigee)
+        : false;
 
     if ($newId !== false) {
         foreach ($reponses as $i => $texte) {
@@ -135,6 +142,7 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_enigme') {
     }
 }
 
+$categories = CategoryDAL::selectAll($connexion);
 $itemsPublication = ItemDAL::selectPourPublication($connexion);
 
 // ─── Gestion de publication d'une enigme (retirer / republier) ───────────────

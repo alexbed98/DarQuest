@@ -68,6 +68,10 @@ $items = ItemDAL::select($connexion);
     </div>
     <div class="list-item">
         <?php foreach ($items as $item): ?>
+            <?php
+                $isSpell = (($item['typeItem'] ?? '') === 'S');
+                $canBuyItem = ((int) $item['quantiteStock'] > 0) && (!$isSpell || (defined('IS_MAGE_PLAYER') && IS_MAGE_PLAYER));
+            ?>
 
             <div class="item">
                 <a href="detail.php?idItem=<?= $item['idItem'] ?>">
@@ -86,7 +90,14 @@ $items = ItemDAL::select($connexion);
                         <!-- Ce formulaire envoie l'id de l'item à catalogue.php pour l'ajout panier utilisateur. -->
                         <form method="post" action="" style="margin: 0;">
                             <input type="hidden" name="add_item_id" value="<?= (int) $item['idItem'] ?>">
-                            <button type="submit" class="item-add-btn" <?= (int) $item['quantiteStock'] === 0 ? 'disabled' : '' ?>>Ajouter</button>
+                            <button
+                                type="submit"
+                                class="item-add-btn"
+                                <?= $canBuyItem ? '' : 'disabled' ?>
+                                <?= (!$canBuyItem && $isSpell) ? 'title="Reserve aux mages"' : '' ?>
+                            >
+                                Ajouter
+                            </button>
                         </form>
                     </div>
                 </div>

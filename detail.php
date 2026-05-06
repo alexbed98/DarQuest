@@ -7,11 +7,18 @@
 require_once 'src/initialization.php';
 require_once 'src/Page.php';
 include_once 'core/Database.php';
+require_once 'src/AccountDAL.php';
 require_once 'src/ItemDAL.php';
 require_once 'src/CartDAL.php';
 require_once 'src/ItemRatingDAL.php';
 
 $connexion = Database::getConnexion($dbConfig);
+
+$isMagePlayer = false;
+if (!empty($_SESSION['email'])) {
+    $currentUser = AccountDAL::selectByEmail($connexion, (string) $_SESSION['email']);
+    $isMagePlayer = $currentUser !== false && (int) ($currentUser['estMage'] ?? 0) === 1;
+}
 
 // Ajouter/mettre a jour la note d'un item (doit etre traite avant tout output HTML)
 if (IS_POST && isset($_POST['rate_item_id'])) {
@@ -39,6 +46,12 @@ if (IS_POST && isset($_POST['rate_item_id'])) {
 // Ajouter un item au panier (doit etre traite avant tout output HTML)
 if (IS_POST && isset($_POST['add_item_id'])) {
 
+    if (!IS_AUTH) {
+        $_SESSION['cart_notice'] = 'Connectez-vous pour ajouter des items au panier.';
+        header('Location: ' . $_SERVER['REQUEST_URI']);
+        exit;
+    }
+
     $itemId = filter_input(INPUT_POST, 'add_item_id', FILTER_VALIDATE_INT);
     $qty = filter_input(INPUT_POST, 'update_qty', FILTER_VALIDATE_INT);
     $qty = ($qty && $qty > 0) ? $qty : 1;
@@ -47,6 +60,13 @@ if (IS_POST && isset($_POST['add_item_id'])) {
         $item = ItemDAL::selectById($connexion, $itemId);
 
         if ($item !== false) {
+            $isSpell = (($item['typeItem'] ?? '') === 'S');
+            if ($isSpell && !$isMagePlayer) {
+                $_SESSION['cart_notice'] = 'Seuls les joueurs mages peuvent acheter des sorts.';
+                header('Location: ' . $_SERVER['REQUEST_URI']);
+                exit;
+            }
+
             if ((int) ($item['quantiteStock'] ?? 0) <= 0) {
                 $_SESSION['cart_notice'] = 'Item en rupture de stock.';
                 header('Location: ' . $_SERVER['REQUEST_URI']);
@@ -105,6 +125,10 @@ if (IS_POST && isset($_POST['add_item_id'])) {
 
 // identification de la page active
  const ACTIVE_PAGE = Page::Details;
+
+if (!defined('IS_MAGE_PLAYER')) {
+    define('IS_MAGE_PLAYER', $isMagePlayer);
+}
 
 $cssAdd = ['/public/css/catalogue.css',
            '/public/css/layout.css',
