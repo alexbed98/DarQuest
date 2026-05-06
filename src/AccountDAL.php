@@ -242,7 +242,7 @@ class AccountDAL
     {
         $sql = null;
         $piece = '';
-        $enigme = EnigneDAL::selectById($connexion, $id);
+        $enigme = EnigmeDAL::selectById($connexion, $id);
         $difficulte = $enigme['difficulte'];
 
         switch ($difficulte) {
@@ -283,7 +283,7 @@ class AccountDAL
     {
         $sql = null;
         $hp = '';
-        $enigme = EnigneDAL::selectById($connexion, $id);
+        $enigme = EnigmeDAL::selectById($connexion, $id);
         $difficulte = $enigme['difficulte'];
 
         switch ($difficulte) {
