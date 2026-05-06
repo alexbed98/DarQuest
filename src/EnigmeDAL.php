@@ -2,29 +2,6 @@
 
 class EnigmeDAL
 {
-<<<<<<< Choix-Quete
-    public static string $filtleDifficulte = "";
-    public static string $filtleCategorie = "";
-    //-------------------------------------------------------------------------------
-    //Set le filtre de difficulter (permet de hardcoder en cas)
-    //-------------------------------------------------------------------------------
-    public static function setFiltreDifficulte(string $difChar): void
-    {
-        if ($difChar == 'None')
-            self::$filtleDifficulte = '';
-        else
-            self::$filtleDifficulte = $difChar;
-    }
-    //-------------------------------------------------------------------------------
-    //Set le filtre de Categorie (permet de hardcoder en cas)
-    //-------------------------------------------------------------------------------
-    public static function setFiltreCategorie(string $CatChar): void
-    {
-        if ($CatChar == 'None')
-            self::$filtleDifficulte = '';
-        else
-            self::$filtleCategorie = $CatChar;
-=======
     public static $currentDif = '';
 
     //-------------------------------------------------------------------------------
@@ -42,41 +19,18 @@ class EnigmeDAL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
         $connexion->exec($sql);
->>>>>>> main
     }
     //-------------------------------------------------------------------------------
     //Selectionne tout les enigmes et choisisez un aleatoirement
     //(return false s'il n'y a pas d'enigme choisi)
     //-------------------------------------------------------------------------------
-    public static function selectRandomEnigme(PDO $connexion): array|false
+    public static function selectRandomEnigme(PDO $connexion): array | false
     {
-        $where = '';
-        if (self::$filtleDifficulte != '' && self::$filtleDifficulte != 'None') {
-            $where = ' WHERE difficulte = :difficulte';
-        }
-        if (self::$filtleCategorie != '' && self::$filtleCategorie != 'None') {
-            if ($where == '')
-                $where = ' WHERE idCategorie = :idCategorie';
-            else
-                $where .= ' AND idCategorie = :idCategorie';
-        }
 
         $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee
-                FROM Enigmes
-<<<<<<< Choix-Quete
-                $where;";
-=======
-                WHERE estDisponible = 1;";
->>>>>>> main
+                FROM Enigmes;";
 
         $statement = $connexion->prepare($sql);
-
-        if (self::$filtleDifficulte != '')
-            $statement->bindValue(':difficulte', self::$filtleDifficulte, PDO::PARAM_STR);
-
-        if (self::$filtleCategorie != '')
-            $statement->bindValue(':idCategorie', self::$filtleCategorie, PDO::PARAM_STR);
-
         $statement->execute();
 
         $randomEnigme = $statement->fetchAll();
@@ -91,7 +45,7 @@ class EnigmeDAL
     //Selectionne tout les reponses selon l'id de l'enigme
     //(return false s'il n'y a pas de reponses pour l'enigme)
     //-------------------------------------------------------------------------------
-    public static function selectAllAnswers(PDO $connexion, $enigmeId): array|false
+    public static function selectAllAnswers(PDO $connexion, $enigmeId): array | false
     {
 
         $sql = "SELECT idReponse, estBonneReponse, reponse, idEnigme 
@@ -108,7 +62,7 @@ class EnigmeDAL
     //-------------------------------------------------------------------------------
     //Selectionne une enigme selon son id
     //-------------------------------------------------------------------------------
-    public static function selectById(PDO $connexion, $enigmeId): array|false
+    public static function selectById(PDO $connexion, $enigmeId): array | false
     {
 
         $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee
@@ -126,12 +80,11 @@ class EnigmeDAL
     //Compte tout les enigmes
     //(return false s'il n'y a pas d'enigmes)
     //-------------------------------------------------------------------------------
-    public static function countAllEnigme(PDO $connexion): false|string
+    public static function countAllEnigme(PDO $connexion): false | string
     {
 
         $sql = "SELECT COUNT(*) 
-                FROM Enigmes
-                WHERE estDisponible = 1;";
+                FROM Enigmes;";
 
         $statement = $connexion->prepare($sql);
         if (!$statement->execute()) {
@@ -204,21 +157,12 @@ class EnigmeDAL
         return $statement->execute();
     }
 
-<<<<<<< Choix-Quete
-}
-=======
 
     //-------------------------------------------------------------------------------
     // Selectionne toutes les enigmes avec leur statut de disponibilite (pour l'admin)
     //-------------------------------------------------------------------------------
     public static function selectPourPublication(PDO $connexion): array
     {
-        // Ajoute la colonne si elle n'existe pas encore
-        $connexion->exec("
-            ALTER TABLE Enigmes
-            ADD COLUMN IF NOT EXISTS estDisponible TINYINT(1) NOT NULL DEFAULT 1
-        ");
-
         $sql = "SELECT idEnigme, enonce, difficulte, estDisponible
                 FROM Enigmes
                 ORDER BY idEnigme ASC";
@@ -325,33 +269,9 @@ class EnigmeDAL
         $connexion->prepare($sql)->execute([$idDemande]);
     }
 
-    public static function selectRandomEnigmeNonReussie($connexion, int $idJoueur)
-    {
-        $sql = "
-            SELECT e.*
-            FROM Enigmes e
-            WHERE e.idEnigme NOT IN (
-                SELECT s.idEnigme
-                FROM Statistiques s
-                WHERE s.idJoueur = ?
-                AND s.estReussie = 1
-            )
-            ORDER BY RAND()
-            LIMIT 1
-        ";
-
-        $stmt = $connexion->prepare($sql);
-        $stmt->execute([$idJoueur]);
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
 }
-
-
 
 // Backward compatibility with existing calls using the old typo'ed class name.
 class EnigneDAL extends EnigmeDAL
 {
 }
->>>>>>> main
