@@ -28,7 +28,8 @@ class EnigmeDAL
     {
 
         $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee
-                FROM Enigmes;";
+                FROM Enigmes
+                WHERE estDisponible = 1;";
 
         $statement = $connexion->prepare($sql);
         $statement->execute();
@@ -84,7 +85,8 @@ class EnigmeDAL
     {
 
         $sql = "SELECT COUNT(*) 
-                FROM Enigmes;";
+                FROM Enigmes
+                WHERE estDisponible = 1;";
 
         $statement = $connexion->prepare($sql);
         if (!$statement->execute()) {
@@ -157,6 +159,48 @@ class EnigmeDAL
         return $statement->execute();
     }
 
+
+    //-------------------------------------------------------------------------------
+    // Selectionne toutes les enigmes avec leur statut de disponibilite (pour l'admin)
+    //-------------------------------------------------------------------------------
+    public static function selectPourPublication(PDO $connexion): array
+    {
+        // Ajoute la colonne si elle n'existe pas encore
+        $connexion->exec("
+            ALTER TABLE Enigmes
+            ADD COLUMN IF NOT EXISTS estDisponible TINYINT(1) NOT NULL DEFAULT 1
+        ");
+
+        $sql = "SELECT idEnigme, enonce, difficulte, estDisponible
+                FROM Enigmes
+                ORDER BY idEnigme ASC";
+
+        $statement = $connexion->prepare($sql);
+        $statement->execute();
+
+        return $statement->fetchAll();
+    }
+
+    //-------------------------------------------------------------------------------
+    // Change le statut de disponibilite d'une enigme (sans suppression BD)
+    //-------------------------------------------------------------------------------
+    public static function setDisponibilite(PDO $connexion, int $idEnigme, bool $estDisponible): bool
+    {
+        // Ajoute la colonne si elle n'existe pas
+        $connexion->exec("
+            ALTER TABLE Enigmes
+            ADD COLUMN IF NOT EXISTS estDisponible TINYINT(1) NOT NULL DEFAULT 1
+        ");
+
+        $sql = "UPDATE Enigmes SET estDisponible = :estDisponible WHERE idEnigme = :idEnigme";
+
+        $statement = $connexion->prepare($sql);
+        $statement->bindValue(':estDisponible', $estDisponible ? 1 : 0, PDO::PARAM_INT);
+        $statement->bindValue(':idEnigme', $idEnigme, PDO::PARAM_INT);
+        $statement->execute();
+
+        return $statement->rowCount() > 0;
+    }
 
     public static function countDemandesByJoueur($connexion, $idJoueur) {
         self::ensureDemandesTable($connexion);
@@ -236,3 +280,6 @@ class EnigmeDAL
 }
 
 // Backward compatibility with existing calls using the old typo'ed class name.
+class EnigneDAL extends EnigmeDAL
+{
+}

@@ -137,6 +137,29 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_enigme') {
 
 $itemsPublication = ItemDAL::selectPourPublication($connexion);
 
+// ─── Gestion de publication d'une enigme (retirer / republier) ───────────────
+if (IS_POST && in_array(($_POST['action'] ?? ''), ['retirer_enigme', 'republier_enigme'], true)) {
+
+    $action = (string) ($_POST['action'] ?? '');
+    $idEnigme = filter_input(INPUT_POST, 'idEnigme', FILTER_VALIDATE_INT);
+    $estDisponible = $action === 'republier_enigme';
+
+    if ($idEnigme) {
+        if (EnigmeDAL::setDisponibilite($connexion, $idEnigme, $estDisponible)) {
+            header('Location: ' . Page::Admin->url() . '?success=enigme_publication&tab=enigmeRetraitContainer');
+            exit;
+        }
+
+        $enigmePublicationError = "Aucune modification effectuee (enigme introuvable ou statut deja applique).";
+    } else {
+        $enigmePublicationError = "Identifiant d'enigme invalide.";
+    }
+}
+
+$enigmesPublication = EnigmeDAL::selectPourPublication($connexion);
+$enigmePublicationSuccess = isset($_GET['success']) && $_GET['success'] === 'enigme_publication';
+$enigmePublicationError = $enigmePublicationError ?? null;
+
 // identification de la page active
 const ACTIVE_PAGE = Page::Admin;
 

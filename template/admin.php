@@ -34,6 +34,7 @@
     <button class="mainButton admin-tab-btn" onclick="toggleForm('itemFormContainer', this)">Creation des items</button>
     <button class="mainButton admin-tab-btn" onclick="toggleForm('itemRetraitContainer', this)">Retrait du catalogue</button>
     <button class="mainButton admin-tab-btn" onclick="toggleForm('enigmeFormContainer', this)">Creation des quetes</button>
+    <button class="mainButton admin-tab-btn" onclick="toggleForm('enigmeRetraitContainer', this)">Retrait des quetes</button>
 </div>
 
 <?php if ($itemSuccess ?? false): ?>
@@ -50,6 +51,11 @@
     <div class="admin-alert admin-alert-success">Statut de publication de l'item mis a jour !</div>
 <?php elseif (!empty($itemPublicationError)): ?>
     <div class="admin-alert admin-alert-error"><?= htmlspecialchars($itemPublicationError) ?></div>
+<?php endif; ?>
+<?php if ($enigmePublicationSuccess ?? false): ?>
+    <div class="admin-alert admin-alert-success">Statut de la quete mis a jour !</div>
+<?php elseif (!empty($enigmePublicationError)): ?>
+    <div class="admin-alert admin-alert-error"><?= htmlspecialchars($enigmePublicationError) ?></div>
 <?php endif; ?>
 
 <div id="itemFormContainer" class="toggleForm admin-panel">
@@ -198,6 +204,39 @@
                             <input type="hidden" name="idItem" value="<?= (int) $item['idItem'] ?>" />
                             <button type="submit" class="mainButton <?= $isDisponible ? 'admin-retire-btn' : 'admin-republier-btn' ?>">
                                 <?= $isDisponible ? 'Retirer du catalogue' : 'Republier' ?>
+                            </button>
+                        </form>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+
+<div id="enigmeRetraitContainer" class="toggleForm admin-panel">
+    <div class="admin-panel-card">
+        <h2 class="admin-panel-title">Publication des quetes</h2>
+        <p class="admin-panel-subtitle">Retire ou republie une quete sans la supprimer de la base de donnees.</p>
+
+        <?php if (empty($enigmesPublication ?? [])): ?>
+            <p class="admin-empty-state">Aucune quete trouvee.</p>
+        <?php else: ?>
+            <div class="admin-retire-list">
+                <?php foreach ($enigmesPublication as $enigme): ?>
+                    <?php $isDisponible = (int) ($enigme['estDisponible'] ?? 1) === 1; ?>
+                    <div class="admin-retire-row">
+                        <div class="admin-retire-meta">
+                            <span class="admin-retire-name"><?= htmlspecialchars($enigme['enonce']) ?></span>
+                            <span class="admin-retire-badge">Difficulte <?= htmlspecialchars((string) $enigme['difficulte']) ?></span>
+                            <span class="admin-retire-badge"><?= $isDisponible ? 'Active' : 'Retiree' ?></span>
+                        </div>
+
+                        <form method="post" action="<?= Page::Admin->url() ?>" class="admin-retire-form">
+                            <input type="hidden" name="action" value="<?= $isDisponible ? 'retirer_enigme' : 'republier_enigme' ?>" />
+                            <input type="hidden" name="idEnigme" value="<?= (int) $enigme['idEnigme'] ?>" />
+                            <button type="submit" class="mainButton <?= $isDisponible ? 'admin-retire-btn' : 'admin-republier-btn' ?>">
+                                <?= $isDisponible ? 'Retirer la quete' : 'Republier' ?>
                             </button>
                         </form>
                     </div>
