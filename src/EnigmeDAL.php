@@ -3,13 +3,26 @@
 class EnigmeDAL
 {
     public static string $filtleDifficulte = "";
-    public static function setFiltre(string $difChar): void
+    public static string $filtleCategorie = "";
+    //-------------------------------------------------------------------------------
+    //Set le filtre de difficulter (permet de hardcoder en cas)
+    //-------------------------------------------------------------------------------
+    public static function setFiltreDifficulte(string $difChar): void
     {
         if ($difChar == 'None')
             self::$filtleDifficulte = '';
         else
             self::$filtleDifficulte = $difChar;
-
+    }
+    //-------------------------------------------------------------------------------
+    //Set le filtre de Categorie (permet de hardcoder en cas)
+    //-------------------------------------------------------------------------------
+    public static function setFiltreCategorie(string $CatChar): void
+    {
+        if ($CatChar == 'None')
+            self::$filtleDifficulte = '';
+        else
+            self::$filtleCategorie = $CatChar;
     }
     //-------------------------------------------------------------------------------
     //Selectionne tout les enigmes et choisisez un aleatoirement
@@ -21,6 +34,12 @@ class EnigmeDAL
         if (self::$filtleDifficulte != '' && self::$filtleDifficulte != 'None') {
             $where = ' WHERE difficulte = :difficulte';
         }
+        if (self::$filtleCategorie != '' && self::$filtleCategorie != 'None') {
+            if ($where == '')
+                $where = ' WHERE idCategorie = :idCategorie';
+            else
+                $where .= ' AND idCategorie = :idCategorie';
+        }
 
         $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee
                 FROM Enigmes
@@ -30,6 +49,9 @@ class EnigmeDAL
 
         if (self::$filtleDifficulte != '')
             $statement->bindValue(':difficulte', self::$filtleDifficulte, PDO::PARAM_STR);
+
+        if (self::$filtleCategorie != '')
+            $statement->bindValue(':idCategorie', self::$filtleCategorie, PDO::PARAM_STR);
 
         $statement->execute();
 

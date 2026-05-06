@@ -10,15 +10,23 @@ require_once 'src/CategoryDAL.php';
 
 $connexion = Database::getConnexion($dbConfig);
 $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0;
-$filtre = '';
+$filtreDifficulte = '';
+$filtreCategorie = '';
+$categories = CategoryDAL::select($connexion);
 $enigme = [];
 $reponses = [];
 $message = '';
 $errorMessage = '';
 
+// set le filtre pour la difficulte avec l'url
 if (isset($_GET['filtreDifficulte'])) {
-    $filtre = $_GET['filtreDifficulte'];
-    EnigmeDAL::setFiltre($filtre);
+    $filtreDifficulte = $_GET['filtreDifficulte'];
+    EnigmeDAL::setFiltreDifficulte($filtreDifficulte);
+}
+// set le filtre pour le categorie avec l'url
+if (isset($_GET['filtreCategorie'])) {
+    $filtreCategorie = $_GET['filtreCategorie'];
+    EnigmeDAL::setFiltreCategorie($filtreCategorie);
 }
 
 if (EnigmeDAL::countAllEnigme($connexion)) { //Verifie s'il y a des enigmes (Return true s'il y en a)
@@ -48,31 +56,32 @@ if (IS_POST) {
         } else {
             $message = AccountDAL::takeDamage($connexion, $_SESSION['email'], $idEnigme);//'Mauvaise réponse';
         }
-
 }
 
 $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0; //Update son acces au jeu
 ?>
 
-<script>
-    function DifficultyFiltreChange() {
-        document.getElementById('changeDifficultyFiltre').submit();
-    }
-
-</script>
-
 <div style="flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
-    <form id="changeDifficultyFiltre" style="display: flex;flex-direction:column" method="GET" action="">
+    <form id="changeFiltre" style="display: flex;flex-direction:column" method="GET" action="">
         <input type="button" value="Demander pour de l'argent" onclick="alert('Demander pour de l\'argent')">
         <label for="filtreDifficulte">Préférence de difficulté</label>
-        <select id="filtreDifficulte" name="filtreDifficulte" onchange="DifficultyFiltreChange()">
-            <option value="None" <?php echo EnigmeDAL::$filtleDifficulte == "" ? 'Selected' : '' ?>>Aucune Preference
+        <select id="filtreDifficulte" name="filtreDifficulte" onchange="submit()">
+            <option value="None" <?php echo $filtreDifficulte == "" ? 'Selected' : '' ?>>Aucune Preference
             </option>
             <!-- HardCoder -->
-            <option value="F" <?php echo $filtre == "F" ? 'Selected' : '' ?>>Facile</option>
-            <option value="M" <?php echo $filtre == "M" ? 'Selected' : '' ?>>Moyen</option>
-            <option value="D" <?php echo $filtre == "D" ? 'Selected' : '' ?>>Difficile</option>
+            <option value="F" <?php echo $filtreDifficulte == "F" ? 'Selected' : '' ?>>Facile</option>
+            <option value="M" <?php echo $filtreDifficulte == "M" ? 'Selected' : '' ?>>Moyen</option>
+            <option value="D" <?php echo $filtreDifficulte == "D" ? 'Selected' : '' ?>>Difficile</option>
         </select>
+        <label for="filtreCategorie">Préférence de Categorie</label>
+        <select id="filtreCategorie" name="filtreCategorie" onchange="submit()">
+            <option value="None" <?php echo $filtreCategorie == "" ? 'Selected' : '' ?>>Aucune Preference
+            </option>
+            <?php foreach ($categories as $cat): ?>
+                <option value="<?php echo $cat['idCategorie']?>" <?php echo $filtreCategorie == $cat['idCategorie'] ? 'Selected' : '' ?>><?= $cat['nomCategorie'] ?></option>
+            <?php endforeach ?>
+        </select>
+
     </form>
     <h1>Enigma</h1>
     <div>
