@@ -277,7 +277,30 @@ class EnigmeDAL
         $connexion->prepare($sql)->execute([$idDemande]);
     }
 
+    public static function selectRandomEnigmeNonReussie($connexion, int $idJoueur)
+    {
+        $sql = "
+            SELECT e.*
+            FROM Enigmes e
+            WHERE e.idEnigme NOT IN (
+                SELECT s.idEnigme
+                FROM Statistiques s
+                WHERE s.idJoueur = ?
+                AND s.estReussie = 1
+            )
+            ORDER BY RAND()
+            LIMIT 1
+        ";
+
+        $stmt = $connexion->prepare($sql);
+        $stmt->execute([$idJoueur]);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 }
+
+
 
 // Backward compatibility with existing calls using the old typo'ed class name.
 class EnigneDAL extends EnigmeDAL
