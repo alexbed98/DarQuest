@@ -120,6 +120,9 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_enigme') {
     $bonneRep    = (int) ($_POST['bonneReponse'] ?? 0);
     $reponses    = $_POST['reponses'] ?? [];
 
+<<<<<<< Choix-Quete
+    $newId = EnigmeDAL::insertEnigme($connexion, $enonce, $idCategorie, $difficulte, $estPigee);
+=======
     if (!in_array($difficulte, ['F', 'M', 'D'], true)) {
         $enigmeError = "Difficulte invalide. Utilisez F (Facile), M (Moyen) ou D (Difficile).";
     }
@@ -127,12 +130,13 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_enigme') {
     $newId = $enigmeError === null
         ? EnigneDAL::insertEnigme($connexion, $enonce, $idCategorie, $difficulte, $estPigee)
         : false;
+>>>>>>> main
 
     if ($newId !== false) {
         foreach ($reponses as $i => $texte) {
             $texte = trim($texte);
             if ($texte !== '') {
-                EnigneDAL::insertReponse($connexion, $texte, ($i === $bonneRep ? 1 : 0), $newId);
+                EnigmeDAL::insertReponse($connexion, $texte, ($i === $bonneRep ? 1 : 0), $newId);
             }
         }
         header('Location: ' . Page::Admin->url() . '?success=enigme');
