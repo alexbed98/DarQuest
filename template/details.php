@@ -89,6 +89,14 @@ if (!empty($_SESSION['id'])) {
     $userOwnsItem = (bool) $stmtOwnsItem->fetchColumn();
 }
 
+function redirectToDetail(int $idItem): void
+{
+    $target = 'detail.php?idItem=' . $idItem;
+    echo '<script>window.location.href=' . json_encode($target) . ';</script>';
+    echo '<noscript><meta http-equiv="refresh" content="0;url=' . htmlspecialchars($target, ENT_QUOTES, 'UTF-8') . '"></noscript>';
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_item_id'])) {
     if (!empty($_SESSION['id'])) {
 
@@ -98,8 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_item_id'])) {
 
         if (!$userOwnsItem) {
             $_SESSION['comment_notice'] = 'Vous devez posseder cet item pour laisser un commentaire.';
-            header("Location: detail.php?idItem=" . $idItem);
-            exit;
+            redirectToDetail($idItem);
         }
 
         if (!empty($commentaire)) {
@@ -112,8 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_item_id'])) {
 
             $stmtInsert->execute([$idJoueur, $idItem, $commentaire]);
 
-            header("Location: detail.php?idItem=" . $idItem);
-            exit;
+            redirectToDetail($idItem);
         }
     }
 }
@@ -127,8 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_item_id'])) {
 
         if (!$userOwnsItem) {
             $_SESSION['comment_notice'] = 'Modification impossible: vous ne possedez pas cet item.';
-            header("Location: detail.php?idItem=" . $idItem);
-            exit;
+            redirectToDetail($idItem);
         }
 
         if (!empty($commentaire)) {
@@ -141,8 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_item_id'])) {
 
             $stmtUpdate->execute([$commentaire, $idJoueur, $idItem]);
 
-            header("Location: detail.php?idItem=" . $idItem);
-            exit;
+            redirectToDetail($idItem);
         }
     }
 }
@@ -155,8 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_item_id'])) {
 
         if (!$userOwnsItem) {
             $_SESSION['comment_notice'] = 'Suppression impossible: vous ne possedez pas cet item.';
-            header("Location: detail.php?idItem=" . $idItem);
-            exit;
+            redirectToDetail($idItem);
         }
 
         $stmtDelete = $connexion->prepare("
@@ -166,8 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_item_id'])) {
 
         $stmtDelete->execute([$idJoueur, $idItem]);
 
-        header("Location: detail.php?idItem=" . $idItem);
-        exit;
+        redirectToDetail($idItem);
     }
 }
 
