@@ -8,6 +8,7 @@ body {
     height: 100%;
     padding: 15px;
     background-color: #dce3ee;
+    box-sizing: border-box;
 }
 
 .header {
@@ -117,6 +118,7 @@ main {
     border: 2px solid #7e89b4;
     border-radius: 12px;
     padding: 15px;
+    min-width: 0;
 }
 
 .pages {
@@ -124,8 +126,10 @@ main {
     flex-direction: row;
     margin-left: auto;
     justify-content: space-between;
-    width: 30%;
-    padding-right: 15px;
+    flex-wrap: wrap;
+    width: auto;
+    max-width: 100%;
+    padding-right: 0;
     gap: 10px;
 }
 
@@ -251,6 +255,13 @@ main {
     }
 
     .headerRight {
+        width: 100%;
+        margin-left: 0;
+        justify-content: flex-start;
+    }
+
+    .pages {
+        width: 100%;
         justify-content: flex-start;
     }
 
@@ -262,5 +273,50 @@ main {
     .logout-btn {
         width: 36px;
         height: 36px;
+    }
+}
+
+@media (max-width: 640px) {
+    body {
+        padding: 8px;
+    }
+
+    main {
+        padding: 12px 10px;
+    }
+
+    .header {
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .headerLeft,
+    .headerRight,
+    .pages {
+        width: 100%;
+    }
+
+    .pages {
+        gap: 8px;
+    }
+
+    .pages .headerButtons {
+        flex: 1 1 calc(50% - 8px);
+        text-align: center;
+    }
+
+    .header-status,
+    .header-gold {
+        font-size: 0.78rem;
+    }
+
+    .titre {
+        font-size: 1.5rem;
+    }
+
+    .footer {
+        height: auto;
+        min-height: 50px;
+        padding: 10px;
     }
 }

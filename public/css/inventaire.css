@@ -231,3 +231,37 @@
     color: #2e7d32;
 }
 
+@media (max-width: 768px) {
+    .inventaire-item {
+        width: calc(50% - 10px);
+        min-width: 0;
+    }
+
+    .inventaire-img-wrapper {
+        width: 100%;
+        height: 150px;
+    }
+
+    .inventaire-vendre-form {
+        flex-wrap: wrap;
+    }
+
+    .inventaire-qty-input,
+    .inventaire-vendre-btn,
+    .inventaire-consommer-btn,
+    .inventaire-lancer-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    .inventaire-item {
+        width: 100%;
+    }
+
+    .inventaire-notification {
+        padding: 10px 12px;
+        font-size: 0.92rem;
+    }
+}
+

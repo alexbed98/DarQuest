@@ -1,9 +1,10 @@
 .mainContainer{
     display: flex;
     gap: 20px;
-    width: 90%;
+    width: min(100%, 1180px);
     margin: 20px auto;
     align-items: stretch;
+    box-sizing: border-box;
 
 }
 
@@ -332,6 +333,7 @@ Section pour style commentaires
 
 .comments-section {
     margin: 20px;
+    box-sizing: border-box;
 }
 
 .comment-card {
@@ -373,6 +375,8 @@ Section pour style commentaires
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .edit-form {
@@ -474,6 +478,7 @@ Section pour style commentaires
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 /* IMPORTANT */
@@ -518,4 +523,60 @@ button:disabled {
     padding: 20px;
     margin: 20px;
     border-radius: 12px;
+}
+
+@media (max-width: 720px) {
+    .mainContainer {
+        width: 100%;
+        gap: 16px;
+    }
+
+    .item-title-row,
+    .details-meta-row,
+    .details-buy-form,
+    .details-confirm-actions,
+    .edit-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .title-rating,
+    .details-total-wrap {
+        margin-left: 0;
+    }
+
+    .details-image {
+        height: 220px;
+    }
+
+    .details-qty-input,
+    .details-buy-form .item-add-btn,
+    .details-confirm-cancel,
+    .details-confirm-submit {
+        width: 100%;
+    }
+
+    .comments-section {
+        margin: 16px 0 0;
+        padding: 16px 12px;
+    }
+
+    .comment-card {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .rating-stars-readonly,
+    .rating-stars-input label {
+        font-size: 1.15rem;
+    }
+
+    .item-title {
+        font-size: 1.4rem;
+    }
+
+    .details-confirm-dialog {
+        padding: 18px 16px 16px;
+    }
 }

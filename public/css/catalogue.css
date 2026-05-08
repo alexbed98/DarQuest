@@ -2,6 +2,7 @@
 .catalogue {
     display: flex;
     gap: 16px;
+    align-items: flex-start;
 }
 
 /* ── Sidebar filters ──────────────────────────────────────── */
@@ -9,12 +10,14 @@
     border: 2px solid #7e89b4;
     border-radius: 12px;
     min-width: 160px;
+    max-width: 240px;
     padding: 14px;
     background-color: #edf0f8;
     display: flex;
     flex-direction: column;
     gap: 14px;
     align-self: start;
+    box-sizing: border-box;
 }
 
 .options legend {
@@ -53,13 +56,14 @@
     display: flex;
     flex-wrap: wrap;
     align-content: start;
+    flex: 1 1 auto;
     gap: 20px;
 }
 
 .item {
     display: flex;
     flex-direction: column;
-    width: 300px;
+    width: min(100%, 300px);
 }
 
 /* ── Item card info bar ───────────────────────────────────── */
@@ -132,7 +136,7 @@
 }
 
 .image-item {
-    width: 300px;
+    width: 100%;
     height: 200px;
     display: block;
     object-fit: cover;
@@ -177,7 +181,7 @@
 }
 
 .image-item {
-    width: 300px; 
+    width: 100%; 
     height: 200px;
 }
 
@@ -190,5 +194,53 @@
     justify-content: space-between; 
     padding: 10px; 
     margin-top: 10px; 
-    width: 300px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 980px) {
+    .catalogue {
+        flex-direction: column;
+    }
+
+    .options {
+        width: 100%;
+        max-width: none;
+        min-width: 0;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+    }
+
+    .options legend,
+    .options-gold {
+        width: 100%;
+    }
+
+    .list-item {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .item {
+        width: 100%;
+    }
+
+    .item-info-bottom,
+    .info-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .image-item {
+        height: 180px;
+    }
+
+    .cart-toast {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }
