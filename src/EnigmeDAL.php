@@ -2,7 +2,6 @@
 
 class EnigmeDAL
 {
-<<<<<<< Choix-Quete
     public static string $filtleDifficulte = "";
     public static string $filtleCategorie = "";
     //-------------------------------------------------------------------------------
@@ -21,12 +20,10 @@ class EnigmeDAL
     public static function setFiltreCategorie(string $CatChar): void
     {
         if ($CatChar == 'None')
-            self::$filtleDifficulte = '';
+            self::$filtleCategorie = '';
         else
             self::$filtleCategorie = $CatChar;
-=======
-    public static $currentDif = '';
-
+    }
     //-------------------------------------------------------------------------------
     // Cree la table de demandes si elle n'existe pas.
     //-------------------------------------------------------------------------------
@@ -42,7 +39,6 @@ class EnigmeDAL
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
         $connexion->exec($sql);
->>>>>>> main
     }
     //-------------------------------------------------------------------------------
     //Selectionne tout les enigmes et choisisez un aleatoirement
@@ -63,11 +59,7 @@ class EnigmeDAL
 
         $sql = "SELECT idEnigme, enonce, idCategorie, difficulte, estPigee
                 FROM Enigmes
-<<<<<<< Choix-Quete
-                $where;";
-=======
                 WHERE estDisponible = 1;";
->>>>>>> main
 
         $statement = $connexion->prepare($sql);
 
@@ -204,9 +196,6 @@ class EnigmeDAL
         return $statement->execute();
     }
 
-<<<<<<< Choix-Quete
-}
-=======
 
     //-------------------------------------------------------------------------------
     // Selectionne toutes les enigmes avec leur statut de disponibilite (pour l'admin)
@@ -250,7 +239,8 @@ class EnigmeDAL
         return $statement->rowCount() > 0;
     }
 
-    public static function countDemandesByJoueur($connexion, $idJoueur) {
+    public static function countDemandesByJoueur($connexion, $idJoueur)
+    {
         self::ensureDemandesTable($connexion);
 
         $sql = "SELECT COUNT(*) as total FROM Demandes WHERE idJoueur = ?";
@@ -260,7 +250,8 @@ class EnigmeDAL
         return $result['total'];
     }
 
-    public static function insertDemande($connexion, $idJoueur) {
+    public static function insertDemande($connexion, $idJoueur)
+    {
         self::ensureDemandesTable($connexion);
 
         $sql = "INSERT INTO Demandes (idJoueur, accepter) VALUES (?, 0)";
@@ -268,7 +259,8 @@ class EnigmeDAL
         $stmt->execute([$idJoueur]);
     }
 
-    public static function accepterDemande(PDO $connexion, int $idDemande) {
+    public static function accepterDemande(PDO $connexion, int $idDemande)
+    {
         self::ensureDemandesTable($connexion);
 
         $sql = "SELECT idJoueur FROM Demandes WHERE idDemande = ?";
@@ -276,7 +268,8 @@ class EnigmeDAL
         $stmt->execute([$idDemande]);
         $demande = $stmt->fetch();
 
-        if (!$demande) return;
+        if (!$demande)
+            return;
 
         $idJoueur = $demande['idJoueur'];
 
@@ -285,22 +278,23 @@ class EnigmeDAL
 
         if ($count == 0) {
             $connexion->prepare("UPDATE Joueurs SET gold = gold + 100 WHERE idJoueur = ?")
-                    ->execute([$idJoueur]);
+                ->execute([$idJoueur]);
 
         } elseif ($count == 1) {
             $connexion->prepare("UPDATE Joueurs SET argent = argent + 100 WHERE idJoueur = ?")
-                    ->execute([$idJoueur]);
+                ->execute([$idJoueur]);
 
         } else {
             $connexion->prepare("UPDATE Joueurs SET bronze = bronze + 100 WHERE idJoueur = ?")
-                    ->execute([$idJoueur]);
+                ->execute([$idJoueur]);
         }
-        
+
         $connexion->prepare("UPDATE Demandes SET accepter = 1 WHERE idDemande = ?")
-                ->execute([$idDemande]);
+            ->execute([$idDemande]);
     }
 
-    public static function selectDemandesEnAttente(PDO $connexion) {
+    public static function selectDemandesEnAttente(PDO $connexion)
+    {
         self::ensureDemandesTable($connexion);
 
         $sql = "
@@ -318,7 +312,8 @@ class EnigmeDAL
     }
 
 
-    public static function refuserDemande(PDO $connexion, int $idDemande) {
+    public static function refuserDemande(PDO $connexion, int $idDemande)
+    {
         self::ensureDemandesTable($connexion);
 
         $sql = "UPDATE Demandes SET accepter = -1 WHERE idDemande = ?";
@@ -327,6 +322,18 @@ class EnigmeDAL
 
     public static function selectRandomEnigmeNonReussie($connexion, int $idJoueur)
     {
+        $filtre = [$idJoueur]; //Modifie la selection du random Enigme pour que sa conveint au choix du user
+
+        $where = '';
+        if (self::$filtleDifficulte != '' && self::$filtleDifficulte != 'None') {
+            $where .= ' AND difficulte = ?';
+            array_push($filtre,self::$filtleDifficulte);
+        }
+        if (self::$filtleCategorie != '' && self::$filtleCategorie != 'None') {
+            $where .= ' AND e.idCategorie = ?';
+            array_push($filtre,self::$filtleCategorie);
+        }
+
         $sql = "
             SELECT e.*
             FROM Enigmes e
@@ -335,13 +342,15 @@ class EnigmeDAL
                 FROM Statistiques s
                 WHERE s.idJoueur = ?
                 AND s.estReussie = 1
-            )
+            ) 
+            $where
             ORDER BY RAND()
             LIMIT 1
         ";
 
         $stmt = $connexion->prepare($sql);
-        $stmt->execute([$idJoueur]);
+
+        $stmt->execute($filtre);
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -354,4 +363,3 @@ class EnigmeDAL
 class EnigneDAL extends EnigmeDAL
 {
 }
->>>>>>> main
