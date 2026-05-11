@@ -37,6 +37,7 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_item') {
     $prix        = (int) ($_POST['prix'] ?? 0);
     $estDispo    = isset($_POST['estDisponible']) ? 1 : 0;
     $typeItem    = strtoupper(trim($_POST['typeItem'] ?? ''));
+    $uploadFailed = false;
 
     // Upload photo
     $photo = 'sword1.png';
@@ -46,12 +47,18 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_item') {
         if ($uploadedPhoto !== false) {
             $photo = $uploadedPhoto;
         } else {
-            $itemError = "Le televersement de l'image a echoue (type/poids/droits du dossier).";
+            $uploadFailed = true;
+            $uploadError = Upload::getLastError();
+            $itemError = "Le televersement de l'image a echoue.";
+            if ($uploadError !== '') {
+                $itemError .= ' ' . $uploadError;
+            }
         }
     }
 
     $ok = false;
-    switch ($typeItem) {
+    if (!$uploadFailed) {
+        switch ($typeItem) {
         case 'A':
             $ok = ItemDAL::insertArme(
                 $connexion, $nom, $quantite, $prix, $photo, $estDispo,
@@ -84,6 +91,7 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_item') {
             break;
         default:
             $itemError = "Type d'item invalide. Utilisez A, R, P ou S.";
+        }
     }
 
     if ($ok) {
