@@ -52,7 +52,7 @@ if (IS_POST) {
 
             $message = <<<HTML
                 <h1>Rénitialisation du mot de passe</h1>
-                <p><a style="text-decoration: underline; color: blue;" href="http://darquest.ca/validateReset.php?reset_guid=$reset_guid">
+                <p><a style="text-decoration: underline; color: blue;" href="http://158.69.48.57/~darquest12/DarQuestMain-main/validateReset.php?reset_guid=$reset_guid">
                     Cliquer ici pour rénitialiser votre mot de passe</a>
                 </p>
                 HTML;
