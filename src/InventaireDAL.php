@@ -17,7 +17,7 @@ class InventaireDAL
         ];
         $order = $allowedOrders[$orderBy] ?? 'i.nom ASC';
 
-        $where = 'WHERE inv.idJoueur = :idJoueur';
+        $where = 'WHERE inv.idJoueur = :idJoueur AND inv.quantiteInventaire > 0';
 
         $allowedTypes = ['A', 'R', 'P', 'S'];
         $filtres = array_values(array_intersect($filtres, $allowedTypes));
@@ -139,6 +139,24 @@ class InventaireDAL
     }
 
     /**
+     * Retourne true si le joueur a deja achete l'item au moins une fois.
+     */
+    public static function hasPurchasedItem(PDO $pdo, int $idJoueur, int $idItem): bool
+    {
+        $check = $pdo->prepare(
+            "SELECT 1
+             FROM Inventaires
+             WHERE idJoueur = :idJoueur AND idItem = :idItem
+             LIMIT 1"
+        );
+        $check->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+        $check->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+        $check->execute();
+
+        return (bool) $check->fetchColumn();
+    }
+
+    /**
      * Vend une quantité d'un item : retire de l'inventaire et ajoute de l'or au joueur.
         * Retourne le gain en or, ou false si la vente est impossible.
      */
@@ -184,22 +202,13 @@ class InventaireDAL
 
         $pdo->beginTransaction();
         try {
-            if ($nouvelleQte === 0) {
-                $del = $pdo->prepare(
-                    "DELETE FROM Inventaires WHERE idJoueur = :idJoueur AND idItem = :idItem"
-                );
-                $del->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
-                $del->bindValue(':idItem', $idItem, PDO::PARAM_INT);
-                $del->execute();
-            } else {
-                $upd = $pdo->prepare(
-                    "UPDATE Inventaires SET quantiteInventaire = :qte WHERE idJoueur = :idJoueur AND idItem = :idItem"
-                );
-                $upd->bindValue(':qte', $nouvelleQte, PDO::PARAM_INT);
-                $upd->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
-                $upd->bindValue(':idItem', $idItem, PDO::PARAM_INT);
-                $upd->execute();
-            }
+            $upd = $pdo->prepare(
+                "UPDATE Inventaires SET quantiteInventaire = :qte WHERE idJoueur = :idJoueur AND idItem = :idItem"
+            );
+            $upd->bindValue(':qte', $nouvelleQte, PDO::PARAM_INT);
+            $upd->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+            $upd->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+            $upd->execute();
 
             $addGold = $pdo->prepare(
                 "UPDATE Joueurs SET gold = gold + :gain WHERE idJoueur = :idJoueur"
@@ -255,12 +264,14 @@ class InventaireDAL
         $pdo->beginTransaction();
         try {
             if ((int) $row['quantiteInventaire'] === 1) {
-                $del = $pdo->prepare(
-                    "DELETE FROM Inventaires WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                $updInv = $pdo->prepare(
+                    "UPDATE Inventaires
+                     SET quantiteInventaire = 0
+                     WHERE idJoueur = :idJoueur AND idItem = :idItem"
                 );
-                $del->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
-                $del->bindValue(':idItem', $idItem, PDO::PARAM_INT);
-                $del->execute();
+                $updInv->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $updInv->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $updInv->execute();
             } else {
                 $updInv = $pdo->prepare(
                     "UPDATE Inventaires
@@ -321,12 +332,14 @@ class InventaireDAL
         $pdo->beginTransaction();
         try {
             if ((int) $row['quantiteInventaire'] === 1) {
-                $del = $pdo->prepare(
-                    "DELETE FROM Inventaires WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                $updInv = $pdo->prepare(
+                    "UPDATE Inventaires
+                     SET quantiteInventaire = 0
+                     WHERE idJoueur = :idJoueur AND idItem = :idItem"
                 );
-                $del->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
-                $del->bindValue(':idItem', $idItem, PDO::PARAM_INT);
-                $del->execute();
+                $updInv->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $updInv->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $updInv->execute();
             } else {
                 $updInv = $pdo->prepare(
                     "UPDATE Inventaires
@@ -402,12 +415,14 @@ class InventaireDAL
         $pdo->beginTransaction();
         try {
             if ((int) $row['quantiteInventaire'] === 1) {
-                $del = $pdo->prepare(
-                    "DELETE FROM Inventaires WHERE idJoueur = :idJoueur AND idItem = :idItem"
+                $updInv = $pdo->prepare(
+                    "UPDATE Inventaires
+                     SET quantiteInventaire = 0
+                     WHERE idJoueur = :idJoueur AND idItem = :idItem"
                 );
-                $del->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
-                $del->bindValue(':idItem', $idItem, PDO::PARAM_INT);
-                $del->execute();
+                $updInv->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+                $updInv->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+                $updInv->execute();
             } else {
                 $updInv = $pdo->prepare(
                     "UPDATE Inventaires

@@ -8,9 +8,23 @@
     flex-direction: column;
 }
 
+.form-style input,
+.form-style select,
+.form-style textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
 .submit {
     margin-top: 32px;
     background-color: rgb(82, 157, 243);
-    width: 50%;
+    width: min(100%, 320px);
     align-self: center;
+}
+
+@media (max-width: 640px) {
+    .submit {
+        width: 100%;
+    }
 }

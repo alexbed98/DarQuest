@@ -10,6 +10,7 @@ include_once 'core/Database.php';
 require_once 'src/AccountDAL.php';
 require_once 'src/ItemDAL.php';
 require_once 'src/CartDAL.php';
+require_once 'src/InventaireDAL.php';
 require_once 'src/ItemRatingDAL.php';
 
 $connexion = Database::getConnexion($dbConfig);
@@ -29,7 +30,9 @@ if (IS_POST && isset($_POST['rate_item_id'])) {
         $rating = filter_input(INPUT_POST, 'item_rating', FILTER_VALIDATE_INT);
 
         if ($itemId && $rating && $rating >= 1 && $rating <= 5) {
-            if (ItemRatingDAL::upsertRating($connexion, (int) $itemId, (int) $_SESSION['id'], (int) $rating)) {
+            if (!InventaireDAL::hasPurchasedItem($connexion, (int) $_SESSION['id'], (int) $itemId)) {
+                $_SESSION['rating_notice'] = 'Vous devez deja avoir achete cet item pour laisser une evaluation.';
+            } elseif (ItemRatingDAL::upsertRating($connexion, (int) $itemId, (int) $_SESSION['id'], (int) $rating)) {
                 $_SESSION['rating_notice'] = 'Merci! Votre evaluation a ete enregistree.';
             } else {
                 $_SESSION['rating_notice'] = 'Impossible d\'enregistrer votre evaluation.';

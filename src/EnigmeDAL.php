@@ -3,6 +3,8 @@
 class EnigmeDAL
 {
     public static $currentDif = '';
+    public static $filtleDifficulte = '';
+    public static $filtleCategorie = '';
 
     //-------------------------------------------------------------------------------
     // Cree la table de demandes si elle n'existe pas.
@@ -313,6 +315,52 @@ class EnigmeDAL
         $stmt->execute([$idJoueur]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    //-------------------------------------------------------------------------------
+    // Selectionne une enigme aleatoire non reussie selon des filtres optionnels.
+    //-------------------------------------------------------------------------------
+    public static function selectRandomEnigmeNonReussieFiltree(PDO $connexion, int $idJoueur, ?string $idCategorie = null, ?string $difficulte = null): array|false
+    {
+        $conditions = [
+            "e.estDisponible = 1",
+            "e.idEnigme NOT IN (
+                SELECT s.idEnigme
+                FROM Statistiques s
+                WHERE s.idJoueur = :idJoueur
+                AND s.estReussie = 1
+            )",
+        ];
+
+        if ($idCategorie !== null && $idCategorie !== '') {
+            $conditions[] = "e.idCategorie = :idCategorie";
+        }
+
+        if ($difficulte !== null && $difficulte !== '') {
+            $conditions[] = "e.difficulte = :difficulte";
+        }
+
+        $sql = "SELECT e.*
+                FROM Enigmes e
+                WHERE " . implode(' AND ', $conditions) . "
+                ORDER BY RAND()
+                LIMIT 1";
+
+        $stmt = $connexion->prepare($sql);
+        $stmt->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+
+        if ($idCategorie !== null && $idCategorie !== '') {
+            $stmt->bindValue(':idCategorie', $idCategorie, PDO::PARAM_STR);
+        }
+
+        if ($difficulte !== null && $difficulte !== '') {
+            $stmt->bindValue(':difficulte', $difficulte, PDO::PARAM_STR);
+        }
+
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: false;
     }
 
 }

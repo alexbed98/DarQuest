@@ -86,4 +86,21 @@ class ItemRatingDAL
         $note = $statement->fetchColumn();
         return $note !== false ? (int) $note : null;
     }
+
+    //-------------------------------------------------------------------------------
+    // Supprime la note d'un joueur pour un item.
+    //-------------------------------------------------------------------------------
+    public static function deleteRating(PDO $connexion, int $idItem, int $idJoueur): bool
+    {
+        self::ensureTable($connexion);
+
+        $sql = "DELETE FROM ItemEvaluations
+                WHERE idItem = :idItem AND idJoueur = :idJoueur";
+
+        $statement = $connexion->prepare($sql);
+        $statement->bindValue(':idItem', $idItem, PDO::PARAM_INT);
+        $statement->bindValue(':idJoueur', $idJoueur, PDO::PARAM_INT);
+
+        return $statement->execute();
+    }
 }

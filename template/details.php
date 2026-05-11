@@ -4,6 +4,7 @@ include_once 'core/Database.php';
 include_once 'src/initialization.php';
 require_once 'src/ItemDAL.php';
 require_once 'src/CartDAL.php';
+require_once 'src/InventaireDAL.php';
 require_once 'src/ItemRatingDAL.php';
 
 $connexion = Database::getConnexion($dbConfig);
@@ -82,11 +83,9 @@ unset($_SESSION['cart_notice']);
 $commentNotice = $_SESSION['comment_notice'] ?? null;
 unset($_SESSION['comment_notice']);
 
-$userOwnsItem = false;
+$userHasPurchasedItem = false;
 if (!empty($_SESSION['id'])) {
-    $stmtOwnsItem = $connexion->prepare("SELECT 1 FROM Inventaires WHERE idJoueur = ? AND idItem = ? LIMIT 1");
-    $stmtOwnsItem->execute([(int) $_SESSION['id'], $id]);
-    $userOwnsItem = (bool) $stmtOwnsItem->fetchColumn();
+    $userHasPurchasedItem = InventaireDAL::hasPurchasedItem($connexion, (int) $_SESSION['id'], $id);
 }
 
 function redirectToDetail(int $idItem): void
@@ -97,6 +96,22 @@ function redirectToDetail(int $idItem): void
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_rating_item_id'])) {
+    if (!empty($_SESSION['id'])) {
+        $idItem = (int) $_POST['remove_rating_item_id'];
+        $idJoueur = (int) $_SESSION['id'];
+
+        if (ItemRatingDAL::getUserRating($connexion, $idItem, $idJoueur) === null) {
+            $_SESSION['rating_notice'] = 'Suppression impossible: vous ne pouvez retirer que votre propre evaluation.';
+            redirectToDetail($idItem);
+        }
+
+        ItemRatingDAL::deleteRating($connexion, $idItem, $idJoueur);
+        $_SESSION['rating_notice'] = 'Votre evaluation a ete retiree.';
+        redirectToDetail($idItem);
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_item_id'])) {
     if (!empty($_SESSION['id'])) {
 
@@ -104,8 +119,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment_item_id'])) {
         $idJoueur = (int) $_SESSION['id'];
         $commentaire = trim($_POST['comment_text']);
 
-        if (!$userOwnsItem) {
-            $_SESSION['comment_notice'] = 'Vous devez posseder cet item pour laisser un commentaire.';
+        if (!$userHasPurchasedItem) {
+            $_SESSION['comment_notice'] = 'Vous devez deja avoir achete cet item pour laisser un commentaire.';
             redirectToDetail($idItem);
         }
 
@@ -131,8 +146,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_item_id'])) {
         $idJoueur = (int) $_SESSION['id'];
         $commentaire = trim($_POST['edit_comment_text']);
 
-        if (!$userOwnsItem) {
-            $_SESSION['comment_notice'] = 'Modification impossible: vous ne possedez pas cet item.';
+        if (!$userHasPurchasedItem) {
+            $_SESSION['comment_notice'] = 'Modification impossible: vous devez deja avoir achete cet item.';
             redirectToDetail($idItem);
         }
 
@@ -157,8 +172,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_item_id'])) {
         $idItem = (int) $_POST['delete_item_id'];
         $idJoueur = (int) $_SESSION['id'];
 
-        if (!$userOwnsItem) {
-            $_SESSION['comment_notice'] = 'Suppression impossible: vous ne possedez pas cet item.';
+        if (!$userHasPurchasedItem) {
+            $_SESSION['comment_notice'] = 'Suppression impossible: vous devez deja avoir achete cet item.';
             redirectToDetail($idItem);
         }
 
@@ -218,14 +233,24 @@ if (!empty($_SESSION['id'])) {
                         name="item_rating"
                         value="<?= $star ?>"
                         <?= $userRating === $star ? 'checked' : '' ?>
-                        required
+                        <?= $userHasPurchasedItem ? 'required' : 'disabled' ?>
                     >
                     <label for="star-inline-<?= $star ?>" title="<?= $star ?> etoile<?= $star > 1 ? 's' : '' ?>">&#9733;</label>
                 <?php endfor; ?>
             </div>
         </form>
+        <?php if (!$userHasPurchasedItem): ?>
+            <p class="comment-limit-text">Vous devez deja avoir achete cet item avant de laisser une evaluation.</p>
+        <?php endif; ?>
         <?php if ($ratingNotice): ?>
             <p class="rating-notice-inline"><?= htmlspecialchars($ratingNotice) ?></p>
+        <?php endif; ?>
+
+        <?php if ($userRating !== null): ?>
+            <form method="POST" class="remove-rating-form confirm-action-form" data-confirm-title="Retirer votre évaluation" data-confirm-message="Cette action retirera uniquement votre note pour cet item.">
+                <input type="hidden" name="remove_rating_item_id" value="<?= (int) $item['idItem'] ?>">
+                <button type="submit" class="remove-rating-btn" title="Retirer mon évaluation">✕ Retirer mon évaluation</button>
+            </form>
         <?php endif; ?>
     <?php endif; ?>
 
@@ -326,7 +351,7 @@ if (!empty($_SESSION['id'])) {
             <div class="comment-actions">
                 <button class="edit-btn">🪶</button>
 
-                <form method="POST" class="delete-form" onsubmit="return confirm('Supprimer ce commentaire ?');">
+                <form method="POST" class="delete-form confirm-action-form" data-confirm-title="Supprimer votre commentaire" data-confirm-message="Votre commentaire sera retiré de cet item.">
                     <input type="hidden" name="delete_item_id" value="<?= (int)$item['idItem'] ?>">
                     <button type="submit" class="delete-btn">🗑️</button>
                 </form>
@@ -363,15 +388,15 @@ if (!empty($_SESSION['id'])) {
         <button 
             id="toggleCommentForm" 
             class="item-add-btn"
-            <?= ($userHasCommented || !$userOwnsItem) ? 'disabled' : '' ?>
+            <?= ($userHasCommented || !$userHasPurchasedItem) ? 'disabled' : '' ?>
         >
             Ajouter un commentaire
         </button>
 
         <?php if ($userHasCommented): ?>
             <p class="comment-limit-text">Tu as déjà commenté cet item.</p>
-        <?php elseif (!$userOwnsItem): ?>
-            <p class="comment-limit-text">Vous devez acheter cet item avant de commenter.</p>
+        <?php elseif (!$userHasPurchasedItem): ?>
+            <p class="comment-limit-text">Vous devez deja avoir achete cet item avant de commenter.</p>
         <?php endif; ?>
 
         <form method="POST" id="commentForm" class="comment-form" style="display: none;">
@@ -392,6 +417,19 @@ if (!empty($_SESSION['id'])) {
         </form>
     </div>
 <?php endif; ?>
+
+<div class="details-confirm-modal" id="detailsConfirmModal" aria-hidden="true">
+    <div class="details-confirm-backdrop" data-close-modal="true"></div>
+    <div class="details-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="detailsConfirmTitle" aria-describedby="detailsConfirmMessage">
+        <p class="details-confirm-kicker">Confirmation</p>
+        <h4 class="details-confirm-title" id="detailsConfirmTitle">Confirmer l'action</h4>
+        <p class="details-confirm-message" id="detailsConfirmMessage">Voulez-vous continuer ?</p>
+        <div class="details-confirm-actions">
+            <button type="button" class="details-confirm-cancel" id="detailsConfirmCancel">Annuler</button>
+            <button type="button" class="details-confirm-submit" id="detailsConfirmSubmit">Confirmer</button>
+        </div>
+    </div>
+</div>
 
 
 <script>
@@ -488,6 +526,72 @@ if (!empty($_SESSION['id'])) {
             }, 50);
         });
     }
+
+    const confirmModal = document.querySelector('#detailsConfirmModal');
+    const confirmTitle = document.querySelector('#detailsConfirmTitle');
+    const confirmMessage = document.querySelector('#detailsConfirmMessage');
+    const confirmCancel = document.querySelector('#detailsConfirmCancel');
+    const confirmSubmit = document.querySelector('#detailsConfirmSubmit');
+    let pendingForm = null;
+
+    function closeConfirmModal() {
+        if (!confirmModal) {
+            return;
+        }
+
+        confirmModal.classList.remove('is-open');
+        confirmModal.setAttribute('aria-hidden', 'true');
+        pendingForm = null;
+    }
+
+    function openConfirmModal(form) {
+        if (!confirmModal || !confirmTitle || !confirmMessage) {
+            form.submit();
+            return;
+        }
+
+        pendingForm = form;
+        confirmTitle.textContent = form.dataset.confirmTitle || 'Confirmer l\'action';
+        confirmMessage.textContent = form.dataset.confirmMessage || 'Voulez-vous continuer ?';
+        confirmModal.classList.add('is-open');
+        confirmModal.setAttribute('aria-hidden', 'false');
+        confirmSubmit.focus();
+    }
+
+    document.querySelectorAll('.confirm-action-form').forEach((form) => {
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            openConfirmModal(form);
+        });
+    });
+
+    if (confirmCancel) {
+        confirmCancel.addEventListener('click', closeConfirmModal);
+    }
+
+    if (confirmSubmit) {
+        confirmSubmit.addEventListener('click', () => {
+            if (pendingForm) {
+                const formToSubmit = pendingForm;
+                closeConfirmModal();
+                formToSubmit.submit();
+            }
+        });
+    }
+
+    if (confirmModal) {
+        confirmModal.addEventListener('click', (event) => {
+            if (event.target instanceof HTMLElement && event.target.dataset.closeModal === 'true') {
+                closeConfirmModal();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && confirmModal && confirmModal.classList.contains('is-open')) {
+            closeConfirmModal();
+        }
+    });
 </script>
 
 
