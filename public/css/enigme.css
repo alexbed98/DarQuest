@@ -89,6 +89,75 @@
     gap: 14px;
 }
 
+.enigme-filters {
+    width: min(760px, 100%);
+    margin: 0 auto;
+    border: 2px solid #7e89b4;
+    border-radius: 12px;
+    background-color: #edf0f8;
+    padding: 12px;
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.enigme-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 200px;
+    flex: 1 1 220px;
+}
+
+.enigme-filter-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #3f496a;
+}
+
+.enigme-filter-group select {
+    width: 100%;
+    border: 1px solid #7e89b4;
+    border-radius: 8px;
+    padding: 8px 10px;
+    background-color: #fff;
+    font-size: 0.92rem;
+}
+
+.enigme-random-btn {
+    background-color: #94A3D9;
+    border: 1px solid #7e89b4;
+    border-radius: 8px;
+    color: #2c2c2c;
+    font-weight: 700;
+    padding: 9px 14px;
+    cursor: pointer;
+    transition: transform 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.enigme-random-btn:hover,
+.enigme-random-btn:focus-visible {
+    background-color: #b8c4ea;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(78, 93, 143, 0.28);
+}
+
+.enigme-random-btn:focus-visible {
+    outline: 2px solid #4e5d8f;
+    outline-offset: 2px;
+}
+
+.enigme-filter-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.enigme-filter-actions .enigme-random-btn {
+    min-width: 180px;
+}
+
 .enigme-question-card {
     width: 100%;
     border: 2px solid #7e89b4;
@@ -170,6 +239,28 @@
 
     .enigme-stats {
         align-items: stretch;
+    }
+
+    .enigme-filters {
+        padding: 10px;
+    }
+
+    .enigme-filter-group {
+        min-width: 0;
+        flex-basis: 100%;
+    }
+
+    .enigme-random-btn {
+        width: 100%;
+    }
+
+    .enigme-filter-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .enigme-filter-actions .enigme-random-btn {
+        min-width: 0;
     }
 
     .enigme-gold,

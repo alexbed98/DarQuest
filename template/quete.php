@@ -12,6 +12,45 @@ $message = '';
 $errorMessage = '';
 $enigme = [];
 $reponses = [];
+$categories = CategoryDAL::selectAll($connexion);
+
+$allowedDifficultes = ['F', 'M', 'D'];
+$selectedCategorie = isset($_GET['categorie']) ? strtoupper(trim((string) $_GET['categorie'])) : '';
+$selectedDifficulte = isset($_GET['difficulte']) ? strtoupper(trim((string) $_GET['difficulte'])) : '';
+$shouldLoadQuestion = isset($_GET['tirer_question']) || $selectedCategorie !== '' || $selectedDifficulte !== '';
+$isRandomRequest = isset($_GET['tirer_question']);
+
+$allowedCategories = array_map(
+    static fn(array $cat): string => strtoupper((string) ($cat['idCategorie'] ?? '')),
+    $categories
+);
+
+if ($selectedCategorie !== '' && !in_array($selectedCategorie, $allowedCategories, true)) {
+    $selectedCategorie = '';
+}
+
+if ($selectedDifficulte !== '' && !in_array($selectedDifficulte, $allowedDifficultes, true)) {
+    $selectedDifficulte = '';
+}
+
+if ($isRandomRequest) {
+    // Le mode aleatoire ignore volontairement les filtres choisis.
+    $selectedCategorie = '';
+    $selectedDifficulte = '';
+}
+
+if (IS_POST) {
+    $postedCategorie = isset($_POST['categorie']) ? strtoupper(trim((string) $_POST['categorie'])) : '';
+    $postedDifficulte = isset($_POST['difficulte']) ? strtoupper(trim((string) $_POST['difficulte'])) : '';
+
+    if ($postedCategorie !== '' && in_array($postedCategorie, $allowedCategories, true)) {
+        $selectedCategorie = $postedCategorie;
+    }
+
+    if ($postedDifficulte !== '' && in_array($postedDifficulte, $allowedDifficultes, true)) {
+        $selectedDifficulte = $postedDifficulte;
+    }
+}
 
 if (empty($_SESSION['email'])) {
     $errorMessage = 'Vous devez etre connecte pour acceder aux quetes.';
@@ -44,6 +83,7 @@ if (empty($_SESSION['email'])) {
             } else {
                 $message = AccountDAL::takeDamage($connexion, $_SESSION['email'], (string) $idEnigme);
             }
+            $shouldLoadQuestion = true;
         }
     }
 
@@ -52,13 +92,22 @@ if (empty($_SESSION['email'])) {
     $peutJouer = AccountDAL::selectHp($connexion, $_SESSION['email']) > 0;
 
     if (EnigmeDAL::countAllEnigme($connexion)) {
-        $enigme = EnigmeDAL::selectRandomEnigmeNonReussie($connexion, $idJoueur);
-        $reponses = $enigme ? EnigmeDAL::selectAllAnswers($connexion, $enigme['idEnigme']) : [];
+        if ($shouldLoadQuestion) {
+            $enigme = EnigmeDAL::selectRandomEnigmeNonReussieFiltree(
+                $connexion,
+                $idJoueur,
+                $selectedCategorie !== '' ? $selectedCategorie : null,
+                $selectedDifficulte !== '' ? $selectedDifficulte : null
+            );
+            $reponses = $enigme ? EnigmeDAL::selectAllAnswers($connexion, $enigme['idEnigme']) : [];
 
-        if (!$reponses) {
-            $errorMessage = "Cette quete manque ses reponses.";
-        } else {
-            shuffle($reponses);
+            if ($enigme && !$reponses) {
+                $errorMessage = "Cette quete manque ses reponses.";
+            } elseif ($enigme) {
+                shuffle($reponses);
+            } else {
+                $errorMessage = 'Aucune quete disponible pour ces filtres. Essayez une autre categorie ou difficulte.';
+            }
         }
     } elseif ($errorMessage === '') {
         $errorMessage = "Desole, il n'y a pas de quete pour le moment.";
@@ -92,12 +141,47 @@ if (empty($_SESSION['email'])) {
         </div>
     </div>
 
+    <?php if (!empty($_SESSION['email'])): ?>
+        <form method="GET" action="" class="enigme-filters">
+            <div class="enigme-filter-group">
+                <label for="enigme-categorie">Categorie</label>
+                <select id="enigme-categorie" name="categorie">
+                    <option value="">Toutes les categories</option>
+                    <?php foreach ($categories as $categorie): ?>
+                        <?php $idCategorie = strtoupper((string) ($categorie['idCategorie'] ?? '')); ?>
+                        <option value="<?= htmlspecialchars($idCategorie) ?>" <?= $selectedCategorie === $idCategorie ? 'selected' : '' ?>>
+                            <?= htmlspecialchars((string) ($categorie['nomCategorie'] ?? $idCategorie)) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="enigme-filter-group">
+                <label for="enigme-difficulte">Difficulte</label>
+                <select id="enigme-difficulte" name="difficulte">
+                    <option value="">Toutes les difficultes</option>
+                    <option value="F" <?= $selectedDifficulte === 'F' ? 'selected' : '' ?>>Facile</option>
+                    <option value="M" <?= $selectedDifficulte === 'M' ? 'selected' : '' ?>>Moyen</option>
+                    <option value="D" <?= $selectedDifficulte === 'D' ? 'selected' : '' ?>>Difficile</option>
+                </select>
+            </div>
+
+            <div class="enigme-filter-actions">
+                <button type="submit" class="enigme-random-btn">Appliquer les criteres</button>
+                <button type="submit" name="tirer_question" value="1" class="enigme-random-btn">Question aleatoire</button>
+            </div>
+        </form>
+    <?php endif; ?>
+
     <form id="answerEnigme" method="POST" action="" class="enigme-form">
         <?php if ($peutJouer): ?>
             <?php if ($enigme): ?>
                 <div class="enigme-question-card">
                     <h3><?= htmlspecialchars((string) $enigme['enonce']); ?></h3>
                     <input type="hidden" name="idEnigme" value="<?= htmlspecialchars((string) $enigme['idEnigme']); ?>">
+                    <input type="hidden" name="categorie" value="<?= htmlspecialchars($selectedCategorie); ?>">
+                    <input type="hidden" name="difficulte" value="<?= htmlspecialchars($selectedDifficulte); ?>">
+                    <input type="hidden" name="tirer_question" value="1">
                 </div>
             <?php endif; ?>
 
