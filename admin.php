@@ -39,11 +39,14 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_item') {
     $typeItem    = strtoupper(trim($_POST['typeItem'] ?? ''));
 
     // Upload photo
-    $photo = 'default.png';
+    $photo = 'sword1.png';
     if (!empty($_FILES['photoFile']['name'])) {
         $dest = IMG_ITEMS;
-        if (Upload::move('photoFile', $dest, ['image/jpeg', 'image/png', 'image/webp', 'image/gif'], 5 * 1024 * 1024)) {
-            $photo = basename($_FILES['photoFile']['name']);
+        $uploadedPhoto = Upload::move('photoFile', $dest, ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'], 5 * 1024 * 1024);
+        if ($uploadedPhoto !== false) {
+            $photo = $uploadedPhoto;
+        } else {
+            $itemError = "Le televersement de l'image a echoue (type/poids/droits du dossier).";
         }
     }
 
