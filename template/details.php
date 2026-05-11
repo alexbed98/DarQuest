@@ -322,7 +322,13 @@ if (!empty($_SESSION['id'])) {
 <!-- Côté droit de la page -->
 <div class="conteneur details-image-panel">
     <div class="conteneur details-image-wrap">
-        <img src="<?= IMG ?>/items/<?= htmlspecialchars($item['photo']) ?>" 
+        <?php
+            $itemPhoto = (string) ($item['photo'] ?? '');
+            $itemImageSrc = ($itemPhoto !== '' && $itemPhoto[0] === '/')
+                ? rtrim(URL_ROOT, '/') . $itemPhoto
+                : IMG . '/items/' . ltrim($itemPhoto, '/');
+        ?>
+        <img src="<?= htmlspecialchars($itemImageSrc) ?>" 
             alt="image item" 
             class="details-image">
     </div>

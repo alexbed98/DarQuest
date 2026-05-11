@@ -42,10 +42,10 @@ if (IS_POST && ($_POST['action'] ?? '') === 'create_item') {
     // Upload photo
     $photo = 'sword1.png';
     if (!empty($_FILES['photoFile']['name'])) {
-        $dest = IMG_ITEMS;
+        $dest = UPLOAD . '/items';
         $uploadedPhoto = Upload::move('photoFile', $dest, ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'], 5 * 1024 * 1024);
         if ($uploadedPhoto !== false) {
-            $photo = $uploadedPhoto;
+            $photo = '/upload/items/' . $uploadedPhoto;
         } else {
             $uploadFailed = true;
             $uploadError = Upload::getLastError();

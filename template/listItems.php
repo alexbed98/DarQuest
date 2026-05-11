@@ -71,12 +71,16 @@ $items = ItemDAL::select($connexion);
             <?php
                 $isSpell = (($item['typeItem'] ?? '') === 'S');
                 $canBuyItem = ((int) $item['quantiteStock'] > 0) && (!$isSpell || (defined('IS_MAGE_PLAYER') && IS_MAGE_PLAYER));
+                $photo = (string) ($item['photo'] ?? '');
+                $imageSrc = ($photo !== '' && $photo[0] === '/')
+                    ? rtrim(URL_ROOT, '/') . $photo
+                    : IMG . '/items/' . ltrim($photo, '/');
             ?>
 
             <div class="item">
                 <a href="detail.php?idItem=<?= $item['idItem'] ?>">
                     <div class="background" style="background-image: url('<?= IMG ?>/backgrounds/background06');">
-                        <img class="image-item" src="<?= IMG ?>/items/<?= $item['photo'] ?>" alt="Image de l'article">
+                        <img class="image-item" src="<?= htmlspecialchars($imageSrc) ?>" alt="Image de l'article">
                     </div>
                 </a>
 
