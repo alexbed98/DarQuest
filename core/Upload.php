@@ -50,8 +50,9 @@ class Upload
         }
 
         if (!is_writable($destinationFolder)) {
-            self::setLastError('Dossier de destination non accessible en ecriture.');
-            return false;
+            // Sous Windows, is_writable peut retourner false meme si move_uploaded_file fonctionne.
+            @chmod($destinationFolder, 0775);
+            clearstatcache(true, $destinationFolder);
         }
 
         $destinationPath = $destinationFolder . '/' . $fileName;
@@ -71,7 +72,11 @@ class Upload
             return $fileName;
         }
 
-        self::setLastError('Impossible de deplacer le fichier televerse.');
+        if (!is_writable($destinationFolder)) {
+            self::setLastError('Dossier de destination non accessible en ecriture: ' . $destinationFolder);
+        } else {
+            self::setLastError('Impossible de deplacer le fichier televerse vers: ' . $destinationPath);
+        }
 
         return false;
     }
