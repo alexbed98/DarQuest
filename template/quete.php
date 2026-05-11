@@ -61,6 +61,11 @@ if (empty($_SESSION['email'])) {
 } else {
     $joueur = AccountDAL::selectByEmail($connexion, $_SESSION['email']);
     $idJoueur = (int) $joueur['idJoueur'];
+    $difficultStreakKey = 'enigme_difficult_streak_' . $idJoueur;
+    if (!isset($_SESSION[$difficultStreakKey]) || !is_int($_SESSION[$difficultStreakKey])) {
+        $_SESSION[$difficultStreakKey] = 0;
+    }
+
     $nbDemandes = (int) EnigmeDAL::countDemandesByJoueur($connexion, $idJoueur);
 
     if (IS_POST) {
@@ -80,8 +85,25 @@ if (empty($_SESSION['email'])) {
         if ($bonOuPas !== null && $bonOuPas !== false && $idEnigme) {
             if ($bonOuPas === 1) {
                 $message = AccountDAL::addReward($connexion, $_SESSION['email'], (string) $idEnigme);
+
+                $enigmeCourante = EnigmeDAL::selectById($connexion, (int) $idEnigme);
+                $isDifficile = $enigmeCourante !== false && (($enigmeCourante['difficulte'] ?? '') === 'D');
+
+                if ($isDifficile) {
+                    $_SESSION[$difficultStreakKey]++;
+
+                    if ($_SESSION[$difficultStreakKey] >= 3) {
+                        if (AccountDAL::addGoldById($connexion, $idJoueur, 100)) {
+                            $message .= ' Bonus suite difficile: +100 pieces d\'or!';
+                        }
+                        $_SESSION[$difficultStreakKey] = 0;
+                    }
+                } else {
+                    $_SESSION[$difficultStreakKey] = 0;
+                }
             } else {
                 $message = AccountDAL::takeDamage($connexion, $_SESSION['email'], (string) $idEnigme);
+                $_SESSION[$difficultStreakKey] = 0;
             }
             $shouldLoadQuestion = true;
         }
